@@ -3,11 +3,32 @@
 import { SanityApp } from "@sanity/sdk-react";
 import { dataset, projectId } from "@/sanity/env";
 
+const normalizeUrl = (value: string | undefined | null) => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(value).toString();
+  } catch {
+    try {
+      return new URL(decodeURIComponent(value)).toString();
+    } catch {
+      return null;
+    }
+  }
+};
+
 function SanityAppProvider({ children }: { children: React.ReactNode }) {
-  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  const adminUrl = appBaseUrl
-    ? new URL("/admin", appBaseUrl).toString()
-    : null;
+  const appBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_APP_URL);
+  const adminBaseUrl =
+    typeof window !== "undefined"
+      ? new URL("/admin", window.location.origin).toString()
+      : appBaseUrl
+        ? new URL("/admin", appBaseUrl).toString()
+        : null;
+  const initialLocationHref =
+    typeof window !== "undefined" ? window.location.href : adminBaseUrl;
 
   return (
     <SanityApp
@@ -15,11 +36,11 @@ function SanityAppProvider({ children }: { children: React.ReactNode }) {
         {
           projectId,
           dataset,
-          ...(adminUrl
+          ...(adminBaseUrl
             ? {
                 auth: {
-                  callbackUrl: adminUrl,
-                  initialLocationHref: adminUrl,
+                  callbackUrl: adminBaseUrl,
+                  initialLocationHref,
                 },
               }
             : {}),
