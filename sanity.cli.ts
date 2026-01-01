@@ -21,7 +21,7 @@ if (!organizationId || !projectId || !dataset) {
 export default defineCliConfig({
   app: {
     organizationId,
-    entry: "./app/(admin)/admin/page.tsx",
+    entry: "./sanity-app/entry.tsx",
   },
   vite: {
     resolve: {

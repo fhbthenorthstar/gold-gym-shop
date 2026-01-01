@@ -3,7 +3,7 @@
 // Modifications to this file are automatically discarded
 import {createRoot} from 'react-dom/client'
 import {createElement} from 'react'
-import App from "/Users/fhb/DevProjects/ecommerce-ai/app/(admin)/admin/page.tsx"
+import App from "/Users/fhb/DevProjects/ecommerce-ai/sanity-app/entry.tsx"
 
 const root = createRoot(document.getElementById('root'))
 const element = createElement(App)
