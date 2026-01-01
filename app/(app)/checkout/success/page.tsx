@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
+import { sanityFetch } from "@/sanity/lib/live";
+import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
 import { SuccessClient } from "./SuccessClient";
-import { getCheckoutSession } from "@/lib/actions/checkout";
 
 export const metadata = {
   title: "Order Confirmed | Furniture Shop",
@@ -8,22 +9,25 @@ export const metadata = {
 };
 
 interface SuccessPageProps {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ orderId?: string }>;
 }
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
-  const sessionId = params.session_id;
+  const orderId = params.orderId;
 
-  if (!sessionId) {
+  if (!orderId) {
     redirect("/");
   }
 
-  const result = await getCheckoutSession(sessionId);
+  const { data: order } = await sanityFetch({
+    query: ORDER_BY_ID_QUERY,
+    params: { id: orderId },
+  });
 
-  if (!result.success || !result.session) {
+  if (!order) {
     redirect("/");
   }
 
-  return <SuccessClient session={result.session} />;
+  return <SuccessClient order={order} />;
 }

@@ -25,7 +25,7 @@ function StatusSelectContent(handle: StatusSelectProps) {
   const editStatus = useEditDocument({ ...handle, path: "status" });
   const apply = useApplyDocumentActions();
 
-  const currentStatus = (status as string) ?? "paid";
+  const currentStatus = (status as string) ?? "cod";
   const statusConfig = getOrderStatus(currentStatus);
   const StatusIcon = statusConfig.icon;
 

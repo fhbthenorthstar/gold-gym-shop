@@ -14,7 +14,7 @@ const productSuggestions = [
 const orderSuggestions = [
   "Where's my order?",
   "Show me my recent orders",
-  "Has my order shipped?",
+  "What's my order status?",
 ];
 
 export function WelcomeScreen({

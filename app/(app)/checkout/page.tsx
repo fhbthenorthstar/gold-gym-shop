@@ -1,3 +1,6 @@
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { sanityFetch } from "@/sanity/lib/live";
+import { CUSTOMER_BY_CLERK_ID_QUERY } from "@/lib/sanity/queries/customers";
 import { CheckoutClient } from "./CheckoutClient";
 
 export const metadata = {
@@ -6,5 +9,27 @@ export const metadata = {
 };
 
 export default function CheckoutPage() {
-  return <CheckoutClient />;
+  return <CheckoutClientLoader />;
+}
+
+async function CheckoutClientLoader() {
+  const { userId } = await auth();
+  const user = userId ? await currentUser() : null;
+
+  const { data: customer } = userId
+    ? await sanityFetch({
+        query: CUSTOMER_BY_CLERK_ID_QUERY,
+        params: { clerkUserId: userId },
+      })
+    : { data: null };
+
+  const initialEmail = user?.emailAddresses[0]?.emailAddress ?? customer?.email ?? "";
+
+  return (
+    <CheckoutClient
+      isSignedIn={!!userId}
+      initialEmail={initialEmail}
+      initialAddresses={customer?.addresses ?? []}
+    />
+  );
 }

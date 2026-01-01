@@ -19,21 +19,26 @@ import {
   RevertButton,
 } from "@/components/admin";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { PAYMENT_METHOD_LABELS } from "@/lib/constants/paymentMethods";
 
 interface OrderDetailProjection {
   orderNumber: string;
   email: string;
   total: number;
+  subtotal: number | null;
+  shippingFee: number | null;
   status: string;
+  paymentMethod: string | null;
   createdAt: string;
   stripePaymentId: string | null;
   address: {
     name: string;
     line1: string;
     line2: string | null;
-    city: string;
-    postcode: string;
-    country: string;
+    division: string | null;
+    postcode: string | null;
+    country: string | null;
+    phone: string | null;
   } | null;
   items: Array<{
     _key: string;
@@ -59,16 +64,20 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
       orderNumber,
       email,
       total,
+      subtotal,
+      shippingFee,
       status,
+      paymentMethod,
       createdAt,
       stripePaymentId,
       address{
         name,
         line1,
         line2,
-        city,
+        "division": coalesce(division, city),
         postcode,
-        country
+        country,
+        phone
       },
       items[]{
         _key,
@@ -210,7 +219,15 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
                   Subtotal
                 </span>
                 <span className="text-zinc-900 dark:text-zinc-100">
-                  {formatPrice(data.total)}
+                  {formatPrice(data.subtotal ?? data.total)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  Shipping
+                </span>
+                <span className="text-zinc-900 dark:text-zinc-100">
+                  {formatPrice(data.shippingFee ?? 0)}
                 </span>
               </div>
               <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
@@ -240,6 +257,12 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
             <div className="mt-4 space-y-2 text-sm">
               <p className="break-all text-zinc-900 dark:text-zinc-100">
                 {data.email}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Payment method:{" "}
+                {data.paymentMethod
+                  ? PAYMENT_METHOD_LABELS[data.paymentMethod as "cod" | "online"]
+                  : data.status}
               </p>
               {data.stripePaymentId && (
                 <p className="break-all text-xs text-zinc-500 dark:text-zinc-400">

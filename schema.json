@@ -122,19 +122,28 @@
           "of": [
             {
               "type": "string",
+              "value": "cod"
+            },
+            {
+              "type": "string",
               "value": "paid"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "paymentMethod": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "cod"
             },
             {
               "type": "string",
-              "value": "shipped"
-            },
-            {
-              "type": "string",
-              "value": "delivered"
-            },
-            {
-              "type": "string",
-              "value": "cancelled"
+              "value": "online"
             }
           ]
         },
@@ -210,10 +219,44 @@
               },
               "optional": true
             },
-            "city": {
+            "division": {
               "type": "objectAttribute",
               "value": {
-                "type": "string"
+                "type": "union",
+                "of": [
+                  {
+                    "type": "string",
+                    "value": "Dhaka"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Chattogram"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Rajshahi"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Khulna"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Barishal"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Sylhet"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Rangpur"
+                  },
+                  {
+                    "type": "string",
+                    "value": "Mymensingh"
+                  }
+                ]
               },
               "optional": true
             },
@@ -230,8 +273,36 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "phone": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
             }
           }
+        },
+        "optional": true
+      },
+      "orderNotes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "subtotal": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "shippingFee": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
         },
         "optional": true
       },
@@ -691,6 +762,126 @@
         "type": "objectAttribute",
         "value": {
           "type": "string"
+        },
+        "optional": true
+      },
+      "addresses": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "label": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "name": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "line1": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "line2": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "division": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "Dhaka"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Chattogram"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Rajshahi"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Khulna"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Barishal"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Sylhet"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Rangpur"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Mymensingh"
+                    }
+                  ]
+                },
+                "optional": true
+              },
+              "postcode": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "country": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "phone": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "isDefault": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              }
+            },
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
         },
         "optional": true
       },

@@ -1,12 +1,6 @@
-import {
-  Package,
-  Truck,
-  XCircle,
-  CreditCard,
-  type LucideIcon,
-} from "lucide-react";
+import { Banknote, CreditCard, type LucideIcon } from "lucide-react";
 
-export type OrderStatusValue = "paid" | "shipped" | "delivered" | "cancelled";
+export type OrderStatusValue = "cod" | "paid";
 
 export interface OrderStatusConfig {
   /** The status value/key */
@@ -27,41 +21,23 @@ export interface OrderStatusConfig {
 
 export const ORDER_STATUS_CONFIG: Record<OrderStatusValue, OrderStatusConfig> =
   {
+    cod: {
+      value: "cod",
+      label: "COD",
+      color: "bg-amber-100 text-amber-800",
+      icon: Banknote,
+      emoji: "💵",
+      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBgColor: "bg-amber-100 dark:bg-amber-900/30",
+    },
     paid: {
       value: "paid",
       label: "Paid",
-      color: "bg-green-100 text-green-800",
+      color: "bg-emerald-100 text-emerald-800",
       icon: CreditCard,
       emoji: "✅",
       iconColor: "text-emerald-600 dark:text-emerald-400",
       iconBgColor: "bg-emerald-100 dark:bg-emerald-900/30",
-    },
-    shipped: {
-      value: "shipped",
-      label: "Shipped",
-      color: "bg-blue-100 text-blue-800",
-      icon: Truck,
-      emoji: "📦",
-      iconColor: "text-blue-600 dark:text-blue-400",
-      iconBgColor: "bg-blue-100 dark:bg-blue-900/30",
-    },
-    delivered: {
-      value: "delivered",
-      label: "Delivered",
-      color: "bg-zinc-100 text-zinc-800",
-      icon: Package,
-      emoji: "🎉",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-      iconBgColor: "bg-emerald-100 dark:bg-emerald-900/30",
-    },
-    cancelled: {
-      value: "cancelled",
-      label: "Cancelled",
-      color: "bg-red-100 text-red-800",
-      icon: XCircle,
-      emoji: "❌",
-      iconColor: "text-red-600 dark:text-red-400",
-      iconBgColor: "bg-red-100 dark:bg-red-900/30",
     },
   };
 
@@ -85,11 +61,11 @@ export const ORDER_STATUS_SANITY_LIST = ORDER_STATUS_VALUES.map((value) => ({
   value,
 }));
 
-/** Get order status config with fallback to "paid" */
+/** Get order status config with fallback to "cod" */
 export const getOrderStatus = (
   status: string | null | undefined
 ): OrderStatusConfig =>
-  ORDER_STATUS_CONFIG[status as OrderStatusValue] ?? ORDER_STATUS_CONFIG.paid;
+  ORDER_STATUS_CONFIG[status as OrderStatusValue] ?? ORDER_STATUS_CONFIG.cod;
 
 /** Get emoji display for status (for AI/chat) */
 export const getOrderStatusEmoji = (

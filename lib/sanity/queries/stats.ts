@@ -15,7 +15,7 @@ export const ORDER_COUNT_QUERY = defineQuery(`count(*[_type == "order"])`);
  */
 export const TOTAL_REVENUE_QUERY = defineQuery(`math::sum(*[
   _type == "order"
-  && status in ["paid", "shipped", "delivered"]
+  && status == "paid"
 ].total)`);
 
 // ============================================
@@ -50,10 +50,8 @@ export const ORDERS_LAST_7_DAYS_QUERY = defineQuery(`*[
  * Excludes draft documents to get accurate counts
  */
 export const ORDER_STATUS_DISTRIBUTION_QUERY = defineQuery(`{
-  "paid": count(*[_type == "order" && status == "paid" && !(_id in path("drafts.**"))]),
-  "shipped": count(*[_type == "order" && status == "shipped" && !(_id in path("drafts.**"))]),
-  "delivered": count(*[_type == "order" && status == "delivered" && !(_id in path("drafts.**"))]),
-  "cancelled": count(*[_type == "order" && status == "cancelled" && !(_id in path("drafts.**"))])
+  "cod": count(*[_type == "order" && status == "cod" && !(_id in path("drafts.**"))]),
+  "paid": count(*[_type == "order" && status == "paid" && !(_id in path("drafts.**"))])
 }`);
 
 /**
@@ -62,7 +60,7 @@ export const ORDER_STATUS_DISTRIBUTION_QUERY = defineQuery(`{
  */
 export const TOP_SELLING_PRODUCTS_QUERY = defineQuery(`*[
   _type == "order"
-  && status in ["paid", "shipped", "delivered"]
+  && status == "paid"
   && !(_id in path("drafts.**"))
 ] {
   items[]{
@@ -85,12 +83,12 @@ export const PRODUCTS_INVENTORY_QUERY = defineQuery(`*[_type == "product"] {
 }`);
 
 /**
- * Get unfulfilled orders (paid but not yet shipped)
+ * Get unfulfilled orders (COD orders awaiting confirmation)
  * Excludes draft documents to get accurate counts
  */
 export const UNFULFILLED_ORDERS_QUERY = defineQuery(`*[
   _type == "order"
-  && status == "paid"
+  && status == "cod"
   && !(_id in path("drafts.**"))
 ] | order(createdAt asc) {
   _id,
@@ -108,13 +106,13 @@ export const UNFULFILLED_ORDERS_QUERY = defineQuery(`*[
 export const REVENUE_BY_PERIOD_QUERY = defineQuery(`{
   "currentPeriod": math::sum(*[
     _type == "order"
-    && status in ["paid", "shipped", "delivered"]
+    && status == "paid"
     && createdAt >= $currentStart
     && !(_id in path("drafts.**"))
   ].total),
   "previousPeriod": math::sum(*[
     _type == "order"
-    && status in ["paid", "shipped", "delivered"]
+    && status == "paid"
     && createdAt >= $previousStart
     && createdAt < $currentStart
     && !(_id in path("drafts.**"))

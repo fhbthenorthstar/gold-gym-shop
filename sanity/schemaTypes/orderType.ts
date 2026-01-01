@@ -1,6 +1,8 @@
 import { BasketIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { DEFAULT_COUNTRY, BANGLADESH_DIVISIONS } from "@/lib/constants/bangladesh";
 import { ORDER_STATUS_SANITY_LIST } from "@/lib/constants/orderStatus";
+import { PAYMENT_METHOD_SANITY_LIST } from "@/lib/constants/paymentMethods";
 
 export const orderType = defineType({
   name: "order",
@@ -76,9 +78,19 @@ export const orderType = defineType({
       name: "status",
       type: "string",
       group: "details",
-      initialValue: "paid",
+      initialValue: "cod",
       options: {
         list: ORDER_STATUS_SANITY_LIST,
+        layout: "radio",
+      },
+    }),
+    defineField({
+      name: "paymentMethod",
+      type: "string",
+      group: "payment",
+      initialValue: "cod",
+      options: {
+        list: PAYMENT_METHOD_SANITY_LIST,
         layout: "radio",
       },
     }),
@@ -110,10 +122,43 @@ export const orderType = defineType({
         defineField({ name: "name", type: "string", title: "Full Name" }),
         defineField({ name: "line1", type: "string", title: "Address Line 1" }),
         defineField({ name: "line2", type: "string", title: "Address Line 2" }),
-        defineField({ name: "city", type: "string" }),
+        defineField({
+          name: "division",
+          type: "string",
+          title: "Division",
+          options: {
+            list: [...BANGLADESH_DIVISIONS],
+          },
+        }),
         defineField({ name: "postcode", type: "string", title: "Postcode" }),
-        defineField({ name: "country", type: "string" }),
+        defineField({
+          name: "country",
+          type: "string",
+          initialValue: DEFAULT_COUNTRY,
+        }),
+        defineField({ name: "phone", type: "string", title: "Phone" }),
       ],
+    }),
+    defineField({
+      name: "orderNotes",
+      type: "text",
+      group: "details",
+      rows: 3,
+      description: "Additional delivery notes",
+    }),
+    defineField({
+      name: "subtotal",
+      type: "number",
+      group: "details",
+      readOnly: true,
+      description: "Subtotal before shipping",
+    }),
+    defineField({
+      name: "shippingFee",
+      type: "number",
+      group: "details",
+      readOnly: true,
+      description: "Shipping fee",
     }),
     defineField({
       name: "stripePaymentId",
@@ -140,7 +185,7 @@ export const orderType = defineType({
     prepare({ orderNumber, email, total, status }) {
       return {
         title: `Order ${orderNumber ?? "N/A"}`,
-        subtitle: `${email ?? "No email"} • £${total ?? 0} • ${status ?? "paid"}`,
+        subtitle: `${email ?? "No email"} • £${total ?? 0} • ${status ?? "cod"}`,
       };
     },
   },

@@ -116,9 +116,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           name: session.customer_details?.name ?? "",
           line1: shippingAddress.line1 ?? "",
           line2: shippingAddress.line2 ?? "",
-          city: shippingAddress.city ?? "",
+          division: shippingAddress.city ?? shippingAddress.state ?? "",
           postcode: shippingAddress.postal_code ?? "",
           country: shippingAddress.country ?? "",
+          phone: session.customer_details?.phone ?? "",
         }
       : undefined;
 
@@ -137,6 +138,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       items: orderItems,
       total: (session.amount_total ?? 0) / 100,
       status: "paid",
+      paymentMethod: "online",
       stripePaymentId,
       address,
       createdAt: new Date().toISOString(),

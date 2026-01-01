@@ -6,39 +6,29 @@ import { CheckCircle, Package, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useCartActions } from "@/lib/store/cart-store-provider";
+import { PAYMENT_METHOD_LABELS } from "@/lib/constants/paymentMethods";
+import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 
 interface SuccessClientProps {
-  session: {
-    id: string;
-    customerEmail?: string | null;
-    customerName?: string | null;
-    amountTotal?: number | null;
-    paymentStatus: string;
-    shippingAddress?: {
-      line1?: string | null;
-      line2?: string | null;
-      city?: string | null;
-      state?: string | null;
-      postal_code?: string | null;
-      country?: string | null;
-    } | null;
-    lineItems?: {
-      name?: string | null;
-      quantity?: number | null;
-      amount: number;
-    }[];
-  };
+  order: NonNullable<ORDER_BY_ID_QUERYResult>;
 }
 
-export function SuccessClient({ session }: SuccessClientProps) {
+type OrderItem = NonNullable<
+  NonNullable<NonNullable<ORDER_BY_ID_QUERYResult>["items"]>[number]
+>;
+
+export function SuccessClient({ order }: SuccessClientProps) {
   const { clearCart } = useCartActions();
 
-  // Clear cart on mount
   useEffect(() => {
     clearCart();
   }, [clearCart]);
 
-  const address = session.shippingAddress;
+  const orderItems = (order.items ?? []).filter(Boolean) as OrderItem[];
+  const address = order.address;
+  const paymentLabel = order.paymentMethod
+    ? PAYMENT_METHOD_LABELS[order.paymentMethod as "cod" | "online"]
+    : order.status?.toUpperCase();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
@@ -47,63 +37,79 @@ export function SuccessClient({ session }: SuccessClientProps) {
         <h1 className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
           Order Confirmed!
         </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Thank you for your purchase. We&apos;ve sent a confirmation to{" "}
-          <span className="font-medium">{session.customerEmail}</span>
-        </p>
+        {order.email && (
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            Thank you for your purchase. We&apos;ve sent a confirmation to{" "}
+            <span className="font-medium">{order.email}</span>
+          </p>
+        )}
       </div>
 
-      {/* Order Details */}
       <div className="mt-10 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
         <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
             Order Details
           </h2>
+          {order.orderNumber && (
+            <p className="mt-1 text-xs text-zinc-500">Order #{order.orderNumber}</p>
+          )}
         </div>
 
         <div className="px-6 py-4">
-          {/* Items */}
-          {session.lineItems && session.lineItems.length > 0 && (
+          {orderItems.length > 0 && (
             <div className="space-y-3">
-              {session.lineItems.map((item) => (
+              {orderItems.map((item) => (
                 <div
-                  key={`${item.name}-${item.quantity}-${item.amount}`}
+                  key={item._key}
                   className="flex justify-between text-sm"
                 >
                   <span className="text-zinc-600 dark:text-zinc-400">
-                    {item.name} × {item.quantity}
+                    {item.product?.name ?? "Item"} × {item.quantity ?? 1}
                   </span>
                   <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                    {formatPrice(item.amount / 100)}
+                    {formatPrice(
+                      (item.priceAtPurchase ?? 0) * (item.quantity ?? 1)
+                    )}
                   </span>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Total */}
-          <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <div className="mt-4 space-y-2 border-t border-zinc-200 pt-4 text-sm">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Subtotal</span>
+              <span className="text-zinc-900 dark:text-zinc-100">
+                {formatPrice(order.subtotal ?? order.total)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Shipping</span>
+              <span className="text-zinc-900 dark:text-zinc-100">
+                {formatPrice(order.shippingFee ?? 0)}
+              </span>
+            </div>
             <div className="flex justify-between text-base font-semibold">
               <span className="text-zinc-900 dark:text-zinc-100">Total</span>
               <span className="text-zinc-900 dark:text-zinc-100">
-                {formatPrice((session.amountTotal ?? 0) / 100)}
+                {formatPrice(order.total)}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Shipping Address */}
         {address && (
           <div className="border-t border-zinc-200 px-6 py-4 dark:border-zinc-800">
             <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
               Shipping to
             </h3>
             <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              {session.customerName && <p>{session.customerName}</p>}
+              {address.name && <p>{address.name}</p>}
+              {address.phone && <p>{address.phone}</p>}
               {address.line1 && <p>{address.line1}</p>}
               {address.line2 && <p>{address.line2}</p>}
               <p>
-                {[address.city, address.state, address.postal_code]
+                {[address.division, address.postcode]
                   .filter(Boolean)
                   .join(", ")}
               </p>
@@ -112,28 +118,28 @@ export function SuccessClient({ session }: SuccessClientProps) {
           </div>
         )}
 
-        {/* Payment Status */}
         <div className="border-t border-zinc-200 px-6 py-4 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <Package className="h-5 w-5 text-zinc-400" />
             <span className="text-sm text-zinc-600 dark:text-zinc-400">
-              Payment status:{" "}
-              <span className="font-medium capitalize text-green-600">
-                {session.paymentStatus}
+              Payment method:{" "}
+              <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
+                {paymentLabel ?? "COD"}
               </span>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Actions */}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button asChild variant="outline">
-          <Link href="/orders">
-            View Your Orders
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+        {order.clerkUserId && (
+          <Button asChild variant="outline">
+            <Link href="/orders">
+              View Your Orders
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        )}
         <Button asChild>
           <Link href="/">Continue Shopping</Link>
         </Button>

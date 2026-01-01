@@ -57,14 +57,17 @@ function AddressEditorContent(handle: AddressEditorProps) {
       </Suspense>
       <div className="grid grid-cols-2 gap-3">
         <Suspense fallback={<Skeleton className="h-16" />}>
-          <AddressField handle={handle} field="city" label="City" placeholder="London" />
+          <AddressField handle={handle} field="division" label="Division" placeholder="Dhaka" />
         </Suspense>
         <Suspense fallback={<Skeleton className="h-16" />}>
           <AddressField handle={handle} field="postcode" label="Postcode" placeholder="SW1A 1AA" />
         </Suspense>
       </div>
       <Suspense fallback={<Skeleton className="h-16" />}>
-        <AddressField handle={handle} field="country" label="Country" placeholder="United Kingdom" />
+        <AddressField handle={handle} field="phone" label="Phone" placeholder="01XXXXXXXXX" />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-16" />}>
+        <AddressField handle={handle} field="country" label="Country" placeholder="Bangladesh" />
       </Suspense>
     </div>
   );
@@ -92,4 +95,3 @@ export function AddressEditor(props: AddressEditorProps) {
     </Suspense>
   );
 }
-

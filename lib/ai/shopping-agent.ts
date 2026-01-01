@@ -149,13 +149,13 @@ You have access to the getMyOrders tool to check the user's order history and st
 
 ### When to Use
 - User asks about their orders ("Where's my order?", "What have I ordered?")
-- User asks about order status ("Has my order shipped?")
+- User asks about order status ("Is my order COD or paid?")
 - User wants to track a delivery
 
 ### Parameters
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| status | enum | Optional filter: "", "pending", "paid", "shipped", "delivered", "cancelled" |
+| status | enum | Optional filter: "", "cod", "paid" |
 
 ### Presenting Orders
 
@@ -167,11 +167,8 @@ Format orders like this:
 - [View Order](/orders/[id])
 
 ### Order Status Meanings
-- ⏳ Pending - Order received, awaiting payment confirmation
-- ✅ Paid - Payment confirmed, preparing for shipment
-- 📦 Shipped - On its way to you
-- 🎉 Delivered - Successfully delivered
-- ❌ Cancelled - Order was cancelled`;
+- 💵 COD - Cash on delivery
+- ✅ Paid - Payment completed`;
 
 const notAuthenticatedInstructions = `
 

@@ -8,6 +8,8 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
 import { getOrderStatus } from "@/lib/constants/orderStatus";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { PAYMENT_METHOD_LABELS } from "@/lib/constants/paymentMethods";
+import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 
 export const metadata = {
   title: "Order Details | Furniture Shop",
@@ -17,6 +19,10 @@ export const metadata = {
 interface OrderPageProps {
   params: Promise<{ id: string }>;
 }
+
+type OrderItem = NonNullable<
+  NonNullable<NonNullable<ORDER_BY_ID_QUERYResult>["items"]>[number]
+>;
 
 export default async function OrderDetailPage({ params }: OrderPageProps) {
   const { id } = await params;
@@ -34,6 +40,9 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
 
   const status = getOrderStatus(order.status);
   const StatusIcon = status.icon;
+  const paymentLabel = order.paymentMethod
+    ? PAYMENT_METHOD_LABELS[order.paymentMethod as "cod" | "online"]
+    : order.status?.toUpperCase();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -72,7 +81,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               </h2>
             </div>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {order.items?.map((item) => (
+              {order.items?.map((item: OrderItem) => (
                 <div key={item._key} className="flex gap-4 px-6 py-4">
                   {/* Image */}
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800">
@@ -138,7 +147,15 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                   Subtotal
                 </span>
                 <span className="text-zinc-900 dark:text-zinc-100">
-                  {formatPrice(order.total)}
+                  {formatPrice(order.subtotal ?? order.total)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  Shipping
+                </span>
+                <span className="text-zinc-900 dark:text-zinc-100">
+                  {formatPrice(order.shippingFee ?? 0)}
                 </span>
               </div>
               <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
@@ -167,8 +184,9 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                 {order.address.name && <p>{order.address.name}</p>}
                 {order.address.line1 && <p>{order.address.line1}</p>}
                 {order.address.line2 && <p>{order.address.line2}</p>}
+                {order.address.phone && <p>{order.address.phone}</p>}
                 <p>
-                  {[order.address.city, order.address.postcode]
+                  {[order.address.division, order.address.postcode]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
@@ -187,9 +205,11 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
             </div>
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-light tracking-wide">Status</span>
+                <span className="text-xs font-light tracking-wide">
+                  Payment method
+                </span>
                 <span className="text-sm font-medium capitalize text-green-600">
-                  {order.status}
+                  {paymentLabel ?? "COD"}
                 </span>
               </div>
               {order.email && (

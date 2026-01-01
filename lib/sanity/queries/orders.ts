@@ -47,14 +47,19 @@ export const ORDER_BY_ID_QUERY = defineQuery(`*[
     }
   },
   total,
+  subtotal,
+  shippingFee,
   status,
+  paymentMethod,
+  orderNotes,
   address{
     name,
     line1,
     line2,
-    city,
+    "division": coalesce(division, city),
     postcode,
-    country
+    country,
+    phone
   },
   stripePaymentId,
   createdAt
@@ -82,4 +87,3 @@ export const ORDER_BY_STRIPE_PAYMENT_ID_QUERY = defineQuery(`*[
   _type == "order"
   && stripePaymentId == $stripePaymentId
 ][0]{ _id }`);
-

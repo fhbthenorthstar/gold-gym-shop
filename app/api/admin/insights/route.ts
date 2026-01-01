@@ -27,10 +27,8 @@ interface Order {
 }
 
 interface StatusDistribution {
+  cod: number;
   paid: number;
-  shipped: number;
-  delivered: number;
-  cancelled: number;
 }
 
 interface ProductSale {
@@ -300,7 +298,7 @@ Generate insights in the required JSON format.`,
         actionItems: {
           urgent:
             unfulfilledOrders.length > 0
-              ? [`Ship ${unfulfilledOrders.length} pending orders`]
+              ? [`Follow up ${unfulfilledOrders.length} COD orders`]
               : ["All orders fulfilled!"],
           recommended: ["Review inventory levels", "Check product listings"],
           opportunities: ["Featured products drive more sales"],
