@@ -161,13 +161,6 @@ export const orderType = defineType({
       description: "Shipping fee",
     }),
     defineField({
-      name: "stripePaymentId",
-      type: "string",
-      group: "payment",
-      readOnly: true,
-      description: "Stripe payment intent ID",
-    }),
-    defineField({
       name: "createdAt",
       type: "datetime",
       group: "details",

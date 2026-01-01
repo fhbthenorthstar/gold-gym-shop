@@ -61,7 +61,6 @@ export const ORDER_BY_ID_QUERY = defineQuery(`*[
     country,
     phone
   },
-  stripePaymentId,
   createdAt
 }`);
 
@@ -78,12 +77,3 @@ export const RECENT_ORDERS_QUERY = defineQuery(`*[
   status,
   createdAt
 }`);
-
-/**
- * Check if order exists by Stripe payment ID
- * Used for webhook idempotency check
- */
-export const ORDER_BY_STRIPE_PAYMENT_ID_QUERY = defineQuery(`*[
-  _type == "order"
-  && stripePaymentId == $stripePaymentId
-][0]{ _id }`);

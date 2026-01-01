@@ -30,7 +30,6 @@ interface OrderDetailProjection {
   status: string;
   paymentMethod: string | null;
   createdAt: string;
-  stripePaymentId: string | null;
   address: {
     name: string;
     line1: string;
@@ -69,7 +68,6 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
       status,
       paymentMethod,
       createdAt,
-      stripePaymentId,
       address{
         name,
         line1,
@@ -264,11 +262,6 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
                   ? PAYMENT_METHOD_LABELS[data.paymentMethod as "cod" | "online"]
                   : data.status}
               </p>
-              {data.stripePaymentId && (
-                <p className="break-all text-xs text-zinc-500 dark:text-zinc-400">
-                  Payment: {data.stripePaymentId}
-                </p>
-              )}
             </div>
           </div>
 
