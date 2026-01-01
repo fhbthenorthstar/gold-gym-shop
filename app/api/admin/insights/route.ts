@@ -209,7 +209,7 @@ export async function GET() {
 
     // Generate AI insights
     const { text } = await generateText({
-      model: gateway("anthropic/claude-sonnet-4"),
+      model: gateway("google/gemini-3-flash"),
       system: `You are an expert e-commerce analytics assistant. Analyze the provided store data and generate actionable insights for the store admin.
 
 Your response must be valid JSON with this exact structure:
