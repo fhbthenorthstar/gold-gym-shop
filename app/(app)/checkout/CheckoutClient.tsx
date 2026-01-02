@@ -193,6 +193,7 @@ export function CheckoutClient({
       }
 
       setFormError(result.error ?? "Checkout failed.");
+      console.log(result);
       toast.error("Checkout Error", {
         description: result.error ?? "Something went wrong",
       });
