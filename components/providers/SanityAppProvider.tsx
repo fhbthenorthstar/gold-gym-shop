@@ -1,22 +1,13 @@
 "use client";
 
-import { SanityApp } from "@sanity/sdk-react";
+import { ResourceProvider } from "@sanity/sdk-react";
 import { dataset, projectId } from "@/sanity/env";
 
 function SanityAppProvider({ children }: { children: React.ReactNode }) {
   return (
-    <SanityApp
-      config={[
-        {
-          projectId,
-          dataset,
-          studioMode: { enabled: true },
-        },
-      ]}
-      fallback={<div />}
-    >
+    <ResourceProvider projectId={projectId} dataset={dataset} fallback={<div />}>
       {children}
-    </SanityApp>
+    </ResourceProvider>
   );
 }
 
