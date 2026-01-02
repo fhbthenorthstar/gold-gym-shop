@@ -2,12 +2,19 @@ import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
 // Types
+export interface CartItemVariant {
+  sku?: string;
+  options?: { name: string; value: string }[];
+}
+
 export interface CartItem {
+  id: string;
   productId: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
+  variant?: CartItemVariant;
 }
 
 export interface CartState {
@@ -17,8 +24,8 @@ export interface CartState {
 
 export interface CartActions {
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeItem: (itemId: string) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   toggleCart: () => void;
   openCart: () => void;
@@ -31,6 +38,13 @@ export type CartStore = CartState & CartActions;
 export const defaultInitState: CartState = {
   items: [],
   isOpen: false,
+};
+
+const migrateCartItems = (items: CartItem[] = []): CartItem[] => {
+  return items.map((item) => ({
+    ...item,
+    id: item.id || item.productId,
+  }));
 };
 
 /**
@@ -46,13 +60,11 @@ export const createCartStore = (initState: CartState = defaultInitState) => {
 
         addItem: (item, quantity = 1) =>
           set((state) => {
-            const existing = state.items.find(
-              (i) => i.productId === item.productId
-            );
+            const existing = state.items.find((i) => i.id === item.id);
             if (existing) {
               return {
                 items: state.items.map((i) =>
-                  i.productId === item.productId
+                  i.id === item.id
                     ? { ...i, quantity: i.quantity + quantity }
                     : i
                 ),
@@ -61,21 +73,21 @@ export const createCartStore = (initState: CartState = defaultInitState) => {
             return { items: [...state.items, { ...item, quantity }] };
           }),
 
-        removeItem: (productId) =>
+        removeItem: (itemId) =>
           set((state) => ({
-            items: state.items.filter((i) => i.productId !== productId),
+            items: state.items.filter((i) => i.id !== itemId),
           })),
 
-        updateQuantity: (productId, quantity) =>
+        updateQuantity: (itemId, quantity) =>
           set((state) => {
             if (quantity <= 0) {
               return {
-                items: state.items.filter((i) => i.productId !== productId),
+                items: state.items.filter((i) => i.id !== itemId),
               };
             }
             return {
               items: state.items.map((i) =>
-                i.productId === productId ? { ...i, quantity } : i
+                i.id === itemId ? { ...i, quantity } : i
               ),
             };
           }),
@@ -87,6 +99,15 @@ export const createCartStore = (initState: CartState = defaultInitState) => {
       }),
       {
         name: "cart-storage",
+        version: 2,
+        migrate: (state) => {
+          if (!state || typeof state !== "object") return state as CartState;
+          const nextState = state as CartState;
+          return {
+            ...nextState,
+            items: migrateCartItems(nextState.items),
+          };
+        },
         // Skip automatic hydration - we'll trigger it manually on the client
         skipHydration: true,
         // Only persist items, not UI state like isOpen

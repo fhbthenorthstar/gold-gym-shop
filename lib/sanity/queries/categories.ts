@@ -4,9 +4,7 @@ import { defineQuery } from "next-sanity";
  * Get all categories
  * Used for navigation and filters
  */
-export const ALL_CATEGORIES_QUERY = defineQuery(`*[
-  _type == "category"
-] | order(title asc) {
+export const ALL_CATEGORIES_QUERY = defineQuery(`*[_type == "category"] | order(order asc, title asc) {
   _id,
   title,
   "slug": slug.current,
@@ -16,6 +14,20 @@ export const ALL_CATEGORIES_QUERY = defineQuery(`*[
       url
     },
     hotspot
+  },
+  parent->{
+    _id,
+    title,
+    "slug": slug.current
+  },
+  order,
+  featuredInMenu,
+  filterConfig{
+    showBrand,
+    showGoals,
+    showSports,
+    showGender,
+    optionFilters
   }
 }`);
 
@@ -35,5 +47,19 @@ export const CATEGORY_BY_SLUG_QUERY = defineQuery(`*[
       url
     },
     hotspot
+  },
+  parent->{
+    _id,
+    title,
+    "slug": slug.current
+  },
+  order,
+  featuredInMenu,
+  filterConfig{
+    showBrand,
+    showGoals,
+    showSports,
+    showGender,
+    optionFilters
   }
 }`);

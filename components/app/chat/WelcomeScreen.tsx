@@ -6,9 +6,9 @@ interface WelcomeScreenProps {
 }
 
 const productSuggestions = [
-  "Show me oak tables",
-  "Leather sofas under £1000",
-  "What chairs do you have?",
+  "Creatine for strength",
+  "Boxing gloves under ৳3000",
+  "Women's activewear",
 ];
 
 const orderSuggestions = [
@@ -31,8 +31,8 @@ export function WelcomeScreen({
       </h3>
       <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-xs">
         {isSignedIn
-          ? "I can help you find furniture, check your orders, and track deliveries."
-          : "I can help you find furniture by style, material, color, or price. Just ask!"}
+          ? "I can help you find gym and combat gear, check your orders, and track deliveries."
+          : "I can help you find supplements, apparel, and training gear by brand, goal, sport, or price."}
       </p>
 
       {/* Product suggestions */}

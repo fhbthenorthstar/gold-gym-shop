@@ -48,18 +48,43 @@ export const orderType = defineType({
               description: "Price at time of purchase",
               validation: (rule) => rule.required(),
             }),
+            defineField({
+              name: "variantSku",
+              type: "string",
+            }),
+            defineField({
+              name: "variantTitle",
+              type: "string",
+              description: "Selected options summary",
+            }),
+            defineField({
+              name: "variantOptions",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  fields: [
+                    defineField({ name: "name", type: "string" }),
+                    defineField({ name: "value", type: "string" }),
+                  ],
+                }),
+              ],
+            }),
           ],
           preview: {
             select: {
               title: "product.name",
               quantity: "quantity",
               price: "priceAtPurchase",
+              variantTitle: "variantTitle",
               media: "product.images.0",
             },
-            prepare({ title, quantity, price, media }) {
+            prepare({ title, quantity, price, media, variantTitle }) {
               return {
                 title: title ?? "Product",
-                subtitle: `Qty: ${quantity} • £${price}`,
+                subtitle: `Qty: ${quantity} • ৳${price}${
+                  variantTitle ? ` • ${variantTitle}` : ""
+                }`,
                 media,
               };
             },
@@ -72,7 +97,7 @@ export const orderType = defineType({
       type: "number",
       group: "details",
       readOnly: true,
-      description: "Total order amount in GBP",
+      description: "Total order amount in BDT",
     }),
     defineField({
       name: "status",
@@ -178,7 +203,7 @@ export const orderType = defineType({
     prepare({ orderNumber, email, total, status }) {
       return {
         title: `Order ${orderNumber ?? "N/A"}`,
-        subtitle: `${email ?? "No email"} • £${total ?? 0} • ${status ?? "cod"}`,
+        subtitle: `${email ?? "No email"} • ৳${total ?? 0} • ${status ?? "cod"}`,
       };
     },
   },

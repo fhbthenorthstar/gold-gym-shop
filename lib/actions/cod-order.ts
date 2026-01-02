@@ -7,6 +7,7 @@ import { CUSTOMER_BY_CLERK_ID_QUERY } from "@/lib/sanity/queries/customers";
 import { DEFAULT_COUNTRY, BANGLADESH_DIVISIONS, getShippingFee } from "@/lib/constants/bangladesh";
 import type { CartItem } from "@/lib/store/cart-store";
 import type { CUSTOMER_BY_CLERK_ID_QUERYResult } from "@/sanity.types";
+import { getVariantBySelectedOptions } from "@/lib/utils/product-variants";
 
 export interface CheckoutAddressInput {
   name: string;
@@ -103,10 +104,46 @@ export async function createCodOrder(
       ids: productIds,
     });
 
+    type ProductResult = (typeof products)[number];
+
+    const getVariantLabel = (variant: CartItem["variant"]) => {
+      if (!variant?.options?.length) return "";
+      return variant.options
+        .map((opt) => `${opt.name}: ${opt.value}`)
+        .join(" / ");
+    };
+
+    const resolveVariantForItem = (
+      product: ProductResult,
+      item: CartItem
+    ) => {
+      if (!product?.variants?.length || !item.variant) return null;
+
+      if (item.variant.sku) {
+        return (
+          product.variants?.find(
+            (variant: { sku?: string | null }) =>
+              variant?.sku === item.variant?.sku
+          ) ?? null
+        );
+      }
+
+      const selectedOptions =
+        item.variant.options?.reduce<Record<string, string>>((acc, option) => {
+          acc[option.name] = option.value;
+          return acc;
+        }, {}) ?? {};
+
+      return getVariantBySelectedOptions(product, selectedOptions);
+    };
+
+    type ResolvedVariant = ReturnType<typeof resolveVariantForItem>;
     const validationErrors: string[] = [];
     const validatedItems: {
-      product: (typeof products)[number];
+      product: ProductResult;
       quantity: number;
+      lineItem: CartItem;
+      variant?: ResolvedVariant;
     }[] = [];
 
     for (const item of input.items) {
@@ -119,19 +156,31 @@ export async function createCodOrder(
         continue;
       }
 
-      if ((product.stock ?? 0) === 0) {
-        validationErrors.push(`"${product.name}" is out of stock`);
+      const variant = resolveVariantForItem(product, item);
+      const currentStock = variant ? variant?.stock ?? 0 : product.stock ?? 0;
+      const variantLabel = getVariantLabel(item.variant);
+      const displayName = variantLabel
+        ? `${product.name} (${variantLabel})`
+        : product.name;
+
+      if (currentStock === 0) {
+        validationErrors.push(`"${displayName}" is out of stock`);
         continue;
       }
 
-      if (item.quantity > (product.stock ?? 0)) {
+      if (item.quantity > currentStock) {
         validationErrors.push(
-          `Only ${product.stock} of "${product.name}" available`
+          `Only ${currentStock} of "${displayName}" available`
         );
         continue;
       }
 
-      validatedItems.push({ product, quantity: item.quantity });
+      validatedItems.push({
+        product,
+        quantity: item.quantity,
+        lineItem: item,
+        variant,
+      });
     }
 
     if (validationErrors.length > 0) {
@@ -139,7 +188,7 @@ export async function createCodOrder(
     }
 
     const subtotal = validatedItems.reduce(
-      (sum, item) => sum + (item.product.price ?? 0) * item.quantity,
+      (sum, item) => sum + (item.lineItem.price ?? 0) * item.quantity,
       0
     );
     const shippingFee = getShippingFee(address.division);
@@ -229,7 +278,15 @@ export async function createCodOrder(
         _ref: item.product._id,
       },
       quantity: item.quantity,
-      priceAtPurchase: item.product.price ?? 0,
+      priceAtPurchase: item.lineItem.price ?? 0,
+      variantSku: item.lineItem.variant?.sku ?? item.variant?.sku ?? null,
+      variantTitle: item.lineItem.variant
+        ? getVariantLabel(item.lineItem.variant)
+        : null,
+      variantOptions: item.lineItem.variant?.options?.map((option) => ({
+        name: option.name,
+        value: option.value,
+      })) ?? [],
     }));
 
     const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}-${Math.random()
@@ -269,10 +326,19 @@ export async function createCodOrder(
     });
 
     await validatedItems
-      .reduce(
-        (tx, item) => tx.patch(item.product._id, (p) => p.dec({ stock: item.quantity })),
-        writeClient.transaction()
-      )
+      .reduce((tx, item) => {
+        if (item.variant?._key) {
+          return tx.patch(item.product._id, (p) =>
+            p.dec({
+              [`variants[_key==\"${item.variant?._key}\"].stock`]: item.quantity,
+            })
+          );
+        }
+
+        return tx.patch(item.product._id, (p) =>
+          p.dec({ stock: item.quantity })
+        );
+      }, writeClient.transaction())
       .commit();
 
     return { success: true, orderId: order._id };

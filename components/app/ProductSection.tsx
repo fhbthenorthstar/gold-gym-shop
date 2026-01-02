@@ -7,12 +7,12 @@ import { ProductFilters } from "./ProductFilters";
 import { ProductGrid } from "./ProductGrid";
 import type {
   ALL_CATEGORIES_QUERYResult,
-  FILTER_PRODUCTS_BY_NAME_QUERYResult,
+  FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult,
 } from "@/sanity.types";
 
 interface ProductSectionProps {
   categories: ALL_CATEGORIES_QUERYResult;
-  products: FILTER_PRODUCTS_BY_NAME_QUERYResult;
+  products: FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult;
   searchQuery: string;
 }
 
@@ -70,7 +70,7 @@ export function ProductSection({
             filtersOpen ? "w-full lg:w-72 lg:opacity-100" : "hidden lg:hidden"
           }`}
         >
-          <ProductFilters categories={categories} />
+          <ProductFilters categories={categories} products={products} />
         </aside>
 
         {/* Product Grid - expands to full width when filters hidden */}

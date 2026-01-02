@@ -4,7 +4,7 @@ import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
 import { SuccessClient } from "./SuccessClient";
 
 export const metadata = {
-  title: "Order Confirmed | Furniture Shop",
+  title: "Order Confirmed | Gold's Gym Shop",
   description: "Your order has been placed successfully",
 };
 

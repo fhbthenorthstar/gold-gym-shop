@@ -465,7 +465,7 @@ export function CheckoutClient({
 
             <div className="mt-4 space-y-4 border-b border-zinc-200 pb-4">
               {items.map((item) => (
-                <div key={item.productId} className="flex gap-3">
+                <div key={item.id} className="flex gap-3">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-zinc-100">
                     {item.image ? (
                       <Image
@@ -485,6 +485,13 @@ export function CheckoutClient({
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {item.name}
                     </p>
+                    {item.variant?.options?.length ? (
+                      <p className="text-xs text-zinc-500">
+                        {item.variant.options
+                          .map((option) => `${option.name}: ${option.value}`)
+                          .join(" / ")}
+                      </p>
+                    ) : null}
                     <p className="text-xs text-zinc-500">Qty: {item.quantity}</p>
                   </div>
                   <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">

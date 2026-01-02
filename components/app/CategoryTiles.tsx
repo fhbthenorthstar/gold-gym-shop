@@ -14,6 +14,12 @@ export function CategoryTiles({
   categories,
   activeCategory,
 }: CategoryTilesProps) {
+  const activeCategoryRecord = categories.find(
+    (category) => category.slug === activeCategory
+  );
+  const activeRootSlug = activeCategoryRecord?.parent?.slug ?? activeCategory;
+  const topCategories = categories.filter((category) => !category.parent?.slug);
+
   return (
     <div className="relative">
       {/* Horizontal scrolling container - full width with edge padding */}
@@ -49,8 +55,8 @@ export function CategoryTiles({
         </Link>
 
         {/* Category tiles */}
-        {categories.map((category) => {
-          const isActive = activeCategory === category.slug;
+        {topCategories.map((category) => {
+          const isActive = activeRootSlug === category.slug;
           const imageUrl = category.image?.asset?.url;
 
           return (

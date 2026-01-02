@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatPrice } from "@/lib/utils";
+import { getDefaultVariant, getDisplayPrice } from "@/lib/utils/product-variants";
 import type { FEATURED_PRODUCTS_QUERYResult } from "@/sanity.types";
 
 type FeaturedProduct = FEATURED_PRODUCTS_QUERYResult[number];
@@ -110,6 +111,8 @@ interface FeaturedSlideProps {
 
 function FeaturedSlide({ product }: FeaturedSlideProps) {
   const mainImage = product.images?.[0]?.asset?.url;
+  const defaultVariant = getDefaultVariant(product);
+  const displayPrice = getDisplayPrice(product, defaultVariant);
 
   return (
     <div className="flex min-h-[400px] flex-col md:min-h-[450px] md:flex-row lg:min-h-[500px]">
@@ -157,7 +160,7 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
         )}
 
         <p className="mt-6 text-3xl font-bold text-white lg:text-4xl">
-          {formatPrice(product.price)}
+          {formatPrice(displayPrice)}
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">

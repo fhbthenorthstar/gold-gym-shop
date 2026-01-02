@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CartStoreProvider } from "@/lib/store/cart-store-provider";
 import { ChatStoreProvider } from "@/lib/store/chat-store-provider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -14,7 +15,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       <CartStoreProvider>
         <ChatStoreProvider>
           <AppShell>
-            <Header />
+            <Suspense fallback={null}>
+              <Header />
+            </Suspense>
             <main>{children}</main>
           </AppShell>
           <CartSheet />

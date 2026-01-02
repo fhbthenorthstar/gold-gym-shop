@@ -4,7 +4,7 @@ import { CUSTOMER_BY_CLERK_ID_QUERY } from "@/lib/sanity/queries/customers";
 import { CheckoutClient } from "./CheckoutClient";
 
 export const metadata = {
-  title: "Checkout | Furniture Shop",
+  title: "Checkout | Gold's Gym Shop",
   description: "Complete your purchase",
 };
 
