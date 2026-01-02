@@ -9,9 +9,9 @@ import {
 } from "@/lib/sanity/queries/products";
 import { ALL_CATEGORIES_QUERY } from "@/lib/sanity/queries/categories";
 import { ProductSection } from "@/components/app/ProductSection";
-import { CategoryTiles } from "@/components/app/CategoryTiles";
 import { FeaturedCarousel } from "@/components/app/FeaturedCarousel";
 import { FeaturedCarouselSkeleton } from "@/components/app/FeaturedCarouselSkeleton";
+import { CallToAction } from "@/components/app/CallToAction";
 import {
   parseMultiValueParam,
   parseOptionFiltersParam,
@@ -98,7 +98,28 @@ export default async function HomePage({ searchParams }: PageProps) {
   });
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+    <div className="min-h-screen bg-black">
+      <section
+        className="relative overflow-hidden border-b border-zinc-800 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url(https://dt-fitfinity.myshopify.com/cdn/shop/files/Breadcrump_2.jpg?v=1707216002&width=1920)",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="relative mx-auto max-w-7xl px-4 py-16 text-center text-white">
+          <p className="text-xs uppercase tracking-[0.3em] text-lime-300">
+            Home / All Collections / Products
+          </p>
+          <h1 className="font-heading mt-4 text-3xl md:text-4xl">
+            {activeCategory?.title ?? "All Products"}
+          </h1>
+          <p className="mt-2 text-sm text-zinc-300">
+            Fitwear, supplements, and equipment curated for modern training.
+          </p>
+        </div>
+      </section>
+
       {/* Featured Products Carousel */}
       {featuredProducts.length > 0 && (
         <Suspense fallback={<FeaturedCarouselSkeleton />}>
@@ -106,33 +127,15 @@ export default async function HomePage({ searchParams }: PageProps) {
         </Suspense>
       )}
 
-      {/* Page Banner */}
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Shop {activeCategory?.title ?? "All Products"}
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Supplements, equipment, and combat essentials for Gold's Gym Bangladesh and Zulcan Indoor Arena
-          </p>
-        </div>
-
-        {/* Category Tiles - Full width */}
-        <div className="mt-6">
-          <CategoryTiles
-            categories={categories}
-            activeCategory={categorySlug || undefined}
-          />
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-10">
         <ProductSection
           categories={categories}
           products={products}
           searchQuery={searchQuery}
         />
       </div>
+
+      <CallToAction />
     </div>
   );
 }

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/app/AddToCartButton";
@@ -17,6 +16,15 @@ import {
 } from "@/lib/utils/product-variants";
 import type { FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult } from "@/sanity.types";
 import type { CartItemVariant } from "@/lib/store/cart-store";
+import { Heart, Scale, Star } from "lucide-react";
+import {
+  useWishlistActions,
+  useWishlistItems,
+} from "@/lib/store/wishlist-store-provider";
+import {
+  useCompareActions,
+  useCompareItems,
+} from "@/lib/store/compare-store-provider";
 
 type Product = FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult[number];
 
@@ -28,6 +36,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(
     null,
   );
+  const wishlistItems = useWishlistItems();
+  const compareItems = useCompareItems();
+  const { toggleItem: toggleWishlist } = useWishlistActions();
+  const { toggleItem: toggleCompare } = useCompareActions();
 
   const images = product.images ?? [];
   const mainImageUrl = images[0]?.asset?.url;
@@ -41,6 +53,16 @@ export function ProductCard({ product }: ProductCardProps) {
   const displayPrice = getDisplayPrice(product, defaultVariant);
   const displayStock = getDisplayStock(product, defaultVariant);
   const itemId = buildCartItemId(product._id, variantKey);
+  const compareAtPrice = useMemo(() => {
+    const values =
+      product.variants
+        ?.map((variant) => variant?.compareAtPrice ?? null)
+        .filter((value): value is number => typeof value === "number") ?? [];
+    if (values.length === 0) return null;
+    return Math.min(...values);
+  }, [product.variants]);
+  const hasSale =
+    compareAtPrice !== null && compareAtPrice > displayPrice;
   const cartVariant: CartItemVariant | undefined = defaultVariant
     ? {
         sku: defaultVariant?.sku ?? undefined,
@@ -53,105 +75,111 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const isOutOfStock = displayStock <= 0;
   const hasMultipleImages = images.length > 1;
+  const wishlistItem = {
+    id: itemId,
+    productId: product._id,
+    name: product.name ?? "Unknown Product",
+    price: displayPrice,
+    image: mainImageUrl ?? undefined,
+    slug: product.slug ?? undefined,
+  };
+  const isWishlisted = wishlistItems.some((item) => item.id === itemId);
+  const isCompared = compareItems.some((item) => item.id === itemId);
 
   return (
-    <Card className="group relative flex h-full flex-col overflow-hidden rounded-2xl border-0 bg-white p-0 shadow-sm ring-1 ring-zinc-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:ring-white/10 dark:hover:shadow-zinc-950/50">
-      <Link href={`/products/${product.slug}`} className="block">
-        <div
-          className={cn(
-            "relative overflow-hidden bg-linear-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900",
-            hasMultipleImages ? "aspect-square" : "aspect-4/5",
+    <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-lime-400/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+      <div className="relative">
+        <Link href={`/products/${product.slug}`} className="block">
+          <div
+            className={cn(
+              "relative overflow-hidden bg-zinc-900",
+              hasMultipleImages ? "aspect-square" : "aspect-4/5",
+            )}
+          >
+            {displayedImageUrl ? (
+              <Image
+                src={displayedImageUrl}
+                alt={product.name ?? "Product image"}
+                fill
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-zinc-500">
+                No image
+              </div>
+            )}
+          </div>
+        </Link>
+
+        <div className="absolute left-3 top-3 flex flex-col gap-2">
+          {hasSale && (
+            <Badge className="rounded-full bg-lime-300 px-3 py-1 text-[10px] font-semibold uppercase text-black">
+              Sale
+            </Badge>
           )}
-        >
-          {displayedImageUrl ? (
-            <Image
-              src={displayedImageUrl}
-              alt={product.name ?? "Product image"}
-              fill
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-zinc-400">
-              <svg
-                className="h-16 w-16 opacity-30"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-          )}
-          {/* Gradient overlay for text contrast */}
-          <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           {isOutOfStock && (
-            <Badge
-              variant="destructive"
-              className="absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium shadow-lg"
-            >
+            <Badge className="rounded-full bg-red-500 px-3 py-1 text-[10px] font-semibold uppercase text-white">
               Out of Stock
             </Badge>
           )}
-          {product.category && (
-            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-zinc-700 shadow-sm backdrop-blur-sm dark:bg-zinc-900/90 dark:text-zinc-300">
-              {product.category.title}
-            </span>
-          )}
         </div>
-      </Link>
 
-      {/* Thumbnail strip - only show if multiple images */}
-      {hasMultipleImages && (
-        <div className="flex gap-2 border-t border-zinc-100 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-800/50">
-          {images.map((image, index) => (
-            <button
-              key={image._key ?? index}
-              type="button"
-              className={cn(
-                "relative h-14 flex-1 overflow-hidden rounded-lg transition-all duration-200",
-                hoveredImageIndex === index
-                  ? "ring-2 ring-zinc-900 ring-offset-2 dark:ring-white dark:ring-offset-zinc-900"
-                  : "opacity-50 hover:opacity-100",
-              )}
-              onMouseEnter={() => setHoveredImageIndex(index)}
-              onMouseLeave={() => setHoveredImageIndex(null)}
-            >
-              {image.asset?.url && (
-                <Image
-                  src={image.asset.url}
-                  alt={`${product.name} - view ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="100px"
-                />
-              )}
-            </button>
-          ))}
+        <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={() => toggleWishlist(wishlistItem)}
+            className={cn(
+              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-lime-300",
+              isWishlisted && "text-lime-300",
+            )}
+            aria-label="Add to wishlist"
+          >
+            <Heart className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleCompare(wishlistItem)}
+            className={cn(
+              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-lime-300",
+              isCompared && "text-lime-300",
+            )}
+            aria-label="Add to compare"
+          >
+            <Scale className="h-4 w-4" />
+          </button>
         </div>
-      )}
+      </div>
 
-      <CardContent className="flex grow flex-col justify-between gap-2 p-5">
+      <div className="flex flex-col gap-3 p-5">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+          {product.brand ?? "Fitfinity"}
+        </div>
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-zinc-900 transition-colors group-hover:text-zinc-600 dark:text-zinc-100 dark:group-hover:text-zinc-300">
+          <h3 className="line-clamp-2 text-base font-semibold text-white transition-colors group-hover:text-lime-200">
             {product.name}
           </h3>
         </Link>
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            {formatPrice(displayPrice)}
-          </p>
+        <div className="flex items-center gap-1 text-lime-300">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Star key={index} className="h-3 w-3 fill-lime-300" />
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-white">
+              {formatPrice(displayPrice)}
+            </span>
+            {hasSale && compareAtPrice && (
+              <span className="text-xs text-zinc-500 line-through">
+                {formatPrice(compareAtPrice)}
+              </span>
+            )}
+          </div>
           <StockBadge itemId={itemId} stock={displayStock} />
         </div>
-      </CardContent>
 
-      <CardFooter className="mt-auto p-5 pt-0">
         <AddToCartButton
           productId={product._id}
           name={product.name ?? "Unknown Product"}
@@ -160,8 +188,9 @@ export function ProductCard({ product }: ProductCardProps) {
           stock={displayStock}
           variantKey={variantKey}
           variant={cartVariant}
+          className="h-10 rounded-full bg-lime-300 text-black hover:bg-lime-200"
         />
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

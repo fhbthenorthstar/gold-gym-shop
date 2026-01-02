@@ -26,7 +26,7 @@ export function CategoryTiles({
       <div className="flex gap-4 overflow-x-auto  py-4 pl-8 pr-4 sm:pl-12 sm:pr-6 lg:pl-10 lg:pr-8 scrollbar-hide">
         {/* All Products tile */}
         <Link
-          href="/"
+          href="/shop"
           className={`group relative flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${
             !activeCategory
               ? "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-zinc-900"
@@ -62,7 +62,7 @@ export function CategoryTiles({
           return (
             <Link
               key={category._id}
-              href={`/?category=${category.slug}`}
+              href={`/shop?category=${category.slug}`}
               className={`group relative flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${
                 isActive
                   ? "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-zinc-900"

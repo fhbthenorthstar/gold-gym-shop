@@ -72,6 +72,26 @@ function DescriptionEditor(handle: DocumentHandle) {
   );
 }
 
+function DescriptionHtmlEditor(handle: DocumentHandle) {
+  const { data: descriptionHtml } = useDocument({
+    ...handle,
+    path: "descriptionHtml",
+  });
+  const editDescriptionHtml = useEditDocument({
+    ...handle,
+    path: "descriptionHtml",
+  });
+
+  return (
+    <Textarea
+      value={(descriptionHtml as string) ?? ""}
+      onChange={(e) => editDescriptionHtml(e.target.value)}
+      placeholder="<p>HTML description...</p>"
+      rows={6}
+    />
+  );
+}
+
 function PriceEditor(handle: DocumentHandle) {
   const { data: price } = useDocument({ ...handle, path: "price" });
   const editPrice = useEditDocument({ ...handle, path: "price" });
@@ -333,6 +353,12 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
                 <Label htmlFor="description">Description</Label>
                 <Suspense fallback={<Skeleton className="h-24" />}>
                   <DescriptionEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="descriptionHtml">Description HTML</Label>
+                <Suspense fallback={<Skeleton className="h-32" />}>
+                  <DescriptionHtmlEditor {...handle} />
                 </Suspense>
               </div>
             </div>

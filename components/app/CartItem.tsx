@@ -32,13 +32,13 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
     <div
       className={cn(
         "flex gap-4 py-4",
-        hasIssue && "rounded-lg bg-red-50 p-3 dark:bg-red-950/30",
+        hasIssue && "rounded-lg bg-red-900/30 p-3",
       )}
     >
       {/* Image */}
       <div
         className={cn(
-          "relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800",
+          "relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-900",
           isOutOfStock && "opacity-50",
         )}
       >
@@ -63,8 +63,8 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           <Link
             href={`/products/${item.productId}`}
             className={cn(
-              "font-medium text-zinc-900 hover:text-zinc-600 dark:text-zinc-100 dark:hover:text-zinc-300",
-              isOutOfStock && "text-zinc-400 dark:text-zinc-500",
+              "font-medium text-white hover:text-lime-300",
+              isOutOfStock && "text-zinc-500",
             )}
           >
             {item.name}
@@ -81,12 +81,12 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
         </div>
 
         {variantLabel && (
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-xs text-zinc-400">
             {variantLabel}
           </p>
         )}
 
-        <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        <p className="mt-1 text-sm font-medium text-white">
           {formatPrice(item.price)}
         </p>
 

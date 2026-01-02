@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bai_Jamjuree, Zen_Dots } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const zenDots = Zen_Dots({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-heading",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const baiJamjuree = Bai_Jamjuree({
+  weight: ["200", "300", "400", "500", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
-  title: "E-Commerce AI App",
-  description: "E-Commerce AI App",
+  title: "Fitfinity Storefront",
+  description: "Fitfinity-inspired ecommerce storefront",
 };
 
 export default function RootLayout({
@@ -24,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${zenDots.variable} ${baiJamjuree.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -21,12 +21,12 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
   if (totalItems === 0) return null;
 
   return (
-    <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
-      <div className="flex justify-between text-base font-medium text-zinc-900 dark:text-zinc-100">
+    <div className="border-t border-zinc-800 p-4">
+      <div className="flex justify-between text-base font-medium text-white">
         <span>Subtotal</span>
         <span>{formatPrice(totalPrice)}</span>
       </div>
-      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-sm text-zinc-400">
         Shipping calculated at checkout
       </p>
       <div className="mt-4">
@@ -35,7 +35,7 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
             Resolve stock issues to checkout
           </Button>
         ) : (
-          <Button asChild className="w-full">
+          <Button asChild className="w-full bg-lime-300 text-black hover:bg-lime-200">
             <Link href="/checkout" onClick={() => closeCart()}>
               Checkout
             </Link>
@@ -45,7 +45,7 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
       <div className="mt-3 text-center">
         <Link
           href="/"
-          className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          className="text-sm text-zinc-400 hover:text-lime-300"
         >
           Continue Shopping →
         </Link>

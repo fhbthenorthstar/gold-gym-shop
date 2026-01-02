@@ -1,6 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import {
@@ -14,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { GOALS, SPORTS, GENDERS, SORT_OPTIONS } from "@/lib/constants/filters";
+import { GOALS, SPORTS, GENDERS } from "@/lib/constants/filters";
+import { formatPrice } from "@/lib/utils";
 import {
   buildMultiValueParam,
   buildOptionFiltersParam,
@@ -35,13 +38,13 @@ interface ProductFiltersProps {
 
 export function ProductFilters({ categories, products }: ProductFiltersProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const currentSearch = searchParams.get("q") ?? "";
   const currentCategory = searchParams.get("category") ?? "";
   const currentBrand = searchParams.get("brand") ?? "";
   const currentGender = searchParams.get("gender") ?? "";
-  const currentSort = searchParams.get("sort") ?? "best_selling";
   const currentGoals = parseMultiValueParam(searchParams.get("goals"));
   const currentSports = parseMultiValueParam(searchParams.get("sports"));
   const currentOptionFilters = parseOptionFiltersParam(
@@ -135,6 +138,23 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
     return map;
   }, [products]);
 
+  const bestSellers = useMemo(() => {
+    const featured = products.filter((product) => product.featured);
+    return (featured.length > 0 ? featured : products).slice(0, 3);
+  }, [products]);
+
+  const bestDeals = useMemo(() => {
+    const withDeals = products.filter((product) =>
+      product.variants?.some(
+        (variant) =>
+          typeof variant?.compareAtPrice === "number" &&
+          typeof variant?.price === "number" &&
+          variant.compareAtPrice > variant.price
+      )
+    );
+    return (withDeals.length > 0 ? withDeals : products).slice(0, 3);
+  }, [products]);
+
   // Local state for price range (for smooth slider dragging)
   const [priceRange, setPriceRange] = useState<[number, number]>([
     urlMinPrice,
@@ -196,9 +216,10 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
         }
       });
 
-      router.push(`?${params.toString()}`, { scroll: false });
+      const query = params.toString();
+      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
     },
-    [router, searchParams]
+    [router, searchParams, pathname]
   );
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -209,7 +230,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
   };
 
   const handleClearFilters = () => {
-    router.push("/", { scroll: false });
+    router.push(pathname, { scroll: false });
   };
 
   const toggleMultiValue = (
@@ -286,15 +307,13 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
   }) => (
     <div className="mb-2 flex items-center justify-between">
       <span
-        className={`block text-sm font-medium ${
-          isActive
-            ? "text-zinc-900 dark:text-zinc-100"
-            : "text-zinc-700 dark:text-zinc-300"
+        className={`block text-xs font-semibold uppercase tracking-wide ${
+          isActive ? "text-white" : "text-zinc-400"
         }`}
       >
         {children}
         {isActive && (
-          <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
+          <Badge className="ml-2 h-5 bg-lime-300 px-1.5 text-[10px] text-black hover:bg-lime-300">
             Active
           </Badge>
         )}
@@ -303,7 +322,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
         <button
           type="button"
           onClick={() => clearSingleFilter(filterKey)}
-          className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+          className="text-zinc-500 hover:text-lime-300"
           aria-label={`Clear ${filterKey} filter`}
         >
           <X className="h-4 w-4" />
@@ -313,19 +332,19 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
   );
 
   return (
-    <div className="space-y-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="space-y-6 rounded-lg border border-zinc-800 bg-zinc-950 p-6">
       {/* Clear Filters - Show at top when active */}
       {hasActiveFilters && (
-        <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950">
+        <div className="rounded-lg border border-lime-300/40 bg-black p-3">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+            <span className="text-sm font-medium text-lime-200">
               {activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"} applied
             </span>
           </div>
           <Button
             size="sm"
             onClick={handleClearFilters}
-            className="w-full bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700"
+            className="w-full bg-lime-300 text-black hover:bg-lime-200"
           >
             <X className="mr-2 h-4 w-4" />
             Clear All Filters
@@ -345,9 +364,9 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             defaultValue={currentSearch}
             className={`flex-1 ${
               isSearchActive
-                ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                ? "border-lime-300 ring-1 ring-lime-300"
                 : ""
-            }`}
+            } bg-black text-zinc-200 border-zinc-800`}
           />
           <Button type="submit" size="sm">
             Search
@@ -367,15 +386,13 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           }
         >
           <SelectTrigger
-            className={
-              isCategoryActive
-                ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
-                : ""
-            }
+            className={`border-zinc-800 bg-black text-zinc-200 ${
+              isCategoryActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+            }`}
           >
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border-zinc-800 bg-black text-zinc-200">
             <SelectItem value="all">All Categories</SelectItem>
             {orderedCategories.map((category) => {
               const isChild = !!category.parent?.slug;
@@ -402,15 +419,13 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             }
           >
             <SelectTrigger
-              className={
-                isBrandActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
-                  : ""
-              }
+              className={`border-zinc-800 bg-black text-zinc-200 ${
+                isBrandActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+              }`}
             >
               <SelectValue placeholder="All Brands" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-zinc-800 bg-black text-zinc-200">
               <SelectItem value="all">All Brands</SelectItem>
               {brandOptions.map((brand) => (
                 <SelectItem key={brand} value={brand}>
@@ -435,9 +450,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                 <label
                   key={goal.value}
                   className={`flex items-center gap-2 text-sm ${
-                    isAvailable
-                      ? "text-zinc-700 dark:text-zinc-300"
-                      : "text-zinc-400"
+                    isAvailable ? "text-zinc-300" : "text-zinc-500"
                   }`}
                 >
                   <input
@@ -445,7 +458,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                     checked={currentGoals.includes(goal.value)}
                     onChange={() => toggleMultiValue("goals", goal.value)}
                     disabled={!isAvailable}
-                    className="h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+                    className="h-4 w-4 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
                   />
                   {goal.label}
                 </label>
@@ -468,9 +481,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                 <label
                   key={sport.value}
                   className={`flex items-center gap-2 text-sm ${
-                    isAvailable
-                      ? "text-zinc-700 dark:text-zinc-300"
-                      : "text-zinc-400"
+                    isAvailable ? "text-zinc-300" : "text-zinc-500"
                   }`}
                 >
                   <input
@@ -478,7 +489,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                     checked={currentSports.includes(sport.value)}
                     onChange={() => toggleMultiValue("sports", sport.value)}
                     disabled={!isAvailable}
-                    className="h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+                    className="h-4 w-4 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
                   />
                   {sport.label}
                 </label>
@@ -501,15 +512,13 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             }
           >
             <SelectTrigger
-              className={
-                isGenderActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
-                  : ""
-              }
+              className={`border-zinc-800 bg-black text-zinc-200 ${
+                isGenderActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+              }`}
             >
               <SelectValue placeholder="All" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-zinc-800 bg-black text-zinc-200">
               <SelectItem value="all">All</SelectItem>
               {GENDERS.map((gender) => (
                 <SelectItem
@@ -555,8 +564,8 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                         onClick={() => toggleOptionFilter(optionName, value)}
                         className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                           isChecked
-                            ? "border-amber-500 bg-amber-500 text-white"
-                            : "border-zinc-200 bg-white text-zinc-600 hover:border-amber-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+                            ? "border-lime-300 bg-lime-300 text-black"
+                            : "border-zinc-800 bg-black text-zinc-400 hover:border-lime-300/70"
                         }`}
                       >
                         {value}
@@ -589,7 +598,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           }
           className={`mt-4 ${
             isPriceActive
-              ? "[&_[role=slider]]:border-amber-500 [&_[role=slider]]:ring-amber-500"
+              ? "[&_[role=slider]]:border-lime-300 [&_[role=slider]]:ring-lime-300"
               : ""
           }`}
         />
@@ -604,18 +613,18 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             onChange={(e) =>
               updateParams({ inStock: e.target.checked ? "true" : null })
             }
-            className="h-5 w-5 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+            className="h-5 w-5 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
           />
           <span
             className={`text-sm font-medium ${
               isInStockActive
-                ? "text-zinc-900 dark:text-zinc-100"
-                : "text-zinc-700 dark:text-zinc-300"
+                ? "text-white"
+                : "text-zinc-400"
             }`}
           >
             Show only in-stock
             {isInStockActive && (
-              <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
+              <Badge className="ml-2 h-5 bg-lime-300 px-1.5 text-xs text-black hover:bg-lime-300">
                 Active
               </Badge>
             )}
@@ -623,27 +632,79 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
         </label>
       </div>
 
-      {/* Sort */}
-      <div>
-        <span className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Sort By
-        </span>
-        <Select
-          value={currentSort}
-          onValueChange={(value) => updateParams({ sort: value })}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SORT_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
+      {/* Best Sellers */}
+      {bestSellers.length > 0 && (
+        <div className="space-y-3 border-t border-zinc-800 pt-4">
+          <h4 className="font-heading text-xs text-lime-300">Best Sellers</h4>
+          <div className="space-y-3">
+            {bestSellers.map((product) => (
+              <Link
+                key={product._id}
+                href={`/products/${product.slug}`}
+                className="flex items-center gap-3"
+              >
+                <div className="relative h-14 w-14 overflow-hidden rounded-md bg-zinc-900">
+                  {product.images?.[0]?.asset?.url ? (
+                    <Image
+                      src={product.images[0].asset.url}
+                      alt={product.name ?? "Product"}
+                      fill
+                      className="object-cover"
+                      sizes="60px"
+                    />
+                  ) : null}
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-white">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    {formatPrice(product.price ?? 0)}
+                  </p>
+                </div>
+              </Link>
             ))}
-          </SelectContent>
-        </Select>
-      </div>
+          </div>
+        </div>
+      )}
+
+      {/* Best Deal */}
+      {bestDeals.length > 0 && (
+        <div className="space-y-3 border-t border-zinc-800 pt-4">
+          <h4 className="font-heading text-xs text-lime-300">Best Deal</h4>
+          <div className="space-y-3">
+            {bestDeals.map((product) => (
+              <Link
+                key={product._id}
+                href={`/products/${product.slug}`}
+                className="flex items-center gap-3"
+              >
+                <div className="relative h-14 w-14 overflow-hidden rounded-md bg-zinc-900">
+                  {product.images?.[0]?.asset?.url ? (
+                    <Image
+                      src={product.images[0].asset.url}
+                      alt={product.name ?? "Product"}
+                      fill
+                      className="object-cover"
+                      sizes="60px"
+                    />
+                  ) : null}
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-white">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    {formatPrice(product.price ?? 0)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sort handled in top bar */}
     </div>
   );
 }
