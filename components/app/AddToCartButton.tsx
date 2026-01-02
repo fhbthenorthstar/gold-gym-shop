@@ -5,26 +5,35 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useCartItem } from "@/lib/store/cart-store-provider";
 import { cn } from "@/lib/utils";
+import { buildCartItemId } from "@/lib/utils/cart";
+import type { CartItemVariant } from "@/lib/store/cart-store";
 
 interface AddToCartButtonProps {
+  itemId?: string;
   productId: string;
   name: string;
   price: number;
   image?: string;
   stock: number;
+  variantKey?: string;
+  variant?: CartItemVariant;
   className?: string;
 }
 
 export function AddToCartButton({
+  itemId,
   productId,
   name,
   price,
   image,
   stock,
+  variantKey,
+  variant,
   className,
 }: AddToCartButtonProps) {
+  const resolvedItemId = itemId ?? buildCartItemId(productId, variantKey);
   const { addItem, updateQuantity } = useCartActions();
-  const cartItem = useCartItem(productId);
+  const cartItem = useCartItem(resolvedItemId);
 
   const quantityInCart = cartItem?.quantity ?? 0;
   const isOutOfStock = stock <= 0;
@@ -32,14 +41,17 @@ export function AddToCartButton({
 
   const handleAdd = () => {
     if (quantityInCart < stock) {
-      addItem({ productId, name, price, image }, 1);
+      addItem(
+        { id: resolvedItemId, productId, name, price, image, variant },
+        1
+      );
       toast.success(`Added ${name}`);
     }
   };
 
   const handleDecrement = () => {
     if (quantityInCart > 0) {
-      updateQuantity(productId, quantityInCart - 1);
+      updateQuantity(resolvedItemId, quantityInCart - 1);
     }
   };
 

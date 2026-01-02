@@ -11,14 +11,18 @@ export interface SearchProduct {
   priceFormatted: string | null;
   category: string | null;
   categorySlug: string | null;
-  material: string | null;
-  color: string | null;
-  dimensions: string | null;
+  brand: string | null;
+  productType: string | null;
+  goals: string[];
+  sports: string[];
+  gender: string | null;
+  optionNames: string[];
+  variantsCount: number;
   stockCount: number;
   stockStatus: "in_stock" | "low_stock" | "out_of_stock" | "unknown";
   stockMessage: string;
   featured: boolean;
-  assemblyRequired: boolean;
+  isDigital: boolean;
   imageUrl: string | null;
   productUrl: string | null;
 }
@@ -32,8 +36,10 @@ export interface SearchProductsResult {
   filters: {
     query: string;
     category: string;
-    material: string;
-    color: string;
+    brand: string;
+    goals: string[];
+    sports: string[];
+    gender: string;
     minPrice: number;
     maxPrice: number;
   };

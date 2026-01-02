@@ -8,9 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { cn, formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/app/AddToCartButton";
 import { StockBadge } from "@/components/app/StockBadge";
-import type { FILTER_PRODUCTS_BY_NAME_QUERYResult } from "@/sanity.types";
+import { buildCartItemId } from "@/lib/utils/cart";
+import {
+  getDefaultVariant,
+  getDisplayPrice,
+  getDisplayStock,
+  getVariantKey,
+} from "@/lib/utils/product-variants";
+import type { FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult } from "@/sanity.types";
+import type { CartItemVariant } from "@/lib/store/cart-store";
 
-type Product = FILTER_PRODUCTS_BY_NAME_QUERYResult[number];
+type Product = FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult[number];
 
 interface ProductCardProps {
   product: Product;
@@ -28,8 +36,22 @@ export function ProductCard({ product }: ProductCardProps) {
       ? images[hoveredImageIndex]?.asset?.url
       : mainImageUrl;
 
-  const stock = product.stock ?? 0;
-  const isOutOfStock = stock <= 0;
+  const defaultVariant = getDefaultVariant(product);
+  const variantKey = getVariantKey(defaultVariant);
+  const displayPrice = getDisplayPrice(product, defaultVariant);
+  const displayStock = getDisplayStock(product, defaultVariant);
+  const itemId = buildCartItemId(product._id, variantKey);
+  const cartVariant: CartItemVariant | undefined = defaultVariant
+    ? {
+        sku: defaultVariant?.sku ?? undefined,
+        options:
+          defaultVariant?.optionValues?.flatMap((opt) =>
+            opt?.name && opt?.value ? [{ name: opt.name, value: opt.value }] : []
+          ) ?? undefined,
+      }
+    : undefined;
+
+  const isOutOfStock = displayStock <= 0;
   const hasMultipleImages = images.length > 1;
 
   return (
@@ -123,9 +145,9 @@ export function ProductCard({ product }: ProductCardProps) {
         </Link>
         <div className="flex items-baseline justify-between gap-2">
           <p className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            {formatPrice(product.price)}
+            {formatPrice(displayPrice)}
           </p>
-          <StockBadge productId={product._id} stock={stock} />
+          <StockBadge itemId={itemId} stock={displayStock} />
         </div>
       </CardContent>
 
@@ -133,9 +155,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <AddToCartButton
           productId={product._id}
           name={product.name ?? "Unknown Product"}
-          price={product.price ?? 0}
+          price={displayPrice}
           image={mainImageUrl ?? undefined}
-          stock={stock}
+          stock={displayStock}
+          variantKey={variantKey}
+          variant={cartVariant}
         />
       </CardFooter>
     </Card>

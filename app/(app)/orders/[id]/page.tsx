@@ -12,7 +12,7 @@ import { PAYMENT_METHOD_LABELS } from "@/lib/constants/paymentMethods";
 import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 
 export const metadata = {
-  title: "Order Details | Furniture Shop",
+  title: "Order Details | Gold's Gym Shop",
   description: "View your order details",
 };
 

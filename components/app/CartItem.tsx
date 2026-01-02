@@ -23,6 +23,10 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
   const exceedsStock = stockInfo?.exceedsStock ?? false;
   const currentStock = stockInfo?.currentStock ?? 999;
   const hasIssue = isOutOfStock || exceedsStock;
+  const variantLabel =
+    item.variant?.options
+      ?.map((opt) => `${opt.name}: ${opt.value}`)
+      .join(" / ") ?? "";
 
   return (
     <div
@@ -69,12 +73,18 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-zinc-400 hover:text-red-500"
-            onClick={() => removeItem(item.productId)}
+            onClick={() => removeItem(item.id)}
           >
             <Trash2 className="h-4 w-4" />
             <span className="sr-only">Remove {item.name}</span>
           </Button>
         </div>
+
+        {variantLabel && (
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            {variantLabel}
+          </p>
+        )}
 
         <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           {formatPrice(item.price)}
@@ -82,15 +92,17 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
 
         {/* Stock Badge & Quantity Controls */}
         <div className="mt-2 flex flex-row justify-between items-center gap-2">
-          <StockBadge productId={item.productId} stock={currentStock} />
+          <StockBadge itemId={item.id} stock={currentStock} />
           {!isOutOfStock && (
             <div className="w-32 flex self-end ml-auto">
               <AddToCartButton
+                itemId={item.id}
                 productId={item.productId}
                 name={item.name}
                 price={item.price}
                 image={item.image}
                 stock={currentStock}
+                variant={item.variant}
               />
             </div>
           )}

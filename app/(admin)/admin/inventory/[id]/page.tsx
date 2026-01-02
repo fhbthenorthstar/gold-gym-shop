@@ -27,23 +27,8 @@ import {
   ImageUploader,
   DeleteButton,
 } from "@/components/admin";
+import { PRODUCT_TYPES, GOALS, SPORTS, GENDERS } from "@/lib/constants/filters";
 
-const MATERIALS = [
-  { value: "wood", label: "Wood" },
-  { value: "metal", label: "Metal" },
-  { value: "fabric", label: "Fabric" },
-  { value: "leather", label: "Leather" },
-  { value: "glass", label: "Glass" },
-];
-
-const COLORS = [
-  { value: "black", label: "Black" },
-  { value: "white", label: "White" },
-  { value: "oak", label: "Oak" },
-  { value: "walnut", label: "Walnut" },
-  { value: "grey", label: "Grey" },
-  { value: "natural", label: "Natural" },
-];
 
 // Field editor components
 function NameEditor(handle: DocumentHandle) {
@@ -120,62 +105,128 @@ function StockEditor(handle: DocumentHandle) {
   );
 }
 
-function MaterialEditor(handle: DocumentHandle) {
-  const { data: material } = useDocument({ ...handle, path: "material" });
-  const editMaterial = useEditDocument({ ...handle, path: "material" });
-
-  return (
-    <Select
-      value={(material as string) ?? ""}
-      onValueChange={(value) => editMaterial(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Select material" />
-      </SelectTrigger>
-      <SelectContent>
-        {MATERIALS.map((m) => (
-          <SelectItem key={m.value} value={m.value}>
-            {m.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function ColorEditor(handle: DocumentHandle) {
-  const { data: color } = useDocument({ ...handle, path: "color" });
-  const editColor = useEditDocument({ ...handle, path: "color" });
-
-  return (
-    <Select
-      value={(color as string) ?? ""}
-      onValueChange={(value) => editColor(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Select color" />
-      </SelectTrigger>
-      <SelectContent>
-        {COLORS.map((c) => (
-          <SelectItem key={c.value} value={c.value}>
-            {c.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function DimensionsEditor(handle: DocumentHandle) {
-  const { data: dimensions } = useDocument({ ...handle, path: "dimensions" });
-  const editDimensions = useEditDocument({ ...handle, path: "dimensions" });
+function BrandEditor(handle: DocumentHandle) {
+  const { data: brand } = useDocument({ ...handle, path: "brand" });
+  const editBrand = useEditDocument({ ...handle, path: "brand" });
 
   return (
     <Input
-      value={(dimensions as string) ?? ""}
-      onChange={(e) => editDimensions(e.target.value)}
-      placeholder='e.g., "120cm x 80cm x 75cm"'
+      value={(brand as string) ?? ""}
+      onChange={(e) => editBrand(e.target.value)}
+      placeholder="Brand name"
     />
+  );
+}
+
+function ProductTypeEditor(handle: DocumentHandle) {
+  const { data: productType } = useDocument({ ...handle, path: "productType" });
+  const editProductType = useEditDocument({
+    ...handle,
+    path: "productType",
+  });
+
+  return (
+    <Select
+      value={(productType as string) ?? ""}
+      onValueChange={(value) => editProductType(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select type" />
+      </SelectTrigger>
+      <SelectContent>
+        {PRODUCT_TYPES.map((type) => (
+          <SelectItem key={type.value} value={type.value}>
+            {type.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function GoalsEditor(handle: DocumentHandle) {
+  const { data: goals } = useDocument({ ...handle, path: "goals" });
+  const editGoals = useEditDocument({ ...handle, path: "goals" });
+  const currentGoals = Array.isArray(goals) ? goals : [];
+
+  const toggleGoal = (value: string) => {
+    if (currentGoals.includes(value)) {
+      editGoals(currentGoals.filter((goal) => goal !== value));
+      return;
+    }
+
+    editGoals([...currentGoals, value]);
+  };
+
+  return (
+    <div className="space-y-2">
+      {GOALS.map((goal) => (
+        <label key={goal.value} className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={currentGoals.includes(goal.value)}
+            onChange={() => toggleGoal(goal.value)}
+            className="h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+          />
+          {goal.label}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function SportsEditor(handle: DocumentHandle) {
+  const { data: sports } = useDocument({ ...handle, path: "sports" });
+  const editSports = useEditDocument({ ...handle, path: "sports" });
+  const currentSports = Array.isArray(sports) ? sports : [];
+
+  const toggleSport = (value: string) => {
+    if (currentSports.includes(value)) {
+      editSports(currentSports.filter((sport) => sport !== value));
+      return;
+    }
+
+    editSports([...currentSports, value]);
+  };
+
+  return (
+    <div className="space-y-2">
+      {SPORTS.map((sport) => (
+        <label key={sport.value} className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={currentSports.includes(sport.value)}
+            onChange={() => toggleSport(sport.value)}
+            className="h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+          />
+          {sport.label}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function GenderEditor(handle: DocumentHandle) {
+  const { data: gender } = useDocument({ ...handle, path: "gender" });
+  const editGender = useEditDocument({ ...handle, path: "gender" });
+
+  return (
+    <Select
+      value={(gender as string) ?? ""}
+      onValueChange={(value) => editGender(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select gender" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="">Unspecified</SelectItem>
+        {GENDERS.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -191,20 +242,14 @@ function FeaturedEditor(handle: DocumentHandle) {
   );
 }
 
-function AssemblyEditor(handle: DocumentHandle) {
-  const { data: assemblyRequired } = useDocument({
-    ...handle,
-    path: "assemblyRequired",
-  });
-  const editAssembly = useEditDocument({
-    ...handle,
-    path: "assemblyRequired",
-  });
+function IsDigitalEditor(handle: DocumentHandle) {
+  const { data: isDigital } = useDocument({ ...handle, path: "isDigital" });
+  const editIsDigital = useEditDocument({ ...handle, path: "isDigital" });
 
   return (
     <Switch
-      checked={(assemblyRequired as boolean) ?? false}
-      onCheckedChange={(checked: boolean) => editAssembly(checked)}
+      checked={(isDigital as boolean) ?? false}
+      onCheckedChange={(checked: boolean) => editIsDigital(checked)}
     />
   );
 }
@@ -300,7 +345,7 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="price">Price (£)</Label>
+                <Label htmlFor="price">Price (৳)</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <PriceEditor {...handle} />
                 </Suspense>
@@ -321,21 +366,33 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Material</Label>
+                <Label>Brand</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
-                  <MaterialEditor {...handle} />
+                  <BrandEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label>Color</Label>
+                <Label>Product Type</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
-                  <ColorEditor {...handle} />
+                  <ProductTypeEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label>Gender</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <GenderEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label>Dimensions</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <DimensionsEditor {...handle} />
+                <Label>Goals</Label>
+                <Suspense fallback={<Skeleton className="h-24" />}>
+                  <GoalsEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Sports</Label>
+                <Suspense fallback={<Skeleton className="h-24" />}>
+                  <SportsEditor {...handle} />
                 </Suspense>
               </div>
             </div>
@@ -363,14 +420,14 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Assembly Required
+                    Digital Product
                   </p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Customer will need to assemble
+                    Fulfilled digitally with no shipping
                   </p>
                 </div>
                 <Suspense fallback={<Skeleton className="h-6 w-11" />}>
-                  <AssemblyEditor {...handle} />
+                  <IsDigitalEditor {...handle} />
                 </Suspense>
               </div>
             </div>
@@ -398,7 +455,7 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
               Advanced Editing
             </h2>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Set category and other options in Sanity Studio.
+              Set category, options, and variants in Sanity Studio.
             </p>
             <Link
               href={`/studio/structure/product;${handle.documentId}`}

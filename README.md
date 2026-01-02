@@ -10,9 +10,9 @@
 
 </div>
 
-# 🛋️ AI-Powered E-commerce Platform with Real-time Content
+# 🏋️ AI-Powered Gym + Combat E-commerce Platform
 
-> Build a modern furniture e-commerce store with an AI shopping assistant, real-time inventory updates, and a powerful admin dashboard — all powered by cutting-edge technologies.
+> Build a modern gym + combat training e-commerce store for Gold's Gym Bangladesh and Zulcan Indoor Arena, with an AI shopping assistant, real-time inventory updates, and a powerful admin dashboard.
 
 <div align="center">
 
@@ -40,11 +40,11 @@ Use THESE links to set up your accounts (It's a special affiliate link which let
 
 ## 🤔 What Is This App?
 
-**Think of it as a furniture store with a brain.**
+**Think of it as a gym + combat training store with a brain.**
 
 This is a full-featured e-commerce platform where customers can:
 
-- 🛒 **Browse & Buy** — Shop premium furniture with real-time stock updates
+- 🛒 **Browse & Buy** — Shop supplements, activewear, equipment, and combat gear with live stock updates
 - 🤖 **Chat with AI** — Ask the AI assistant to find products, check prices, or track orders
 - 📦 **Track Orders** — View order history and delivery status (when signed in)
 
@@ -131,7 +131,7 @@ Join thousands of developers learning to build production-ready applications wit
 
 | Feature | Description |
 |---------|-------------|
-| 🤖 **AI Shopping Assistant** | Natural language product search, filter by material/color/price, get recommendations |
+| 🤖 **AI Shopping Assistant** | Natural language product search, filter by brand/goals/sports/gender/options, get recommendations |
 | 📦 **Order Tracking** | View your order history and status (requires sign-in) |
 | 🛒 **Smart Cart** | Persistent cart with real-time stock validation |
 | 💳 **Checkout** | Cash on delivery with address collection |
@@ -305,7 +305,10 @@ AI_GATEWAY_API_KEY=Your_value_goes_here
 # Generate TypeScript types from Sanity schema
 pnpm typegen
 
-# Import sample furniture data
+# Remove old furniture demo data
+pnpm tsx scripts/reset-demo-data.ts --confirm
+
+# Import gym + combat seed data
 npx sanity dataset import sample-data.ndjson
 ```
 
@@ -338,14 +341,20 @@ This app uses **Sanity** as its headless CMS with the following document types:
 | `name` | string | Product name |
 | `slug` | slug | URL-friendly identifier |
 | `description` | text | Product description |
-| `price` | number | Price in GBP |
+| `price` | number | Base price in BDT |
 | `category` | reference | Link to category |
-| `material` | string | wood, metal, fabric, leather, glass |
-| `color` | string | black, white, oak, walnut, grey, natural |
-| `dimensions` | string | e.g., "120cm x 80cm x 75cm" |
-| `stock` | number | Current inventory count |
 | `images` | array | Product images with hotspot |
+| `stock` | number | Base inventory count |
 | `featured` | boolean | Show in featured carousel |
+| `brand` | string | Brand or manufacturer |
+| `productType` | string | supplement, activewear, equipment, accessory, recovery, combat_gear, digital |
+| `goals` | array | Training goals (muscle_gain, fat_loss, strength, endurance, recovery, fighting_performance) |
+| `sports` | array | Sports focus (fitness, boxing, mma, kickboxing, muay_thai) |
+| `gender` | string | unisex, men, women |
+| `options` | array | Shopify-style option names + values |
+| `variants` | array | SKU-level variants with price/stock and option values |
+| `metafields` | array | Custom key/value metadata |
+| `isDigital` | boolean | Digital product flag |
 
 ### Category
 
@@ -353,8 +362,23 @@ This app uses **Sanity** as its headless CMS with the following document types:
 |-------|------|-------------|
 | `title` | string | Category name |
 | `slug` | slug | URL-friendly identifier |
-| `description` | text | Category description |
 | `image` | image | Category thumbnail |
+| `parent` | reference | Optional parent category |
+| `order` | number | Sort order for menus |
+| `featuredInMenu` | boolean | Include in mega menu |
+| `filterConfig` | object | Filter visibility and option list |
+
+### Collection
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Collection name |
+| `slug` | slug | URL-friendly identifier |
+| `description` | text | Collection summary |
+| `heroImage` | image | Collection hero image |
+| `featured` | boolean | Highlight on storefront |
+| `order` | number | Sort order for merchandising |
+| `products` | array | Product references |
 
 ### Order
 
@@ -362,7 +386,7 @@ This app uses **Sanity** as its headless CMS with the following document types:
 |-------|------|-------------|
 | `orderNumber` | string | Unique order ID (e.g., ORD-ABC123) |
 | `items` | array | Products with quantity and price at purchase |
-| `total` | number | Order total in GBP |
+| `total` | number | Order total in BDT |
 | `status` | string | cod, paid |
 | `customer` | reference | Link to customer record |
 | `clerkUserId` | string | Clerk user identifier |
@@ -455,12 +479,14 @@ export function createShoppingAgent({ userId }: { userId: string | null }) {
 ```typescript
 // lib/ai/tools/search-products.ts
 export const searchProductsTool = tool({
-  description: "Search for products in the furniture store",
+  description: "Search for products in the Gold's Gym Bangladesh store",
   inputSchema: z.object({
     query: z.string().optional(),
     category: z.string().optional(),
-    material: z.enum(["", "wood", "metal", "fabric", "leather", "glass"]),
-    color: z.enum(["", "black", "white", "oak", "walnut", "grey", "natural"]),
+    brand: z.string().optional(),
+    goals: z.array(z.enum(["muscle_gain", "fat_loss", "strength", "endurance", "recovery", "fighting_performance"])).optional(),
+    sports: z.array(z.enum(["fitness", "boxing", "mma", "kickboxing", "muay_thai"])).optional(),
+    gender: z.enum(["", "unisex", "men", "women"]).optional(),
     minPrice: z.number().optional(),
     maxPrice: z.number().optional(),
   }),

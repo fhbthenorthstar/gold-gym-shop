@@ -1,35 +1,53 @@
 // ============================================
 // Product Attribute Constants
-// Shared between frontend filters and Sanity schema
+// Shared between frontend filters, Sanity schema, and admin tooling
 // ============================================
 
-export const COLORS = [
-  { value: "black", label: "Black" },
-  { value: "white", label: "White" },
-  { value: "oak", label: "Oak" },
-  { value: "walnut", label: "Walnut" },
-  { value: "grey", label: "Grey" },
-  { value: "natural", label: "Natural" },
+export const PRODUCT_TYPES = [
+  { value: "supplement", label: "Supplement" },
+  { value: "activewear", label: "Activewear" },
+  { value: "equipment", label: "Equipment" },
+  { value: "accessory", label: "Accessory" },
+  { value: "recovery", label: "Recovery" },
+  { value: "combat_gear", label: "Combat Gear" },
+  { value: "digital", label: "Digital" },
 ] as const;
 
-export const MATERIALS = [
-  { value: "wood", label: "Wood" },
-  { value: "metal", label: "Metal" },
-  { value: "fabric", label: "Fabric" },
-  { value: "leather", label: "Leather" },
-  { value: "glass", label: "Glass" },
+export const GOALS = [
+  { value: "muscle_gain", label: "Muscle Gain" },
+  { value: "fat_loss", label: "Fat Loss" },
+  { value: "strength", label: "Strength" },
+  { value: "endurance", label: "Endurance" },
+  { value: "recovery", label: "Recovery" },
+  { value: "fighting_performance", label: "Fighting Performance" },
+] as const;
+
+export const SPORTS = [
+  { value: "fitness", label: "Fitness" },
+  { value: "boxing", label: "Boxing" },
+  { value: "mma", label: "MMA" },
+  { value: "kickboxing", label: "Kickboxing" },
+  { value: "muay_thai", label: "Muay Thai" },
+] as const;
+
+export const GENDERS = [
+  { value: "unisex", label: "Unisex" },
+  { value: "men", label: "Men" },
+  { value: "women", label: "Women" },
 ] as const;
 
 export const SORT_OPTIONS = [
-  { value: "name", label: "Name (A-Z)" },
+  { value: "best_selling", label: "Best Selling" },
+  { value: "newest", label: "Newest" },
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
-  { value: "relevance", label: "Relevance" },
 ] as const;
 
 // Type exports
-export type ColorValue = (typeof COLORS)[number]["value"];
-export type MaterialValue = (typeof MATERIALS)[number]["value"];
+export type ProductTypeValue = (typeof PRODUCT_TYPES)[number]["value"];
+export type GoalValue = (typeof GOALS)[number]["value"];
+export type SportValue = (typeof SPORTS)[number]["value"];
+export type GenderValue = (typeof GENDERS)[number]["value"];
 export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
 
 // ============================================
@@ -37,26 +55,46 @@ export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
 // Format compatible with Sanity's options.list
 // ============================================
 
-/** Colors formatted for Sanity schema options.list */
-export const COLORS_SANITY_LIST = COLORS.map(({ value, label }) => ({
+export const PRODUCT_TYPE_SANITY_LIST = PRODUCT_TYPES.map(({ value, label }) => ({
   title: label,
   value,
 }));
 
-/** Materials formatted for Sanity schema options.list */
-export const MATERIALS_SANITY_LIST = MATERIALS.map(({ value, label }) => ({
+export const GOAL_SANITY_LIST = GOALS.map(({ value, label }) => ({
   title: label,
   value,
 }));
 
-/** Color values array for zod enums or validation */
-export const COLOR_VALUES = COLORS.map((c) => c.value) as [
-  ColorValue,
-  ...ColorValue[],
+export const SPORT_SANITY_LIST = SPORTS.map(({ value, label }) => ({
+  title: label,
+  value,
+}));
+
+export const GENDER_SANITY_LIST = GENDERS.map(({ value, label }) => ({
+  title: label,
+  value,
+}));
+
+// ============================================
+// Enum values for validation (zod, etc.)
+// ============================================
+
+export const PRODUCT_TYPE_VALUES = PRODUCT_TYPES.map((item) => item.value) as [
+  ProductTypeValue,
+  ...ProductTypeValue[],
 ];
 
-/** Material values array for zod enums or validation */
-export const MATERIAL_VALUES = MATERIALS.map((m) => m.value) as [
-  MaterialValue,
-  ...MaterialValue[],
+export const GOAL_VALUES = GOALS.map((item) => item.value) as [
+  GoalValue,
+  ...GoalValue[],
+];
+
+export const SPORT_VALUES = SPORTS.map((item) => item.value) as [
+  SportValue,
+  ...SportValue[],
+];
+
+export const GENDER_VALUES = GENDERS.map((item) => item.value) as [
+  GenderValue,
+  ...GenderValue[],
 ];

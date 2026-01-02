@@ -4,9 +4,10 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 import { PRODUCTS_BY_IDS_QUERY } from "@/lib/sanity/queries/products";
 import type { CartItem } from "@/lib/store/cart-store";
+import { getVariantBySelectedOptions } from "@/lib/utils/product-variants";
 
 export interface StockInfo {
-  productId: string;
+  itemId: string;
   currentStock: number;
   isOutOfStock: boolean;
   exceedsStock: boolean;
@@ -55,10 +56,30 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
         const product = products.find(
           (p: { _id: string }) => p._id === item.productId
         );
-        const currentStock = product?.stock ?? 0;
 
-        newStockMap.set(item.productId, {
-          productId: item.productId,
+        let currentStock = product?.stock ?? 0;
+        if (product?.variants?.length && item.variant) {
+          const selectedOptions =
+            item.variant.options?.reduce<Record<string, string>>(
+              (acc, option) => {
+                acc[option.name] = option.value;
+                return acc;
+              },
+              {}
+            ) ?? {};
+
+          const variant = item.variant.sku
+            ? product.variants?.find(
+                (entry: { sku?: string | null }) =>
+                  entry?.sku === item.variant?.sku
+              )
+            : getVariantBySelectedOptions(product, selectedOptions);
+
+          currentStock = variant?.stock ?? 0;
+        }
+
+        newStockMap.set(item.id, {
+          itemId: item.id,
           currentStock,
           isOutOfStock: currentStock === 0,
           exceedsStock: item.quantity > currentStock,

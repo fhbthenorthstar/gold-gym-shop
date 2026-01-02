@@ -18,16 +18,42 @@ export function ProductFiltersSkeleton() {
         <Skeleton className="h-10 w-full" />
       </div>
 
-      {/* Color */}
+      {/* Brand */}
       <div>
-        <Skeleton className="mb-2 h-4 w-12" />
+        <Skeleton className="mb-2 h-4 w-14" />
         <Skeleton className="h-10 w-full" />
       </div>
 
-      {/* Material */}
+      {/* Goals */}
+      <div>
+        <Skeleton className="mb-2 h-4 w-16" />
+        <div className="space-y-2">
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} className="h-4 w-full" />
+          ))}
+        </div>
+      </div>
+
+      {/* Sports */}
+      <div>
+        <Skeleton className="mb-2 h-4 w-14" />
+        <div className="space-y-2">
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} className="h-4 w-full" />
+          ))}
+        </div>
+      </div>
+
+      {/* Gender */}
       <div>
         <Skeleton className="mb-2 h-4 w-16" />
         <Skeleton className="h-10 w-full" />
+      </div>
+
+      {/* Options */}
+      <div>
+        <Skeleton className="mb-2 h-4 w-24" />
+        <Skeleton className="h-8 w-full" />
       </div>
 
       {/* Price Range */}
