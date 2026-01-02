@@ -53,7 +53,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
   }
 
   return (
-    <div className="relative w-full bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
+    <div className="relative w-full border-b border-zinc-800 bg-black">
       <Carousel
         setApi={setApi}
         opts={{
@@ -78,8 +78,8 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
         </CarouselContent>
 
         {/* Navigation arrows - positioned inside */}
-        <CarouselPrevious className="left-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700 hover:text-white sm:left-8" />
-        <CarouselNext className="right-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700 hover:text-white sm:right-8" />
+        <CarouselPrevious className="left-4 border-zinc-800 bg-zinc-950/80 text-lime-300 hover:bg-zinc-900 hover:text-lime-200 sm:left-8" />
+        <CarouselNext className="right-4 border-zinc-800 bg-zinc-950/80 text-lime-300 hover:bg-zinc-900 hover:text-lime-200 sm:right-8" />
       </Carousel>
 
       {/* Dot indicators */}
@@ -93,8 +93,8 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
               className={cn(
                 "h-2 w-2 rounded-full transition-all duration-300",
                 current === index
-                  ? "w-6 bg-white"
-                  : "bg-white/40 hover:bg-white/60",
+                  ? "w-6 bg-lime-300"
+                  : "bg-zinc-700 hover:bg-zinc-500",
               )}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -134,8 +134,8 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
         )}
 
         {/* Gradient overlay for image edge blending */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-zinc-900/90 dark:to-zinc-950/90 hidden md:block" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-transparent to-transparent md:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/90 hidden md:block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent md:hidden" />
       </div>
 
       {/* Content Section - Right side (40% on desktop) */}
@@ -143,13 +143,13 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
         {product.category && (
           <Badge
             variant="secondary"
-            className="mb-4 w-fit bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+            className="mb-4 w-fit bg-lime-300/20 text-lime-300 hover:bg-lime-300/30"
           >
             {product.category.title}
           </Badge>
         )}
 
-        <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+        <h2 className="font-heading text-2xl font-semibold tracking-wide text-white sm:text-3xl lg:text-4xl">
           {product.name}
         </h2>
 
@@ -159,7 +159,7 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
           </p>
         )}
 
-        <p className="mt-6 text-3xl font-bold text-white lg:text-4xl">
+        <p className="mt-6 text-3xl font-semibold text-white lg:text-4xl">
           {formatPrice(displayPrice)}
         </p>
 
@@ -167,7 +167,7 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
           <Button
             asChild
             size="lg"
-            className="bg-white text-zinc-900 hover:bg-zinc-100"
+            className="bg-lime-300 text-black hover:bg-lime-200"
           >
             <Link href={`/products/${product.slug}`}>
               Shop Now

@@ -48,6 +48,13 @@ export const productType = defineType({
       ],
     }),
     defineField({
+      name: "descriptionHtml",
+      type: "text",
+      group: "details",
+      rows: 6,
+      description: "Optional HTML description (for theme parity)",
+    }),
+    defineField({
       name: "brand",
       type: "string",
       group: "details",

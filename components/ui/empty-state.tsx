@@ -87,15 +87,15 @@ export function EmptyState({
     >
       <div
         className={cn(
-          "flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800",
+          "flex items-center justify-center rounded-full bg-zinc-900",
           config.iconWrapper
         )}
       >
-        <Icon className={cn("text-zinc-400", config.icon)} />
+        <Icon className={cn("text-zinc-500", config.icon)} />
       </div>
       <h2
         className={cn(
-          "font-semibold text-zinc-900 dark:text-zinc-100",
+          "font-semibold text-zinc-100",
           config.title
         )}
       >
@@ -104,7 +104,7 @@ export function EmptyState({
       {description && (
         <p
           className={cn(
-            "max-w-sm text-zinc-500 dark:text-zinc-400",
+            "max-w-sm text-zinc-400",
             config.description
           )}
         >
@@ -115,4 +115,3 @@ export function EmptyState({
     </div>
   );
 }
-
