@@ -22,13 +22,22 @@ import type {
 interface ProductSectionProps {
   categories: ALL_CATEGORIES_QUERYResult;
   products: FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult;
+  allProducts: FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult;
   searchQuery: string;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalResults: number;
+    perPage: number;
+  };
 }
 
 export function ProductSection({
   categories,
   products,
+  allProducts,
   searchQuery,
+  pagination,
 }: ProductSectionProps) {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const router = useRouter();
@@ -42,12 +51,23 @@ export function ProductSection({
   const currentSort = searchParams.get("sort") ?? "best_selling";
 
   const resultLabel = useMemo(() => {
-    if (products.length === 0) return "Showing 0 results";
-    return `Showing 1-${products.length} of ${products.length} results`;
-  }, [products.length]);
+    if (pagination.totalResults === 0) return "Showing 0 results";
+    const start = (pagination.currentPage - 1) * pagination.perPage + 1;
+    const end = Math.min(
+      pagination.currentPage * pagination.perPage,
+      pagination.totalResults
+    );
+    return `Showing ${start}-${end} of ${pagination.totalResults} results`;
+  }, [pagination]);
 
-  const updateParams = (updates: Record<string, string | number | null>) => {
+  const updateParams = (
+    updates: Record<string, string | number | null>,
+    options?: { resetPage?: boolean }
+  ) => {
     const params = new URLSearchParams(searchParams.toString());
+    if (options?.resetPage) {
+      params.delete("page");
+    }
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null || value === "") {
         params.delete(key);
@@ -58,6 +78,23 @@ export function ProductSection({
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
+
+  const pageItems = useMemo(() => {
+    if (pagination.totalPages <= 5) {
+      return Array.from({ length: pagination.totalPages }, (_, i) => i + 1);
+    }
+    const items: Array<number | "ellipsis"> = [1];
+    const left = Math.max(2, pagination.currentPage - 1);
+    const right = Math.min(pagination.totalPages - 1, pagination.currentPage + 1);
+
+    if (left > 2) items.push("ellipsis");
+    for (let page = left; page <= right; page += 1) {
+      items.push(page);
+    }
+    if (right < pagination.totalPages - 1) items.push("ellipsis");
+    items.push(pagination.totalPages);
+    return items;
+  }, [pagination]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -121,7 +158,9 @@ export function ProductSection({
 
           <Select
             value={currentSort}
-            onValueChange={(value) => updateParams({ sort: value })}
+            onValueChange={(value) =>
+              updateParams({ sort: value }, { resetPage: true })
+            }
           >
             <SelectTrigger className="h-9 w-[180px] border-zinc-800 bg-zinc-950 text-xs text-zinc-200">
               <SelectValue placeholder="Sort by" />
@@ -167,12 +206,67 @@ export function ProductSection({
             filtersOpen ? "w-full lg:w-72 lg:opacity-100" : "hidden lg:hidden"
           }`}
         >
-          <ProductFilters categories={categories} products={products} />
+          <ProductFilters categories={categories} products={allProducts} />
         </aside>
 
         {/* Product Grid - expands to full width when filters hidden */}
         <main className="flex-1 transition-all duration-300">
           <ProductGrid products={products} view={view} columns={columns} />
+
+          {pagination.totalPages > 1 && (
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  updateParams({ page: Math.max(1, pagination.currentPage - 1) })
+                }
+                disabled={pagination.currentPage === 1}
+                className="border-zinc-800 bg-zinc-950 text-zinc-200 hover:bg-zinc-900"
+              >
+                Prev
+              </Button>
+
+              {pageItems.map((item, index) =>
+                item === "ellipsis" ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="px-2 text-xs text-zinc-500"
+                  >
+                    ...
+                  </span>
+                ) : (
+                  <Button
+                    key={`page-${item}`}
+                    variant={item === pagination.currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => updateParams({ page: item })}
+                    className={
+                      item === pagination.currentPage
+                        ? "bg-lime-300 text-black hover:bg-lime-200"
+                        : "border-zinc-800 bg-zinc-950 text-zinc-200 hover:bg-zinc-900"
+                    }
+                  >
+                    {item}
+                  </Button>
+                )
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  updateParams({
+                    page: Math.min(pagination.totalPages, pagination.currentPage + 1),
+                  })
+                }
+                disabled={pagination.currentPage === pagination.totalPages}
+                className="border-zinc-800 bg-zinc-950 text-zinc-200 hover:bg-zinc-900"
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </main>
       </div>
     </div>

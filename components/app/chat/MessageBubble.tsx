@@ -20,14 +20,14 @@ export function MessageBubble({
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
           isUser
-            ? "bg-zinc-900 dark:bg-zinc-100"
-            : "bg-amber-100 dark:bg-amber-900/30"
+            ? "bg-lime-300"
+            : "bg-zinc-800"
         }`}
       >
         {isUser ? (
-          <User className="h-4 w-4 text-white dark:text-zinc-900" />
+          <User className="h-4 w-4 text-black" />
         ) : (
-          <Bot className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <Bot className="h-4 w-4 text-lime-300" />
         )}
       </div>
 
@@ -35,8 +35,8 @@ export function MessageBubble({
       <div
         className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
           isUser
-            ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-            : "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+            ? "bg-lime-300 text-black"
+            : "bg-zinc-900 text-zinc-100"
         }`}
       >
         <MessageContent

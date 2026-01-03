@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Phone, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Facebook, Instagram, MapPin, Phone, Mail, Youtube } from "lucide-react";
 
 export function Footer() {
   return (
     <footer className="bg-zinc-950">
-      <div className="mx-auto max-w-7xl px-4 py-12">
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-12">
         <div className="grid gap-10 lg:grid-cols-4">
           <div className="space-y-4">
             <Image
@@ -69,24 +68,37 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-heading text-sm text-white">Subscribe Us</h3>
+            <h3 className="font-heading text-sm text-white">Follow Us</h3>
             <p className="mt-4 text-sm text-zinc-400">
-              Subscribe us to get latest news & useful tips.
+              Stay connected with Gold’s Gym Bangladesh on social media.
             </p>
-            <form className="mt-4 flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="h-10 flex-1 rounded-full border border-zinc-800 bg-black px-4 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-lime-300"
-              />
-              <Button className="h-10 rounded-full bg-lime-300 px-4 text-xs font-semibold text-black hover:bg-lime-200">
-                Sign Up
-              </Button>
-            </form>
+            <div className="mt-4 flex items-center gap-3">
+              <a
+                href="https://www.facebook.com/"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-black text-zinc-300 transition hover:border-lime-300/60 hover:text-lime-300"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.instagram.com/goldsgymbangladesh/"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-black text-zinc-300 transition hover:border-lime-300/60 hover:text-lime-300"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.youtube.com/@GoldsGymBangladesh"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-black text-zinc-300 transition hover:border-lime-300/60 hover:text-lime-300"
+                aria-label="YouTube"
+              >
+                <Youtube className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="mt-10 border-t border-zinc-800 pt-6 text-center text-xs text-zinc-500">
+        <div className="mt-8 border-t border-zinc-800 pt-4 text-center text-xs text-zinc-500">
           © 2026 Fitfinity. All rights reserved.
         </div>
       </div>

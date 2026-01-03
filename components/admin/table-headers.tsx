@@ -58,3 +58,29 @@ export function ProductTableHeader() {
     </TableHeader>
   );
 }
+
+// ============================================
+// Contact Form Table Headers
+// ============================================
+
+const CONTACT_TABLE_COLUMNS: TableHeaderColumn[] = [
+  { label: "Customer" },
+  { label: "Message" },
+  { label: "Status" },
+  { label: "Update" },
+  { label: "Date", className: "hidden md:table-cell" },
+];
+
+export function ContactTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        {CONTACT_TABLE_COLUMNS.map((column) => (
+          <TableHead key={column.label} className={column.className}>
+            {column.label}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+}

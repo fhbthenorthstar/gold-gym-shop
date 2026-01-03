@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
+  MessageSquare,
   Menu,
   X,
   ExternalLink,
@@ -39,6 +40,11 @@ const navItems = [
     label: "Orders",
     href: "/admin/orders",
     icon: ShoppingCart,
+  },
+  {
+    label: "Contact Form",
+    href: "/admin/contact",
+    icon: MessageSquare,
   },
 ];
 

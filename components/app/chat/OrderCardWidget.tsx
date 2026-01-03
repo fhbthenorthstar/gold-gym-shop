@@ -41,17 +41,17 @@ export function OrderCardWidget({ order, onClose }: OrderCardWidgetProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <span className="block truncate text-sm font-medium text-zinc-900 transition-colors duration-200 group-hover:text-amber-600 dark:text-zinc-100 dark:group-hover:text-amber-400">
+            <span className="block truncate text-sm font-medium text-white transition-colors duration-200 group-hover:text-lime-200">
               Order #{formatOrderNumber(order.orderNumber)}
             </span>
             {displayItems && (
-              <span className="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="block truncate text-xs text-zinc-400">
                 {displayItems}
               </span>
             )}
           </div>
           {order.totalFormatted && (
-            <span className="shrink-0 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <span className="shrink-0 text-sm font-semibold text-white">
               {order.totalFormatted}
             </span>
           )}
@@ -64,8 +64,8 @@ export function OrderCardWidget({ order, onClose }: OrderCardWidgetProps) {
           </span>
           {formattedDate && (
             <>
-              <span className="text-zinc-300 dark:text-zinc-600">•</span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-zinc-500">•</span>
+              <span className="text-xs text-zinc-500">
                 {formattedDate}
               </span>
             </>
@@ -76,7 +76,7 @@ export function OrderCardWidget({ order, onClose }: OrderCardWidgetProps) {
   );
 
   const cardClasses =
-    "group flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 transition-all duration-200 hover:border-amber-300 hover:shadow-md hover:shadow-amber-100/50 dark:border-zinc-700 dark:bg-zinc-800/50 dark:hover:border-amber-600/50 dark:hover:shadow-amber-900/20";
+    "group flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3 transition-all duration-200 hover:border-lime-300/60 hover:shadow-[0_12px_30px_rgba(163,230,53,0.12)]";
 
   return (
     <Link href={order.orderUrl} onClick={handleClick} className={cardClasses}>
