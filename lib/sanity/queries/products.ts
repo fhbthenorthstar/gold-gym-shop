@@ -208,6 +208,13 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
 }`);
 
 /**
+ * Get featured products for homepage grid (fallback to newest)
+ */
+export const HOME_FEATURED_PRODUCTS_QUERY = defineQuery(
+  `*[_type == "product"] | order(featured desc, _createdAt desc) [0...8] ${FILTERED_PRODUCT_PROJECTION}`
+);
+
+/**
  * Get products by category slug
  */
 export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
