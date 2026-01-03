@@ -28,7 +28,7 @@ export function MessageContent({
               <Link
                 href={href}
                 onClick={handleCloseChat}
-                className="text-amber-600 hover:text-amber-700 underline underline-offset-2 transition-colors dark:text-amber-400 dark:hover:text-amber-300"
+                className="text-lime-300 hover:text-lime-200 underline underline-offset-2 transition-colors"
               >
                 {children}
               </Link>
@@ -39,7 +39,7 @@ export function MessageContent({
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-600 hover:text-amber-700 underline underline-offset-2 transition-colors dark:text-amber-400 dark:hover:text-amber-300"
+              className="text-lime-300 hover:text-lime-200 underline underline-offset-2 transition-colors"
             >
               {children}
             </a>
@@ -71,7 +71,7 @@ export function MessageContent({
           }
           return <li className="pl-1">{children}</li>;
         },
-        hr: () => <hr className="my-4 border-zinc-200 dark:border-zinc-700" />,
+        hr: () => <hr className="my-4 border-zinc-800" />,
         code: ({ children, className }) => {
           const isInline = !className;
           if (isInline) {
@@ -79,8 +79,8 @@ export function MessageContent({
               <code
                 className={`px-1 py-0.5 rounded text-xs font-mono ${
                   isUser
-                    ? "bg-zinc-700 text-zinc-200"
-                    : "bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                    ? "bg-black/30 text-zinc-900"
+                    : "bg-black/40 text-zinc-200"
                 }`}
               >
                 {children}
@@ -90,7 +90,7 @@ export function MessageContent({
           return <code className={className}>{children}</code>;
         },
         pre: ({ children }) => (
-          <pre className="p-3 rounded-lg bg-zinc-200 dark:bg-zinc-700 overflow-x-auto mb-2 text-xs">
+          <pre className="mb-2 overflow-x-auto rounded-lg bg-black/50 p-3 text-xs text-zinc-200">
             {children}
           </pre>
         ),

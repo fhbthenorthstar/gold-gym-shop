@@ -208,6 +208,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
     (updates: Record<string, string | number | null>) => {
       const params = new URLSearchParams(searchParams.toString());
 
+      params.delete("page");
       Object.entries(updates).forEach(([key, value]) => {
         if (value === null || value === "" || value === 0) {
           params.delete(key);

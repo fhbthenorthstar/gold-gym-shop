@@ -7,7 +7,6 @@ import {
 } from "@/lib/sanity/queries/products";
 import { ALL_CATEGORIES_QUERY } from "@/lib/sanity/queries/categories";
 import { ProductSection } from "@/components/app/ProductSection";
-import { CallToAction } from "@/components/app/CallToAction";
 import {
   parseMultiValueParam,
   parseOptionFiltersParam,
@@ -26,6 +25,7 @@ interface PageProps {
     sort?: string;
     inStock?: string;
     options?: string;
+    page?: string;
   }>;
 }
 
@@ -46,6 +46,8 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const maxPrice = Number(params.maxPrice) || 0;
   const sort = params.sort ?? "best_selling";
   const inStock = params.inStock === "true";
+  const page = Math.max(1, Number(params.page) || 1);
+  const perPage = 12;
 
   const getQuery = () => {
     switch (sort) {
@@ -84,6 +86,11 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const activeCategory = categories.find(
     (category) => category.slug === categorySlug
   );
+  const totalResults = products.length;
+  const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * perPage;
+  const pagedProducts = products.slice(startIndex, startIndex + perPage);
 
   return (
     <div className="min-h-screen bg-black">
@@ -111,12 +118,17 @@ export default async function ShopPage({ searchParams }: PageProps) {
       <div className="mx-auto max-w-7xl px-4 py-10">
         <ProductSection
           categories={categories}
-          products={products}
+          products={pagedProducts}
+          allProducts={products}
           searchQuery={searchQuery}
+          pagination={{
+            currentPage: safePage,
+            totalPages,
+            totalResults,
+            perPage,
+          }}
         />
       </div>
-
-      <CallToAction />
     </div>
   );
 }

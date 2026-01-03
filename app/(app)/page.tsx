@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Facebook, X } from "lucide-react";
+import { Check, Facebook, Instagram, X } from "lucide-react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   HOME_OFFER_QUERY,

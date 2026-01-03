@@ -55,38 +55,38 @@ export function ToolCallUI({ toolPart, closeChat }: ToolCallUIProps) {
     <div className="space-y-2">
       {/* Tool status indicator */}
       <div className="flex gap-3">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-          <ToolIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-800">
+          <ToolIcon className="h-4 w-4 text-lime-300" />
         </div>
         <div
           className={`flex items-center gap-3 rounded-xl px-4 py-2 text-sm ${
             isComplete
-              ? "bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800"
-              : "bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800"
+              ? "border border-lime-300/30 bg-lime-300/10"
+              : "border border-zinc-800 bg-zinc-900"
           }`}
         >
           {isComplete ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-lime-300" />
           ) : (
-            <Loader2 className="h-4 w-4 text-amber-600 dark:text-amber-400 animate-spin shrink-0" />
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-zinc-400" />
           )}
           <div className="flex flex-col">
             <span
               className={`font-medium ${
                 isComplete
-                  ? "text-emerald-700 dark:text-emerald-300"
-                  : "text-amber-700 dark:text-amber-300"
+                  ? "text-lime-200"
+                  : "text-zinc-300"
               }`}
             >
               {isComplete ? `${displayName} complete` : `${displayName}...`}
             </span>
             {searchQuery && (
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-zinc-500">
                 Query: &quot;{searchQuery}&quot;
               </span>
             )}
             {orderStatus && (
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-zinc-500">
                 Filter: {orderStatus}
               </span>
             )}
@@ -97,7 +97,7 @@ export function ToolCallUI({ toolPart, closeChat }: ToolCallUIProps) {
       {/* Product results */}
       {hasProducts && productResult?.products && (
         <div className="ml-11 mt-2">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+          <p className="mb-2 text-xs text-zinc-500">
             {productResult.products.length} product
             {productResult.products.length !== 1 ? "s" : ""} found
           </p>
@@ -116,7 +116,7 @@ export function ToolCallUI({ toolPart, closeChat }: ToolCallUIProps) {
       {/* Order results */}
       {hasOrders && orderResult?.orders && (
         <div className="ml-11 mt-2">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+          <p className="mb-2 text-xs text-zinc-500">
             {orderResult.orders.length} order
             {orderResult.orders.length !== 1 ? "s" : ""} found
           </p>

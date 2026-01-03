@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
-import { useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { Sparkles, Send, Loader2, X, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ export function ChatSheet() {
 
   const { messages, sendMessage, status } = useChat();
   const isLoading = status === "streaming" || status === "submitted";
+  const canChat = Boolean(isSignedIn);
 
   // Auto-scroll to bottom when new messages arrive or streaming updates
   // biome-ignore lint/correctness/useExhaustiveDependencies: trigger scroll on message/loading changes
@@ -39,18 +40,23 @@ export function ChatSheet() {
 
   // Handle pending message - send it when chat opens
   useEffect(() => {
-    if (isOpen && pendingMessage && !isLoading) {
+    if (isOpen && pendingMessage && !isLoading && canChat) {
       sendMessage({ text: pendingMessage });
       clearPendingMessage();
     }
-  }, [isOpen, pendingMessage, isLoading, sendMessage, clearPendingMessage]);
+  }, [isOpen, pendingMessage, isLoading, sendMessage, clearPendingMessage, canChat]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !canChat) return;
 
     sendMessage({ text: input });
     setInput("");
+  };
+
+  const handleSuggestionClick = (message: { text: string }) => {
+    if (!canChat) return;
+    sendMessage(message);
   };
 
   if (!isOpen) return null;
@@ -59,21 +65,26 @@ export function ChatSheet() {
     <>
       {/* Backdrop - only visible on mobile/tablet (< xl) */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 xl:hidden"
+        className="fixed inset-0 z-40 bg-black/60 xl:hidden"
         onClick={closeChat}
         aria-hidden="true"
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 right-0 z-50 flex h-full w-full flex-col border-l border-zinc-200 bg-white overscroll-contain dark:border-zinc-800 dark:bg-zinc-950 sm:w-[448px] animate-in slide-in-from-right duration-300">
+      <div className="fixed top-0 right-0 z-50 flex h-full w-full flex-col border-l border-zinc-800 bg-zinc-950 text-zinc-100 overscroll-contain sm:w-[448px] animate-in slide-in-from-right duration-300">
         {/* Header */}
-        <header className="shrink-0 border-b border-zinc-200 dark:border-zinc-800">
+        <header className="shrink-0 border-b border-zinc-800">
           <div className="flex h-16 items-center justify-between px-6">
-            <div className="flex items-center gap-2 font-semibold">
-              <Sparkles className="h-5 w-5 text-amber-500" />
+            <div className="flex items-center gap-2 font-semibold text-white">
+              <Sparkles className="h-5 w-5 text-lime-300" />
               Shopping Assistant
             </div>
-            <Button variant="ghost" size="icon" onClick={closeChat}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={closeChat}
+              className="text-zinc-200 hover:text-lime-200"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -83,7 +94,7 @@ export function ChatSheet() {
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           {messages.length === 0 ? (
             <WelcomeScreen
-              onSuggestionClick={sendMessage}
+              onSuggestionClick={handleSuggestionClick}
               isSignedIn={isSignedIn ?? false}
             />
           ) : (
@@ -123,14 +134,14 @@ export function ChatSheet() {
               {/* Loading indicator */}
               {isLoading && messages[messages.length - 1]?.role === "user" && (
                 <div className="flex gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                    <Bot className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-800">
+                    <Bot className="h-4 w-4 text-lime-300" />
                   </div>
-                  <div className="flex items-center gap-2 rounded-2xl bg-zinc-100 px-4 py-2 dark:bg-zinc-800">
+                  <div className="flex items-center gap-2 rounded-2xl bg-zinc-900 px-4 py-2">
                     <div className="flex gap-1">
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400 [animation-delay:-0.3s]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400 [animation-delay:-0.15s]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300 [animation-delay:-0.3s]" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300 [animation-delay:-0.15s]" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300" />
                     </div>
                   </div>
                 </div>
@@ -143,19 +154,33 @@ export function ChatSheet() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-zinc-200 px-4 py-4 dark:border-zinc-800">
+        <div className="border-t border-zinc-800 px-4 py-4">
+          {!canChat && (
+            <div className="mb-3 rounded-xl border border-lime-300/30 bg-black/60 px-4 py-3 text-xs text-zinc-300">
+              Sign in to chat with the shopping assistant.
+              <div className="mt-3">
+                <SignInButton mode="modal">
+                  <Button className="h-9 rounded-full bg-lime-300 px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-black hover:bg-lime-200">
+                    Sign In
+                  </Button>
+                </SignInButton>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about supplements, gear, or memberships..."
-              disabled={isLoading}
-              className="flex-1"
+              disabled={isLoading || !canChat}
+              className="flex-1 border-zinc-800 bg-black text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-lime-300"
             />
             <Button
               type="submit"
               size="icon"
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || !canChat}
+              className="bg-lime-300 text-black hover:bg-lime-200"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
