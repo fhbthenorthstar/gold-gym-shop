@@ -4,7 +4,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    domains: ["cdn.sanity.io", "images.unsplash.com", "dt-fitfinity.myshopify.com"],
+    domains: [
+      "cdn.sanity.io",
+      "images.unsplash.com",
+      "dt-fitfinity.myshopify.com",
+      "scontent.cdninstagram.com",
+    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -17,6 +22,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "dt-fitfinity.myshopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "scontent.cdninstagram.com",
       },
     ],
   },

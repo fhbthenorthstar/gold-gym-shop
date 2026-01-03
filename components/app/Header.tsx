@@ -7,21 +7,20 @@ import {
   ChevronDown,
   Heart,
   Menu,
-  Scale,
+  Package,
   Search,
   ShoppingBag,
+  Sparkles,
   User,
 } from "lucide-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useTotalItems } from "@/lib/store/cart-store-provider";
 import {
   useWishlistActions,
   useWishlistItems,
 } from "@/lib/store/wishlist-store-provider";
-import {
-  useCompareActions,
-  useCompareItems,
-} from "@/lib/store/compare-store-provider";
+import { useChatActions, useIsChatOpen } from "@/lib/store/chat-store-provider";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -64,10 +63,10 @@ export function Header() {
   const searchParams = useSearchParams();
   const totalItems = useTotalItems();
   const wishlistItems = useWishlistItems();
-  const compareItems = useCompareItems();
   const { openCart } = useCartActions();
   const { openWishlist } = useWishlistActions();
-  const { openCompare } = useCompareActions();
+  const { openChat } = useChatActions();
+  const isChatOpen = useIsChatOpen();
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -176,6 +175,29 @@ export function Header() {
             />
           </form>
 
+          <SignedIn>
+            <Button
+              asChild
+              size="sm"
+              className="hidden items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-lime-300/60 hover:text-lime-200 lg:inline-flex"
+            >
+              <Link href="/orders">
+                <Package className="h-4 w-4" />
+                My Orders
+              </Link>
+            </Button>
+          </SignedIn>
+
+          {!isChatOpen && (
+            <Button
+              onClick={openChat}
+              className="hidden items-center gap-2 rounded-full bg-lime-300 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-lime-200 lg:inline-flex"
+            >
+              <Sparkles className="h-4 w-4" />
+              Ask AI
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -191,29 +213,36 @@ export function Header() {
             )}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-zinc-200 hover:text-lime-300"
-            onClick={openCompare}
-            aria-label="Open compare"
-          >
-            <Scale className="h-5 w-5" />
-            {compareItems.length > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-lime-400 text-[10px] font-semibold text-black">
-                {compareItems.length}
-              </span>
-            )}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-zinc-200 hover:text-lime-300"
-            aria-label="Account"
-          >
-            <User className="h-5 w-5" />
-          </Button>
+          <SignedIn>
+            <UserButton
+              afterSwitchSessionUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: "h-9 w-9",
+                },
+              }}
+            >
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="My Orders"
+                  labelIcon={<Package className="h-4 w-4" />}
+                  href="/orders"
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          </SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-zinc-200 hover:text-lime-300"
+              >
+                <User className="h-5 w-5" />
+                <span className="sr-only">Sign in</span>
+              </Button>
+            </SignInButton>
+          </SignedOut>
 
           <Button
             variant="ghost"
