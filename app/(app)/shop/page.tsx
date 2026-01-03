@@ -1,7 +1,5 @@
-import { Suspense } from "react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
-  FEATURED_PRODUCTS_QUERY,
   FILTER_PRODUCTS_BY_BEST_SELLING_QUERY,
   FILTER_PRODUCTS_BY_NEWEST_QUERY,
   FILTER_PRODUCTS_BY_PRICE_ASC_QUERY,
@@ -9,8 +7,6 @@ import {
 } from "@/lib/sanity/queries/products";
 import { ALL_CATEGORIES_QUERY } from "@/lib/sanity/queries/categories";
 import { ProductSection } from "@/components/app/ProductSection";
-import { FeaturedCarousel } from "@/components/app/FeaturedCarousel";
-import { FeaturedCarouselSkeleton } from "@/components/app/FeaturedCarouselSkeleton";
 import { CallToAction } from "@/components/app/CallToAction";
 import {
   parseMultiValueParam,
@@ -89,10 +85,6 @@ export default async function ShopPage({ searchParams }: PageProps) {
     (category) => category.slug === categorySlug
   );
 
-  const { data: featuredProducts } = await sanityFetch({
-    query: FEATURED_PRODUCTS_QUERY,
-  });
-
   return (
     <div className="min-h-screen bg-black">
       <section
@@ -115,12 +107,6 @@ export default async function ShopPage({ searchParams }: PageProps) {
           </p>
         </div>
       </section>
-
-      {featuredProducts.length > 0 && (
-        <Suspense fallback={<FeaturedCarouselSkeleton />}>
-          <FeaturedCarousel products={featuredProducts} />
-        </Suspense>
-      )}
 
       <div className="mx-auto max-w-7xl px-4 py-10">
         <ProductSection

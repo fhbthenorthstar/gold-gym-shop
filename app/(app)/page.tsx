@@ -1,19 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Facebook, Instagram, X } from "lucide-react";
+import { Check, Facebook, X } from "lucide-react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
-  HOME_GALLERY_QUERY,
   HOME_OFFER_QUERY,
   HOME_TESTIMONIALS_QUERY,
   HOME_TRAINERS_QUERY,
 } from "@/lib/sanity/queries/home";
-import { HOME_FEATURED_PRODUCTS_QUERY } from "@/lib/sanity/queries/products";
+import {
+  HOME_FEATURED_PRODUCTS_QUERY,
+} from "@/lib/sanity/queries/products";
 import { HomeTestimonials } from "@/components/app/HomeTestimonials";
+import { HomeInstagramSlider } from "@/components/app/HomeInstagramSlider";
 import { ProductCard } from "@/components/app/ProductCard";
-import { CallToAction } from "@/components/app/CallToAction";
 import { cn } from "@/lib/utils";
-import type { FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult } from "@/sanity.types";
+import type {
+  FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult,
+} from "@/sanity.types";
 
 type SanityImage = {
   asset?: {
@@ -60,12 +63,48 @@ type Testimonial = {
   avatar?: SanityImage | null;
 };
 
-type GalleryItem = {
-  _id?: string;
-  title?: string | null;
-  link?: string | null;
-  image?: SanityImage | null;
-};
+const instagramPlaceholderItems = [
+  {
+    id: "instagram-placeholder-1",
+    imageUrl: "/instagram/1.jpg",
+  },
+  {
+    id: "instagram-placeholder-2",
+    imageUrl: "/instagram/2.jpg",
+  },
+  {
+    id: "instagram-placeholder-3",
+    imageUrl: "/instagram/3.jpg",
+  },
+  {
+    id: "instagram-placeholder-4",
+    imageUrl: "/instagram/4.jpg",
+  },
+  {
+    id: "instagram-placeholder-5",
+    imageUrl: "/instagram/5.jpg",
+  },
+  {
+    id: "instagram-placeholder-6",
+    imageUrl: "/instagram/6.jpg",
+  },
+  {
+    id: "instagram-placeholder-7",
+    imageUrl: "/instagram/7.jpg",
+  },
+  {
+    id: "instagram-placeholder-8",
+    imageUrl: "/instagram/8.jpg",
+  },
+  {
+    id: "instagram-placeholder-9",
+    imageUrl: "/instagram/9.jpg",
+  },
+  {
+    id: "instagram-placeholder-10",
+    imageUrl: "/instagram/10.jpeg",
+  },
+];
 
 const isExternalUrl = (value?: string | null) =>
   Boolean(value && /^https?:\/\//i.test(value));
@@ -121,13 +160,13 @@ const TrainerCard = ({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60",
+        "group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/70 transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(163,230,53,0.18)]",
         className
       )}
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden",
+          "relative w-full overflow-hidden bg-black",
           size === "large" ? "h-80" : "h-56"
         )}
       >
@@ -136,7 +175,7 @@ const TrainerCard = ({
             src={imageUrl}
             alt={trainer.name ?? "Trainer"}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="origin-top object-cover object-top transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 1024px) 50vw, 33vw"
           />
         ) : (
@@ -145,16 +184,18 @@ const TrainerCard = ({
           </div>
         )}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-      <div className="absolute bottom-4 left-4">
-        <p className="font-heading text-sm text-white">
-          {trainer.name ?? "Trainer"}
-        </p>
-        {trainer.role && (
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-zinc-400">
-            {trainer.role}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+      <div className="absolute bottom-4 left-4 right-4">
+        <div className="rounded-xl bg-zinc-900/85 px-4 py-3 backdrop-blur-sm ring-1 ring-lime-300/25">
+          <p className="font-heading text-sm text-white">
+            {trainer.name ?? "Trainer"}
           </p>
-        )}
+          {trainer.role && (
+            <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-lime-200/80">
+              {trainer.role}
+            </p>
+          )}
+        </div>
       </div>
       {showSocial && (
         <div className="absolute right-4 top-4 flex items-center gap-2">
@@ -178,13 +219,11 @@ export default async function HomePage() {
     offerResult,
     trainersResult,
     testimonialsResult,
-    galleryResult,
   ] = await Promise.all([
     sanityFetch({ query: HOME_FEATURED_PRODUCTS_QUERY }),
     sanityFetch({ query: HOME_OFFER_QUERY }),
     sanityFetch({ query: HOME_TRAINERS_QUERY }),
     sanityFetch({ query: HOME_TESTIMONIALS_QUERY }),
-    sanityFetch({ query: HOME_GALLERY_QUERY }),
   ]);
 
   const featuredProducts =
@@ -193,9 +232,13 @@ export default async function HomePage() {
   const offer = (offerResult.data as HomeOffer | null) ?? null;
   const trainers = (trainersResult.data as Trainer[] | null) ?? [];
   const testimonials = (testimonialsResult.data as Testimonial[] | null) ?? [];
-  const gallery = (galleryResult.data as GalleryItem[] | null) ?? [];
-  const trainerSlots = trainers.slice(0, 4);
-  const hasTrainerFeatureLayout = trainerSlots.length >= 4;
+  const instagramProfileUrl = "https://www.instagram.com/goldsgymbangladesh/";
+  const instagramSlides = instagramPlaceholderItems.map((item) => ({
+    id: item.id,
+    imageUrl: item.imageUrl,
+    link: instagramProfileUrl,
+    caption: null,
+  }));
 
   return (
     <div className="min-h-screen bg-black">
@@ -314,7 +357,7 @@ export default async function HomePage() {
       </section>
 
       {offer?.image?.asset?.url && (
-        <section className="bg-[#2b2b2b] py-20">
+        <section className="py-20">
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
               <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
@@ -399,81 +442,31 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="relative overflow-hidden border-y border-zinc-800">
-        <video
-          className="h-[320px] w-full object-cover sm:h-[380px] lg:h-[460px]"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="https://dt-fitfinity.myshopify.com/cdn/shop/files/preview_images/2ba2761a4ec1436fab8ef9c56186f9bb.thumbnail.0000000000_1920x.jpg?v=1758100571"
-        >
-          <source
-            src="https://dt-fitfinity.myshopify.com/cdn/shop/videos/c/vp/2ba2761a4ec1436fab8ef9c56186f9bb/2ba2761a4ec1436fab8ef9c56186f9bb.HD-1080p-7.2Mbps-57646921.mp4?v=0"
-            type="video/mp4"
-          />
-        </video>
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h2 className="font-heading text-2xl text-white sm:text-3xl">
-            Ensure Fit
-          </h2>
-        </div>
-      </section>
+      {instagramSlides.length > 0 && (
+        <HomeInstagramSlider
+          items={instagramSlides}
+          profileUrl={instagramProfileUrl}
+        />
+      )}
 
       {trainers.length > 0 && (
         <section className="py-20">
           <div className="mx-auto max-w-7xl px-4">
             <div className="text-center">
               <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
-                Trainers
+                Worldclass Trainers Available
               </p>
               <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-                Advanced <span className="text-lime-300">Fitness</span> Trainers
-                Available
+                 <span className="text-lime-300">Top</span> Trainers
               </h2>
             </div>
 
-            {hasTrainerFeatureLayout && (
-              <div className="relative mt-14 hidden lg:block">
-                <div className="grid grid-cols-12 items-end gap-6">
-                  <TrainerCard
-                    trainer={trainerSlots[0]}
-                    size="large"
-                    className="col-span-5"
-                  />
-                  <div className="col-span-2" />
-                  <TrainerCard
-                    trainer={trainerSlots[2]}
-                    size="large"
-                    className="col-span-5"
-                  />
-                </div>
-                <TrainerCard
-                  trainer={trainerSlots[1]}
-                  size="small"
-                  className="absolute left-1/2 top-28 w-64 -translate-x-1/2"
-                />
-                <TrainerCard
-                  trainer={trainerSlots[3]}
-                  size="small"
-                  showSocial
-                  className="absolute right-0 top-8 w-60"
-                />
-              </div>
-            )}
-
-            <div
-              className={cn(
-                "mt-10 grid gap-6 sm:grid-cols-2",
-                hasTrainerFeatureLayout ? "lg:hidden" : "lg:grid-cols-4"
-              )}
-            >
-              {trainerSlots.map((trainer) => (
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {trainers.map((trainer) => (
                 <TrainerCard
                   key={trainer._id ?? trainer.name}
                   trainer={trainer}
-                  size="small"
+                  size="large"
                 />
               ))}
             </div>
@@ -485,50 +478,32 @@ export default async function HomePage() {
         <HomeTestimonials items={testimonials} />
       )}
 
-      {gallery.length > 0 && (
-        <section className="py-12">
-          <div className="mx-auto max-w-7xl px-4">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {gallery.slice(0, 8).map((item) => {
-                const imageUrl = item.image?.asset?.url;
-                if (!imageUrl) return null;
-                const card = (
-                  <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60">
-                    <div className="relative h-48 w-full sm:h-56 lg:h-60">
-                      <Image
-                        src={imageUrl}
-                        alt={item.title ?? "Gallery image"}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 1024px) 50vw, 25vw"
-                      />
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <Instagram className="h-6 w-6 text-lime-300" />
-                    </div>
-                  </div>
-                );
+      
 
-                if (!item.link) {
-                  return <div key={item._id ?? imageUrl}>{card}</div>;
-                }
-
-                return isExternalUrl(item.link) ? (
-                  <a key={item._id ?? imageUrl} href={item.link}>
-                    {card}
-                  </a>
-                ) : (
-                  <Link key={item._id ?? imageUrl} href={item.link}>
-                    {card}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <CallToAction />
+      <section className="relative overflow-hidden border-y border-zinc-800">
+        <div className="relative h-[380px] w-full sm:h-[460px] lg:h-[540px]">
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          >
+            <source src="/videos/ensure-fit.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
+            Special Facilities
+          </p>
+          <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
+            SPA &amp; Pool
+          </h2>
+        </div>
+      </section>
     </div>
   );
 }
