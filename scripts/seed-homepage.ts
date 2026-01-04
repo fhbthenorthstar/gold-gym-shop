@@ -43,27 +43,26 @@ const buildImage = (assetId: string) => ({
 });
 
 const offerSeed = {
-  _id: "home-offer-fitfinity",
+  _id: "home-offer-goldsgym",
   _type: "homeOffer",
   eyebrow: "The Gym Offers",
-  title: "The Gym with Safe and Comfort Zone",
+  title: "Gold's Gym Bangladesh Experience",
   description:
-    "Aenean vel elit scelerisque mauris pellentesque. At varius vel pharetra vel turpis. Volutpat odio facilisis mauris sit amet massa vitae tortor condimentum.",
+    "Train with world-class equipment, certified coaches, and a motivating community built to help you reach your goals.",
   bullets: [
-    "Maecenas venenatis augue dui",
-    "Orci varius natoque penatibus",
-    "Eget eleifend urna fringilla id.",
-    "Pagnis dis parturient montes.",
+    "Premium strength & conditioning zones",
+    "Certified trainers and custom programs",
+    "Recovery facilities including spa & pool",
+    "Flexible memberships for every lifestyle",
   ],
   ctaLabel: "Discover More",
-  ctaLink: toAbsoluteUrl("/pages/about-us"),
-  imageUrl:
-    "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_9.png?v=1707204172",
+  ctaLink: toAbsoluteUrl("/about"),
+  imageUrl: toAbsoluteUrl("/gold-gym-contact.jpg"),
   brandLogoUrls: [
-    "https://dt-fitfinity.myshopify.com/cdn/shop/files/Botrio_logo_1.png?v=1707208506",
-    "https://dt-fitfinity.myshopify.com/cdn/shop/files/Jerix_Logo_1.png?v=1707208506",
-    "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rave_Logo_1.png?v=1707208506",
-    "https://dt-fitfinity.myshopify.com/cdn/shop/files/Urban_1_2.png?v=1707218457",
+    toAbsoluteUrl("/Gold's_Gym_logo.png"),
+    toAbsoluteUrl("/goldgymshop.png"),
+    toAbsoluteUrl("/Gold's_Gym_logo (1).png"),
+    toAbsoluteUrl("/Gold's_Gym_logo.png"),
   ],
   order: 0,
 };
@@ -73,32 +72,28 @@ const trainerSeeds = [
     _id: "trainer-david",
     name: "David",
     role: "Strength Coach",
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_14_1.png?v=1707204754",
+    imageUrl: toAbsoluteUrl("/trinners/1.jpg"),
     order: 0,
   },
   {
     _id: "trainer-jenny",
     name: "Jenny",
     role: "Fitness Trainer",
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_10.png?v=1707204754",
+    imageUrl: toAbsoluteUrl("/trinners/2.jpg"),
     order: 1,
   },
   {
     _id: "trainer-mathew",
     name: "Mathew",
     role: "Conditioning Coach",
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_11_3.png?v=1707204722",
+    imageUrl: toAbsoluteUrl("/trinners/3.jpg"),
     order: 2,
   },
   {
     _id: "trainer-alisa",
     name: "Alisa",
     role: "Wellness Coach",
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_12_1.png?v=1707204722",
+    imageUrl: toAbsoluteUrl("/trinners/4.jpg"),
     order: 3,
   },
 ];
@@ -106,46 +101,42 @@ const trainerSeeds = [
 const testimonialSeeds = [
   {
     _id: "testimonial-alfie-russell",
-    name: "Alfie Russell",
-    role: "CEO",
+    name: "Arifin Shuvoo",
+    role: "Actor, Artist",
     quote:
-      "Nunc quis lorem ligula. Cras quis ultricies ipsum. Suspendisse potenti. Ut efficitur convallis rim ctetur lectus id blandit. Curabitur lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr blandit sit amet, consectetur cras orci nunc, facilisis sed massa vitae, ullam lacus rictra.",
-    rating: 4,
-    avatarUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Ellipse_4_3.png?v=1707204860",
+      "Discipline is everything in my career—and Gold's Gym gives me the perfect environment to stay focused and push harder every day.",
+    rating: 5,
+    avatarUrl: toAbsoluteUrl("/instagram/1.jpg"),
     order: 0,
   },
   {
     _id: "testimonial-olivia-emma",
-    name: "Olivia Emma",
-    role: "MD",
+    name: "Ishrat Zaheen Ahmed",
+    role: "Actor, Dancer, Influencer",
     quote:
-      "Ut efficitur convallis rim ctetur lectus id blandit. Nunc quis lorem ligula. Cras quis ultricies ipsum. Suspendisse potenti. Curabitur lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    rating: 3,
-    avatarUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Ellipse_3_3.png?v=1707204860",
+      "Gold's Gym Bangladesh gives me the energy and balance I need to perform at my best—both on stage and on screen.",
+    rating: 5,
+    avatarUrl: toAbsoluteUrl("/instagram/2.jpg"),
     order: 1,
   },
   {
     _id: "testimonial-nerisan-sophia",
-    name: "Nerisan Sophia",
-    role: "Developer",
+    name: "Rafsan Sabab",
+    role: "Anchor, Comedian, Vlogger",
     quote:
-      "Sit amet, consectetur cras orci nunc, facilisis sed massa vitae, ullam lacus esctra. Nunc quis lorem ligula. Convallis rim ctetur lectus id blandit. Curabitur lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "Fitness doesn’t have to be boring. At Gold's Gym, every session feels exciting and it keeps me sharp for my work.",
     rating: 5,
-    avatarUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Ellipse_2_5.png?v=1707204897",
+    avatarUrl: toAbsoluteUrl("/instagram/3.jpg"),
     order: 2,
   },
   {
     _id: "testimonial-luna-emily",
-    name: "Luna Emily",
-    role: "Musician",
+    name: "Xefer Rahman",
+    role: "Singer, Musician, Actress",
     quote:
-      "Curabitur lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quis lorem ligula. Cras quis ultricies ipsum. Suspendisse potenti. Ut efficitur convallis rim ctetur lectus id blandit.",
-    rating: 3,
-    avatarUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/home-testimonial-1-1.webp?v=1707208289",
+      "Training at Gold's Gym helps me stay fit, strong, and confident in everything I do.",
+    rating: 5,
+    avatarUrl: toAbsoluteUrl("/instagram/4.jpg"),
     order: 3,
   },
 ];
@@ -153,58 +144,51 @@ const testimonialSeeds = [
 const gallerySeeds = [
   {
     _id: "gallery-rectangle-22",
-    title: "Fitfinity Gallery 1",
+    title: "Gold's Gym BD Gallery 1",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_22.png?v=1707207603",
+    imageUrl: toAbsoluteUrl("/instagram/5.jpg"),
     order: 0,
   },
   {
     _id: "gallery-rectangle-17",
-    title: "Fitfinity Gallery 2",
+    title: "Gold's Gym BD Gallery 2",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_17_2.png?v=1707212312",
+    imageUrl: toAbsoluteUrl("/instagram/6.jpg"),
     order: 1,
   },
   {
     _id: "gallery-rectangle-18",
-    title: "Fitfinity Gallery 3",
+    title: "Gold's Gym BD Gallery 3",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_18_1.png?v=1707207602",
+    imageUrl: toAbsoluteUrl("/instagram/7.jpg"),
     order: 2,
   },
   {
     _id: "gallery-rectangle-19",
-    title: "Fitfinity Gallery 4",
+    title: "Gold's Gym BD Gallery 4",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_19_2.png?v=1707212312",
+    imageUrl: toAbsoluteUrl("/instagram/8.jpg"),
     order: 3,
   },
   {
     _id: "gallery-rectangle-21",
-    title: "Fitfinity Gallery 5",
+    title: "Gold's Gym BD Gallery 5",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_21_1.png?v=1707207676",
+    imageUrl: toAbsoluteUrl("/instagram/9.jpg"),
     order: 4,
   },
   {
     _id: "gallery-rectangle-21-2",
-    title: "Fitfinity Gallery 6",
+    title: "Gold's Gym BD Gallery 6",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_21_2.png?v=1707212312",
+    imageUrl: toAbsoluteUrl("/instagram/10.jpeg"),
     order: 5,
   },
   {
     _id: "gallery-rectangle-20",
-    title: "Fitfinity Gallery 7",
+    title: "Gold's Gym BD Gallery 7",
     link: toAbsoluteUrl("/shop"),
-    imageUrl:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_20_1.png?v=1707207676",
+    imageUrl: toAbsoluteUrl("/instagram/1.jpg"),
     order: 6,
   },
 ];

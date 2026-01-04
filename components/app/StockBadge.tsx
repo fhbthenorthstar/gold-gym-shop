@@ -33,7 +33,7 @@ export function StockBadge({ itemId, stock, className }: StockBadgeProps) {
     return (
       <Badge
         variant="secondary"
-        className={cn("w-fit bg-lime-300 text-black", className)}
+        className={cn("w-fit bg-primary text-black", className)}
       >
         Only {stock} left in stock
       </Badge>

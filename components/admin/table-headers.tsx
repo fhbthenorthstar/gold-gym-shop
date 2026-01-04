@@ -60,12 +60,39 @@ export function ProductTableHeader() {
 }
 
 // ============================================
+// Training Table Headers
+// ============================================
+
+const TRAINING_TABLE_COLUMNS: TableHeaderColumn[] = [
+  { label: "Image", className: "hidden w-16 sm:table-cell" },
+  { label: "Training" },
+  { label: "Link", className: "hidden md:table-cell" },
+  { label: "Order", className: "hidden md:table-cell" },
+  { label: "Featured", className: "hidden lg:table-cell" },
+  { label: "Actions", className: "hidden w-[160px] text-right sm:table-cell" },
+];
+
+export function TrainingTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        {TRAINING_TABLE_COLUMNS.map((column) => (
+          <TableHead key={column.label} className={column.className}>
+            {column.label}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+}
+
+// ============================================
 // Contact Form Table Headers
 // ============================================
 
 const CONTACT_TABLE_COLUMNS: TableHeaderColumn[] = [
   { label: "Customer" },
-  { label: "Message" },
+  { label: "Inquiry" },
   { label: "Status" },
   { label: "Update" },
   { label: "Date", className: "hidden md:table-cell" },
@@ -76,6 +103,59 @@ export function ContactTableHeader() {
     <TableHeader>
       <TableRow>
         {CONTACT_TABLE_COLUMNS.map((column) => (
+          <TableHead key={column.label} className={column.className}>
+            {column.label}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+}
+
+// ============================================
+// Subscription Package Table Headers
+// ============================================
+
+const PACKAGE_TABLE_COLUMNS: TableHeaderColumn[] = [
+  { label: "Package" },
+  { label: "Duration", className: "hidden md:table-cell" },
+  { label: "Offer Price", className: "hidden md:table-cell" },
+  { label: "Featured", className: "hidden lg:table-cell" },
+  { label: "Actions", className: "hidden w-[160px] text-right sm:table-cell" },
+];
+
+export function PackageTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        {PACKAGE_TABLE_COLUMNS.map((column) => (
+          <TableHead key={column.label} className={column.className}>
+            {column.label}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+}
+
+// ============================================
+// Subscription Table Headers
+// ============================================
+
+const SUBSCRIPTION_TABLE_COLUMNS: TableHeaderColumn[] = [
+  { label: "Member" },
+  { label: "Package", className: "hidden md:table-cell" },
+  { label: "Status", className: "text-center sm:text-left" },
+  { label: "Start Date", className: "hidden md:table-cell" },
+  { label: "Amount", className: "hidden md:table-cell" },
+  { label: "Actions", className: "hidden w-[160px] text-right sm:table-cell" },
+];
+
+export function SubscriptionTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        {SUBSCRIPTION_TABLE_COLUMNS.map((column) => (
           <TableHead key={column.label} className={column.className}>
             {column.label}
           </TableHead>

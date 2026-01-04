@@ -314,7 +314,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
       >
         {children}
         {isActive && (
-          <Badge className="ml-2 h-5 bg-lime-300 px-1.5 text-[10px] text-black hover:bg-lime-300">
+          <Badge className="ml-2 h-5 bg-primary px-1.5 text-[10px] text-black hover:bg-primary">
             Active
           </Badge>
         )}
@@ -323,7 +323,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
         <button
           type="button"
           onClick={() => clearSingleFilter(filterKey)}
-          className="text-zinc-500 hover:text-lime-300"
+          className="text-zinc-500 hover:text-primary"
           aria-label={`Clear ${filterKey} filter`}
         >
           <X className="h-4 w-4" />
@@ -336,16 +336,16 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
     <div className="space-y-6 rounded-lg border border-zinc-800 bg-zinc-950 p-6">
       {/* Clear Filters - Show at top when active */}
       {hasActiveFilters && (
-        <div className="rounded-lg border border-lime-300/40 bg-black p-3">
+        <div className="rounded-lg border border-primary/40 bg-black p-3">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-lime-200">
+            <span className="text-sm font-medium text-primary/90">
               {activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"} applied
             </span>
           </div>
           <Button
             size="sm"
             onClick={handleClearFilters}
-            className="w-full bg-lime-300 text-black hover:bg-lime-200"
+            className="w-full bg-primary text-black hover:bg-primary/90"
           >
             <X className="mr-2 h-4 w-4" />
             Clear All Filters
@@ -365,7 +365,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             defaultValue={currentSearch}
             className={`flex-1 ${
               isSearchActive
-                ? "border-lime-300 ring-1 ring-lime-300"
+                ? "border-primary ring-1 ring-primary"
                 : ""
             } bg-black text-zinc-200 border-zinc-800`}
           />
@@ -388,7 +388,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
         >
           <SelectTrigger
             className={`border-zinc-800 bg-black text-zinc-200 ${
-              isCategoryActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+              isCategoryActive ? "border-primary ring-1 ring-primary" : ""
             }`}
           >
             <SelectValue placeholder="All Categories" />
@@ -421,7 +421,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           >
             <SelectTrigger
               className={`border-zinc-800 bg-black text-zinc-200 ${
-                isBrandActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+                isBrandActive ? "border-primary ring-1 ring-primary" : ""
               }`}
             >
               <SelectValue placeholder="All Brands" />
@@ -459,7 +459,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                     checked={currentGoals.includes(goal.value)}
                     onChange={() => toggleMultiValue("goals", goal.value)}
                     disabled={!isAvailable}
-                    className="h-4 w-4 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
+                    className="h-4 w-4 rounded border-zinc-700 text-primary focus:ring-primary"
                   />
                   {goal.label}
                 </label>
@@ -490,7 +490,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                     checked={currentSports.includes(sport.value)}
                     onChange={() => toggleMultiValue("sports", sport.value)}
                     disabled={!isAvailable}
-                    className="h-4 w-4 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
+                    className="h-4 w-4 rounded border-zinc-700 text-primary focus:ring-primary"
                   />
                   {sport.label}
                 </label>
@@ -514,7 +514,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           >
             <SelectTrigger
               className={`border-zinc-800 bg-black text-zinc-200 ${
-                isGenderActive ? "border-lime-300 ring-1 ring-lime-300" : ""
+                isGenderActive ? "border-primary ring-1 ring-primary" : ""
               }`}
             >
               <SelectValue placeholder="All" />
@@ -565,8 +565,8 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
                         onClick={() => toggleOptionFilter(optionName, value)}
                         className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                           isChecked
-                            ? "border-lime-300 bg-lime-300 text-black"
-                            : "border-zinc-800 bg-black text-zinc-400 hover:border-lime-300/70"
+                            ? "border-primary bg-primary text-black"
+                            : "border-zinc-800 bg-black text-zinc-400 hover:border-primary/70"
                         }`}
                       >
                         {value}
@@ -599,7 +599,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           }
           className={`mt-4 ${
             isPriceActive
-              ? "[&_[role=slider]]:border-lime-300 [&_[role=slider]]:ring-lime-300"
+              ? "[&_[role=slider]]:border-primary [&_[role=slider]]:ring-primary"
               : ""
           }`}
         />
@@ -614,7 +614,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
             onChange={(e) =>
               updateParams({ inStock: e.target.checked ? "true" : null })
             }
-            className="h-5 w-5 rounded border-zinc-700 text-lime-300 focus:ring-lime-300"
+            className="h-5 w-5 rounded border-zinc-700 text-primary focus:ring-primary"
           />
           <span
             className={`text-sm font-medium ${
@@ -625,7 +625,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
           >
             Show only in-stock
             {isInStockActive && (
-              <Badge className="ml-2 h-5 bg-lime-300 px-1.5 text-xs text-black hover:bg-lime-300">
+              <Badge className="ml-2 h-5 bg-primary px-1.5 text-xs text-black hover:bg-primary">
                 Active
               </Badge>
             )}
@@ -636,7 +636,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
       {/* Best Sellers */}
       {bestSellers.length > 0 && (
         <div className="space-y-3 border-t border-zinc-800 pt-4">
-          <h4 className="font-heading text-xs text-lime-300">Best Sellers</h4>
+          <h4 className="font-heading text-xs text-primary">Best Sellers</h4>
           <div className="space-y-3">
             {bestSellers.map((product) => (
               <Link
@@ -672,7 +672,7 @@ export function ProductFilters({ categories, products }: ProductFiltersProps) {
       {/* Best Deal */}
       {bestDeals.length > 0 && (
         <div className="space-y-3 border-t border-zinc-800 pt-4">
-          <h4 className="font-heading text-xs text-lime-300">Best Deal</h4>
+          <h4 className="font-heading text-xs text-primary">Best Deal</h4>
           <div className="space-y-3">
             {bestDeals.map((product) => (
               <Link

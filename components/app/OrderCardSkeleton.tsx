@@ -10,7 +10,7 @@ export function OrderCardSkeleton({ count = 3 }: OrderCardSkeletonProps) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
+          className="rounded-xl border border-zinc-800 bg-zinc-950"
         >
           <div className="flex gap-5 p-5">
             {/* Left: Product Images Stack */}
@@ -36,7 +36,7 @@ export function OrderCardSkeleton({ count = 3 }: OrderCardSkeletonProps) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between border-t border-zinc-100 px-5 py-3 dark:border-zinc-800">
+          <div className="flex items-center justify-between border-t border-zinc-800 px-5 py-3">
             <Skeleton className="h-4 w-40" />
             <Skeleton className="h-4 w-20" />
           </div>

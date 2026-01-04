@@ -30,6 +30,7 @@ export function ProductListItem({ product }: ProductListItemProps) {
   const itemId = buildCartItemId(product._id, variantKey);
   const cartVariant: CartItemVariant | undefined = defaultVariant
     ? {
+        _key: defaultVariant?._key ?? undefined,
         sku: defaultVariant?.sku ?? undefined,
         options:
           defaultVariant?.optionValues?.flatMap((opt) =>
@@ -53,10 +54,10 @@ export function ProductListItem({ product }: ProductListItemProps) {
       </Link>
       <div className="flex flex-1 flex-col gap-2">
         <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-          {product.brand ?? "Fitfinity"}
+          {product.brand ?? "Gold's Gym BD"}
         </div>
         <Link href={`/products/${product.slug}`}>
-          <h3 className="text-lg font-semibold text-white hover:text-lime-200">
+          <h3 className="text-lg font-semibold text-white hover:text-primary/90">
             {product.name}
           </h3>
         </Link>
@@ -75,10 +76,11 @@ export function ProductListItem({ product }: ProductListItemProps) {
             name={product.name ?? "Unknown Product"}
             price={displayPrice}
             image={imageUrl ?? undefined}
+            slug={product.slug ?? undefined}
             stock={displayStock}
             variantKey={variantKey}
             variant={cartVariant}
-            className="h-10 rounded-full bg-lime-300 text-black hover:bg-lime-200"
+            className="h-10 rounded-full bg-primary text-black hover:bg-primary/90"
           />
         </div>
       </div>

@@ -50,6 +50,8 @@ interface RawMetrics {
   avgOrderValue: string;
   unfulfilledCount: number;
   lowStockCount: number;
+  activeSubscriptionCount?: number;
+  subscriptionRevenue?: number;
 }
 
 interface InsightsResponse {
@@ -62,10 +64,10 @@ interface InsightsResponse {
 
 function AIInsightsCardSkeleton() {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-6">
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600">
-          <Sparkles className="h-5 w-5 text-white" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
+          <Sparkles className="h-5 w-5 text-primary" />
         </div>
         <div>
           <Skeleton className="h-6 w-32" />
@@ -145,24 +147,24 @@ export function AIInsightsCard() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/20">
+      <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
+              <AlertTriangle className="h-5 w-5 text-red-200" />
             </div>
             <div>
-              <h3 className="font-semibold text-red-900 dark:text-red-100">
+              <h3 className="font-semibold text-red-100">
                 Failed to load insights
               </h3>
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              <p className="text-sm text-red-200">{error}</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => fetchInsights()}
-            className="border-red-300 text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/50"
+            className="border-red-500/40 text-red-200 hover:bg-red-500/20"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Retry
@@ -179,18 +181,16 @@ export function AIInsightsCard() {
   const { insights, rawMetrics, generatedAt } = data;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-950/70">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-zinc-200 p-6 dark:border-zinc-800">
+      <div className="flex items-center justify-between border-b border-zinc-800 p-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600">
-            <Sparkles className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
+            <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              AI Insights
-            </h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <h2 className="font-semibold text-white">AI Insights</h2>
+            <p className="text-sm text-zinc-400">
               Updated{" "}
               {new Date(generatedAt).toLocaleTimeString([], {
                 hour: "2-digit",
@@ -204,7 +204,7 @@ export function AIInsightsCard() {
           size="sm"
           onClick={() => fetchInsights(true)}
           disabled={refreshing}
-          className="gap-2"
+          className="gap-2 border-zinc-800 bg-zinc-950/70 text-zinc-200 hover:bg-zinc-900"
         >
           {refreshing ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -216,12 +216,12 @@ export function AIInsightsCard() {
       </div>
 
       {/* Quick Stats Bar */}
-      <div className="grid grid-cols-2 gap-px border-b border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-4">
-        <div className="bg-white p-4 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+      <div className="grid grid-cols-2 gap-px border-b border-zinc-800 bg-zinc-800 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
             Revenue (7d)
           </p>
-          <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-1 text-lg font-bold text-white">
             ৳
             {Number(rawMetrics.currentRevenue).toLocaleString("en-GB", {
               minimumFractionDigits: 2,
@@ -235,33 +235,55 @@ export function AIInsightsCard() {
                 ? "text-emerald-600"
                 : Number(rawMetrics.revenueChange) < 0
                   ? "text-red-600"
-                  : "text-zinc-500",
+                : "text-zinc-400",
             )}
           >
             {Number(rawMetrics.revenueChange) > 0 ? "+" : ""}
             {rawMetrics.revenueChange}% vs last week
           </p>
         </div>
-        <div className="bg-white p-4 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
             Orders (7d)
           </p>
-          <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-1 text-lg font-bold text-white">
             {rawMetrics.orderCount}
           </p>
           <p className="text-xs text-zinc-500">This week</p>
         </div>
-        <div className="bg-white p-4 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
             Avg Order
           </p>
-          <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-1 text-lg font-bold text-white">
             ৳{rawMetrics.avgOrderValue}
           </p>
           <p className="text-xs text-zinc-500">Per order</p>
         </div>
-        <div className="bg-white p-4 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
+            Active Subs
+          </p>
+          <p className="mt-1 text-lg font-bold text-white">
+            {rawMetrics.activeSubscriptionCount ?? 0}
+          </p>
+          <p className="text-xs text-zinc-500">Members</p>
+        </div>
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
+            Membership Rev (7d)
+          </p>
+          <p className="mt-1 text-lg font-bold text-white">
+            ৳
+            {Number(rawMetrics.subscriptionRevenue ?? 0).toLocaleString("en-GB", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </p>
+          <p className="text-xs text-zinc-500">Subscriptions</p>
+        </div>
+        <div className="bg-zinc-950/70 p-4">
+          <p className="text-xs font-medium text-zinc-400">
             Pending
           </p>
           <p
@@ -284,18 +306,18 @@ export function AIInsightsCard() {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <TrendIcon trend={insights.salesTrends.trend} />
-            <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+            <h3 className="font-medium text-white">
               Sales Trends
             </h3>
           </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-zinc-400">
             {insights.salesTrends.summary}
           </p>
           <ul className="space-y-2">
             {insights.salesTrends.highlights.map((highlight, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                className="flex items-start gap-2 text-sm text-zinc-300"
               >
                 <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                 <span>{highlight}</span>
@@ -307,12 +329,12 @@ export function AIInsightsCard() {
         {/* Inventory */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-blue-500" />
-            <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+            <Package className="h-4 w-4 text-primary" />
+            <h3 className="font-medium text-white">
               Inventory
             </h3>
           </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-zinc-400">
             {insights.inventory.summary}
           </p>
           {insights.inventory.alerts.length > 0 && (
@@ -320,7 +342,7 @@ export function AIInsightsCard() {
               {insights.inventory.alerts.map((alert, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
+                  className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-2 text-sm text-amber-200"
                 >
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{alert}</span>
@@ -332,7 +354,7 @@ export function AIInsightsCard() {
             {insights.inventory.recommendations.map((rec, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                className="flex items-start gap-2 text-sm text-zinc-300"
               >
                 <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
                 <span>{rec}</span>
@@ -344,21 +366,21 @@ export function AIInsightsCard() {
         {/* Action Items */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-violet-500" />
-            <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+            <Clock className="h-4 w-4 text-primary" />
+            <h3 className="font-medium text-white">
               Action Items
             </h3>
           </div>
 
           {insights.actionItems.urgent.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-red-600 dark:text-red-400">
+              <p className="text-xs font-medium uppercase tracking-wide text-red-300">
                 Urgent
               </p>
               {insights.actionItems.urgent.map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-2 rounded-lg bg-red-50 p-2 text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200"
+                  className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 p-2 text-sm text-red-200"
                 >
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{item}</span>
@@ -369,16 +391,16 @@ export function AIInsightsCard() {
 
           {insights.actionItems.recommended.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-300">
                 Recommended
               </p>
               <ul className="space-y-1">
                 {insights.actionItems.recommended.map((item, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                    className="flex items-start gap-2 text-sm text-zinc-300"
                   >
-                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -388,14 +410,14 @@ export function AIInsightsCard() {
 
           {insights.actionItems.opportunities.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+              <p className="text-xs font-medium uppercase tracking-wide text-emerald-300">
                 Opportunities
               </p>
               <ul className="space-y-1">
                 {insights.actionItems.opportunities.map((item, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                    className="flex items-start gap-2 text-sm text-zinc-300"
                   >
                     <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                     <span>{item}</span>

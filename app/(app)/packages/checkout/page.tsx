@@ -1,0 +1,95 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { SignInButton } from "@clerk/nextjs";
+import { sanityFetch } from "@/sanity/lib/live";
+import { SUBSCRIPTION_PACKAGE_BY_SLUG_QUERY } from "@/lib/sanity/queries/subscriptions";
+import { SubscriptionCheckoutClient } from "./SubscriptionCheckoutClient";
+
+interface SubscriptionPackage {
+  _id: string;
+  title?: string | null;
+  slug?: string | null;
+  location?: string | null;
+  tier?: string | null;
+  durationLabel?: string | null;
+  durationMonths?: number | null;
+  accessLabel?: string | null;
+  packagePrice?: number | null;
+  offerPrice?: number | null;
+}
+
+export default async function SubscriptionCheckoutPage({
+  searchParams,
+}: {
+  searchParams: { package?: string };
+}) {
+  const packageSlug = searchParams.package;
+  if (!packageSlug) {
+    return notFound();
+  }
+
+  const packageResult = await sanityFetch({
+    query: SUBSCRIPTION_PACKAGE_BY_SLUG_QUERY,
+    params: { slug: packageSlug },
+  });
+  const pkg = packageResult.data as SubscriptionPackage | null;
+
+  if (!pkg?._id) {
+    return notFound();
+  }
+
+  const { userId } = await auth();
+  const user = userId ? await currentUser() : null;
+  const initialName =
+    user?.fullName || `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim();
+  const initialEmail = user?.primaryEmailAddress?.emailAddress ?? "";
+
+  return (
+    <div className="min-h-screen bg-black text-zinc-200">
+      <section className="border-b border-zinc-900 py-12">
+        <div className="mx-auto max-w-6xl px-4">
+          <Link href="/packages" className="text-sm text-zinc-400 hover:text-primary">
+            ← Back to packages
+          </Link>
+          <h1 className="font-heading mt-4 text-2xl text-white sm:text-3xl">
+            Subscription Checkout
+          </h1>
+          <p className="mt-2 text-sm text-zinc-400">
+            Reserve your membership and let our team confirm your activation.
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        {!userId ? (
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-8 text-center">
+            <h2 className="font-heading text-xl text-white">
+              Sign in to continue
+            </h2>
+            <p className="mt-2 text-sm text-zinc-400">
+              Create an account to subscribe, manage renewals, and track your
+              membership history.
+            </p>
+            <div className="mt-6">
+              <SignInButton mode="modal">
+                <button
+                  type="button"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
+                >
+                  Sign In to Subscribe
+                </button>
+              </SignInButton>
+            </div>
+          </div>
+        ) : (
+          <SubscriptionCheckoutClient
+            pkg={pkg}
+            initialName={initialName}
+            initialEmail={initialEmail}
+          />
+        )}
+      </section>
+    </div>
+  );
+}

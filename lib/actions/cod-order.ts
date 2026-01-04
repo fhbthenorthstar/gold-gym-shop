@@ -5,6 +5,7 @@ import { client, writeClient } from "@/sanity/lib/client";
 import { PRODUCTS_BY_IDS_QUERY } from "@/lib/sanity/queries/products";
 import { CUSTOMER_BY_CLERK_ID_QUERY } from "@/lib/sanity/queries/customers";
 import { DEFAULT_COUNTRY, BANGLADESH_DIVISIONS, getShippingFee } from "@/lib/constants/bangladesh";
+import { DEFAULT_STOCK_FALLBACK } from "@/lib/constants/stock";
 import type { CartItem } from "@/lib/store/cart-store";
 import type { CUSTOMER_BY_CLERK_ID_QUERYResult } from "@/sanity.types";
 import { getVariantBySelectedOptions } from "@/lib/utils/product-variants";
@@ -119,13 +120,26 @@ export async function createCodOrder(
     ) => {
       if (!product?.variants?.length || !item.variant) return null;
 
+      if (item.variant._key) {
+        const match =
+          product.variants?.find(
+            (variant: { _key?: string | null }) =>
+              variant?._key === item.variant?._key
+          ) ?? null;
+        if (match) return match;
+      }
+
       if (item.variant.sku) {
-        return (
+        const match =
           product.variants?.find(
             (variant: { sku?: string | null }) =>
               variant?.sku === item.variant?.sku
-          ) ?? null
-        );
+          ) ?? null;
+        if (match) return match;
+      }
+
+      if (!item.variant.options?.length) {
+        return null;
       }
 
       const selectedOptions =
@@ -157,7 +171,14 @@ export async function createCodOrder(
       }
 
       const variant = resolveVariantForItem(product, item);
-      const currentStock = variant ? variant?.stock ?? 0 : product.stock ?? 0;
+      const baseStock =
+        typeof product.stock === "number"
+          ? product.stock
+          : DEFAULT_STOCK_FALLBACK;
+      const currentStock =
+        variant && typeof variant.stock === "number"
+          ? variant.stock
+          : baseStock;
       const variantLabel = getVariantLabel(item.variant);
       const displayName = variantLabel
         ? `${product.name} (${variantLabel})`
@@ -191,7 +212,7 @@ export async function createCodOrder(
       (sum, item) => sum + (item.lineItem.price ?? 0) * item.quantity,
       0
     );
-    const shippingFee = getShippingFee(address.division);
+    const shippingFee = getShippingFee(address.division, subtotal);
     const total = subtotal + shippingFee;
 
     const userEmail = user?.emailAddresses[0]?.emailAddress ?? "";

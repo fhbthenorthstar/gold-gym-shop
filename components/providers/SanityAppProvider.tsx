@@ -3,7 +3,9 @@
 import { ResourceProvider } from "@sanity/sdk-react";
 import { dataset, projectId } from "@/sanity/env";
 
-const readToken = process.env.NEXT_PUBLIC_SANITY_READ_TOKEN;
+const readToken =
+  process.env.NEXT_PUBLIC_SANITY_READ_TOKEN ||
+  process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN;
 
 function SanityAppProvider({ children }: { children: React.ReactNode }) {
   return (

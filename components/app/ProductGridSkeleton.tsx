@@ -6,7 +6,7 @@ export function ProductGridSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10"
+          className="overflow-hidden rounded-2xl bg-zinc-950 shadow-sm ring-1 ring-zinc-800/80"
         >
           <Skeleton className="aspect-4/5 w-full" />
           <div className="space-y-3 p-5">
@@ -22,4 +22,3 @@ export function ProductGridSkeleton() {
     </div>
   );
 }
-

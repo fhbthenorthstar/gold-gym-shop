@@ -57,27 +57,27 @@ export function ContactForm() {
         name="name"
         placeholder="Name"
         required
-        className="h-11 rounded-md border border-zinc-800 bg-black/70 px-3 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-lime-300"
+        className="h-11 rounded-md border border-zinc-800 bg-black/70 px-3 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <input
         type="tel"
         name="phone"
         placeholder="Phone number"
         required
-        className="h-11 rounded-md border border-zinc-800 bg-black/70 px-3 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-lime-300"
+        className="h-11 rounded-md border border-zinc-800 bg-black/70 px-3 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <textarea
         name="comment"
         placeholder="Comment"
         rows={4}
         required
-        className="sm:col-span-2 rounded-md border border-zinc-800 bg-black/70 px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-lime-300"
+        className="sm:col-span-2 rounded-md border border-zinc-800 bg-black/70 px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {message && (
         <p
           className={`text-xs sm:col-span-2 ${
-            status === "success" ? "text-lime-300" : "text-red-400"
+            status === "success" ? "text-primary" : "text-red-400"
           }`}
         >
           {message}
@@ -87,7 +87,7 @@ export function ContactForm() {
       <Button
         type="submit"
         disabled={status === "submitting"}
-        className="h-10 rounded-md bg-lime-300 text-xs font-semibold uppercase tracking-[0.2em] text-black hover:bg-lime-200 sm:col-span-2"
+        className="h-10 rounded-md bg-primary text-xs font-semibold uppercase tracking-[0.2em] text-black hover:bg-primary/90 sm:col-span-2"
       >
         {status === "submitting" ? "Sending..." : "Get in Touch"}
       </Button>

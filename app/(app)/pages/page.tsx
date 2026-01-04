@@ -18,7 +18,7 @@ export default function PagesIndex() {
             <Link
               key={page.href}
               href={page.href}
-              className="rounded-xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-sm text-white hover:border-lime-300 hover:text-lime-300"
+              className="rounded-xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-sm text-white hover:border-primary hover:text-primary"
             >
               {page.title}
             </Link>

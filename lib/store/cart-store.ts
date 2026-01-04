@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 
 // Types
 export interface CartItemVariant {
+  _key?: string;
   sku?: string;
   options?: { name: string; value: string }[];
 }
@@ -14,6 +15,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  slug?: string;
   variant?: CartItemVariant;
 }
 

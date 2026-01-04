@@ -5,6 +5,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import {
   HOME_OFFER_QUERY,
   HOME_TESTIMONIALS_QUERY,
+  HOME_TRAININGS_QUERY,
   HOME_TRAINERS_QUERY,
 } from "@/lib/sanity/queries/home";
 import {
@@ -63,6 +64,13 @@ type Testimonial = {
   avatar?: SanityImage | null;
 };
 
+type Training = {
+  _id?: string;
+  title?: string | null;
+  link?: string | null;
+  image?: SanityImage | null;
+};
+
 const instagramPlaceholderItems = [
   {
     id: "instagram-placeholder-1",
@@ -109,39 +117,6 @@ const instagramPlaceholderItems = [
 const isExternalUrl = (value?: string | null) =>
   Boolean(value && /^https?:\/\//i.test(value));
 
-const trainingItems = [
-  {
-    title: "Rope Workout",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_3_2.png?v=1707204331",
-  },
-  {
-    title: "Boxing",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_5_2.png?v=1707204331",
-  },
-  {
-    title: "Cycling",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_6_1.png?v=1707204425",
-  },
-  {
-    title: "Treadmill",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_7_1_7042a7e6-3fe6-4818-b299-85c9d369ba37.png?v=1707220906",
-  },
-  {
-    title: "Zumba",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_8.png?v=1707204425",
-  },
-  {
-    title: "Weight Lift",
-    image:
-      "https://dt-fitfinity.myshopify.com/cdn/shop/files/Rectangle_4_5.png?v=1707291964",
-  },
-];
-
 type TrainerCardProps = {
   trainer: Trainer;
   size?: "large" | "small";
@@ -160,7 +135,7 @@ const TrainerCard = ({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/70 transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(163,230,53,0.18)]",
+        "group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/70 transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(246,201,75,0.18)]",
         className
       )}
     >
@@ -186,12 +161,12 @@ const TrainerCard = ({
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
       <div className="absolute bottom-4 left-4 right-4">
-        <div className="rounded-xl bg-zinc-900/85 px-4 py-3 backdrop-blur-sm ring-1 ring-lime-300/25">
+        <div className="rounded-xl bg-zinc-900/85 px-4 py-3 backdrop-blur-sm ring-1 ring-primary/25">
           <p className="font-heading text-sm text-white">
             {trainer.name ?? "Trainer"}
           </p>
           {trainer.role && (
-            <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-lime-200/80">
+            <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-primary/80">
               {trainer.role}
             </p>
           )}
@@ -202,7 +177,7 @@ const TrainerCard = ({
           {[X, Facebook, Instagram].map((Icon, index) => (
             <span
               key={index}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-black/60 text-zinc-200 transition hover:border-lime-300/60 hover:text-lime-200"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-black/60 text-zinc-200 transition hover:border-primary/60 hover:text-primary/90"
             >
               <Icon className="h-4 w-4" />
             </span>
@@ -217,11 +192,13 @@ export default async function HomePage() {
   const [
     featuredProductsResult,
     offerResult,
+    trainingsResult,
     trainersResult,
     testimonialsResult,
   ] = await Promise.all([
     sanityFetch({ query: HOME_FEATURED_PRODUCTS_QUERY }),
     sanityFetch({ query: HOME_OFFER_QUERY }),
+    sanityFetch({ query: HOME_TRAININGS_QUERY }),
     sanityFetch({ query: HOME_TRAINERS_QUERY }),
     sanityFetch({ query: HOME_TESTIMONIALS_QUERY }),
   ]);
@@ -230,6 +207,7 @@ export default async function HomePage() {
     (featuredProductsResult.data as FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult | null) ??
     [];
   const offer = (offerResult.data as HomeOffer | null) ?? null;
+  const trainings = (trainingsResult.data as Training[] | null) ?? [];
   const trainers = (trainersResult.data as Trainer[] | null) ?? [];
   const testimonials = (testimonialsResult.data as Testimonial[] | null) ?? [];
   const instagramProfileUrl = "https://www.instagram.com/goldsgymbangladesh/";
@@ -254,12 +232,12 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
         <div className="relative mx-auto flex min-h-[100svh] max-w-7xl items-center px-4 py-24">
           <div className="max-w-xl space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-700">
-            <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
+            <p className="text-xs uppercase tracking-[0.4em] text-primary">
               Save up to 50% off
             </p>
             <h1 className="font-heading text-3xl text-white sm:text-4xl lg:text-5xl">
               Coaches Guide,
-              <span className="block text-lime-300">Goals Achieved.</span>
+              <span className="block text-primary">Goals Achieved.</span>
             </h1>
             <p className="max-w-xl text-sm text-zinc-200 sm:text-base">
               Shop premium gym wear, supplements, and equipment curated for
@@ -269,13 +247,13 @@ export default async function HomePage() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/shop"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-lime-300 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-lime-200"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
               >
                 Explore Now
               </Link>
               <Link
                 href="/about"
-                className="inline-flex h-11 items-center justify-center rounded-full border border-lime-300/40 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-lime-300 transition hover:border-lime-200 hover:text-lime-200"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-primary/40 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary/80 hover:text-primary/90"
               >
                 Our Story
               </Link>
@@ -284,56 +262,88 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-14">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
-              Trainings
-            </p>
-            <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-              Trainings We <span className="text-lime-300">Offer</span>
-            </h2>
+      {trainings.length > 0 && (
+        <section className="py-14">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="text-center">
+              <p className="text-xs uppercase tracking-[0.4em] text-primary">
+                Training Programs
+              </p>
+              <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
+                Train Smarter. <span className="text-primary">Perform Better.</span>
+              </h2>
+              <p className="mt-2 text-sm text-zinc-400">
+                Choose a focus and let our coaches guide your next session.
+              </p>
+            </div>
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {trainings.map((item, index) => {
+                const imageUrl = item.image?.asset?.url ?? "";
+                const href = item.link || "/shop";
+                const content = (
+                  <>
+                    <div className="relative h-48 w-full sm:h-52">
+                      {imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={item.title ?? "Training"}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-zinc-500">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                      <span className="font-heading text-sm text-white">
+                        {item.title ?? "Training"}
+                      </span>
+                    </div>
+                  </>
+                );
+
+                return (
+                  isExternalUrl(href) ? (
+                    <a
+                      key={item._id ?? item.title ?? index}
+                      href={href}
+                      className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
+                      style={{ animationDelay: `${index * 90}ms` }}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <Link
+                      key={item._id ?? item.title ?? index}
+                      href={href}
+                      className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
+                      style={{ animationDelay: `${index * 90}ms` }}
+                    >
+                      {content}
+                    </Link>
+                  )
+                );
+              })}
+            </div>
           </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {trainingItems.map((item, index) => (
-              <Link
-                key={item.title}
-                href="/shop"
-                className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
-                style={{ animationDelay: `${index * 90}ms` }}
-              >
-                <div className="relative h-48 w-full sm:h-52">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-4 flex justify-center">
-                  <span className="font-heading text-sm text-white">
-                    {item.title}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4">
           <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
-              New arrivals
+            <p className="text-xs uppercase tracking-[0.4em] text-primary">
+              Best sellers
             </p>
             <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-              Top Brand <span className="text-lime-300">Products</span>
+              Gold&apos;s Gym <span className="text-primary">Favorites</span>
             </h2>
             <p className="mt-2 text-sm text-zinc-400">
-              Curated essentials picked from best selling training gear.
+              Coach-approved essentials and member favorites ready for your next session.
             </p>
           </div>
           {featuredProducts.length > 0 ? (
@@ -373,7 +383,7 @@ export default async function HomePage() {
               </div>
               <div>
                 {offer.eyebrow && (
-                  <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
+                  <p className="text-xs uppercase tracking-[0.4em] text-primary">
                     {offer.eyebrow}
                   </p>
                 )}
@@ -392,7 +402,7 @@ export default async function HomePage() {
                         key={`${bullet}-${index}`}
                         className="flex items-start gap-3 text-sm text-zinc-200"
                       >
-                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-lime-300 text-black">
+                        <span className="mt-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-black">
                           <Check className="h-3 w-3" />
                         </span>
                         <span>{bullet}</span>
@@ -402,19 +412,23 @@ export default async function HomePage() {
                 )}
                 <div className="mt-8 border-t border-zinc-700 pt-6">
                   <p className="font-heading text-xs uppercase tracking-[0.3em] text-zinc-300">
-                    We Are Powered By
+                    Proudly Powered By
                   </p>
-                  <div className="mt-5 grid grid-cols-2 gap-6 sm:grid-cols-4">
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
                     {offer.brandLogos?.map((logo) =>
                       logo?.asset?.url ? (
-                        <Image
+                        <div
                           key={logo._key ?? logo.asset.url}
-                          src={logo.asset.url}
-                          alt="Brand logo"
-                          width={140}
-                          height={50}
-                          className="h-9 w-auto object-contain opacity-60 grayscale"
-                        />
+                          className="flex w-[45%] items-center justify-center sm:w-auto"
+                        >
+                          <Image
+                            src={logo.asset.url}
+                            alt="Brand logo"
+                            width={160}
+                            height={60}
+                            className="h-8 w-auto max-w-[120px] object-contain sm:h-10 sm:max-w-[160px]"
+                          />
+                        </div>
                       ) : null
                     )}
                   </div>
@@ -423,14 +437,14 @@ export default async function HomePage() {
                   isExternalUrl(offer.ctaLink) ? (
                     <a
                       href={offer.ctaLink}
-                      className="mt-8 inline-flex h-11 w-fit items-center justify-center rounded-md bg-lime-300 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-lime-200"
+                      className="mt-8 inline-flex h-11 w-fit items-center justify-center rounded-md bg-primary px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
                     >
                       {offer.ctaLabel}
                     </a>
                   ) : (
                     <Link
                       href={offer.ctaLink}
-                      className="mt-8 inline-flex h-11 w-fit items-center justify-center rounded-md bg-lime-300 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-lime-200"
+                      className="mt-8 inline-flex h-11 w-fit items-center justify-center rounded-md bg-primary px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
                     >
                       {offer.ctaLabel}
                     </Link>
@@ -453,11 +467,11 @@ export default async function HomePage() {
         <section className="py-20">
           <div className="mx-auto max-w-7xl px-4">
             <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
-                Worldclass Trainers Available
+              <p className="text-xs uppercase tracking-[0.4em] text-primary">
+                World-class Trainers Available
               </p>
               <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-                 <span className="text-lime-300">Top</span> Trainers
+                 <span className="text-primary">Top</span> Trainers
               </h2>
             </div>
 
@@ -496,7 +510,7 @@ export default async function HomePage() {
         </div>
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
+          <p className="text-xs uppercase tracking-[0.4em] text-primary">
             Special Facilities
           </p>
           <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">

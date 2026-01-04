@@ -76,14 +76,14 @@ export function ChatSheet() {
         <header className="shrink-0 border-b border-zinc-800">
           <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center gap-2 font-semibold text-white">
-              <Sparkles className="h-5 w-5 text-lime-300" />
+              <Sparkles className="h-5 w-5 text-primary" />
               Shopping Assistant
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={closeChat}
-              className="text-zinc-200 hover:text-lime-200"
+              className="text-zinc-200 hover:text-primary/90"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -135,13 +135,13 @@ export function ChatSheet() {
               {isLoading && messages[messages.length - 1]?.role === "user" && (
                 <div className="flex gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-800">
-                    <Bot className="h-4 w-4 text-lime-300" />
+                    <Bot className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex items-center gap-2 rounded-2xl bg-zinc-900 px-4 py-2">
                     <div className="flex gap-1">
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300 [animation-delay:-0.3s]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300 [animation-delay:-0.15s]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-lime-300" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+                      <span className="h-2 w-2 animate-bounce rounded-full bg-primary" />
                     </div>
                   </div>
                 </div>
@@ -156,11 +156,11 @@ export function ChatSheet() {
         {/* Input */}
         <div className="border-t border-zinc-800 px-4 py-4">
           {!canChat && (
-            <div className="mb-3 rounded-xl border border-lime-300/30 bg-black/60 px-4 py-3 text-xs text-zinc-300">
+            <div className="mb-3 rounded-xl border border-primary/30 bg-black/60 px-4 py-3 text-xs text-zinc-300">
               Sign in to chat with the shopping assistant.
               <div className="mt-3">
                 <SignInButton mode="modal">
-                  <Button className="h-9 rounded-full bg-lime-300 px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-black hover:bg-lime-200">
+                  <Button className="h-9 rounded-full bg-primary px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-black hover:bg-primary/90">
                     Sign In
                   </Button>
                 </SignInButton>
@@ -174,13 +174,13 @@ export function ChatSheet() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about supplements, gear, or memberships..."
               disabled={isLoading || !canChat}
-              className="flex-1 border-zinc-800 bg-black text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-lime-300"
+              className="flex-1 border-zinc-800 bg-black text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-primary"
             />
             <Button
               type="submit"
               size="icon"
               disabled={!input.trim() || isLoading || !canChat}
-              className="bg-lime-300 text-black hover:bg-lime-200"
+              className="bg-primary text-black hover:bg-primary/90"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -103,6 +103,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const itemId = buildCartItemId(product._id, variantKey);
   const cartVariant: CartItemVariant | undefined = activeVariant
     ? {
+        _key: activeVariant?._key ?? undefined,
         sku: activeVariant?.sku ?? undefined,
         options:
           activeVariant?.optionValues?.flatMap((opt) =>
@@ -133,7 +134,15 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const handleAddToCart = () => {
     if (displayStock <= 0) return;
     addItem(
-      { id: itemId, productId: product._id, name: product.name ?? "", price: displayPrice, image: imageUrl ?? undefined, variant: cartVariant },
+      {
+        id: itemId,
+        productId: product._id,
+        name: product.name ?? "",
+        price: displayPrice,
+        image: imageUrl ?? undefined,
+        slug: product.slug ?? undefined,
+        variant: cartVariant,
+      },
       quantity
     );
   };
@@ -144,7 +153,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {product.category && (
         <Link
           href={`/shop?category=${product.category.slug}`}
-          className="text-xs uppercase tracking-[0.2em] text-lime-300"
+          className="text-xs uppercase tracking-[0.2em] text-primary"
         >
           {product.category.title}
         </Link>
@@ -162,6 +171,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </p>
         <StockBadge itemId={itemId} stock={displayStock} />
       </div>
+      <p className="text-xs text-zinc-400">
+        {displayStock > 0 ? `${displayStock} in stock` : "Out of stock"}
+      </p>
 
       {/* Description */}
       {product.description && (
@@ -239,13 +251,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </div>
         <Button
           onClick={handleAddToCart}
-          className="h-11 flex-1 rounded-md bg-lime-300 text-black hover:bg-lime-200"
+          className="h-11 flex-1 rounded-md bg-primary text-black hover:bg-primary/90"
         >
           Add to Cart
         </Button>
         <Button
           variant="outline"
-          className="h-11 flex-1 border-lime-300 text-lime-300 hover:bg-lime-300 hover:text-black"
+          className="h-11 flex-1 border-primary text-primary hover:bg-primary hover:text-black"
         >
           Buy It Now
         </Button>
@@ -307,7 +319,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <button
           type="button"
           onClick={() => toggleWishlist(wishlistItem)}
-          className={`flex items-center gap-2 ${isWishlisted ? "text-lime-300" : ""}`}
+          className={`flex items-center gap-2 ${isWishlisted ? "text-primary" : ""}`}
         >
           <Heart className="h-4 w-4" />
           Add to wishlist
@@ -315,7 +327,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <button
           type="button"
           onClick={() => toggleCompare(wishlistItem)}
-          className={`flex items-center gap-2 ${isCompared ? "text-lime-300" : ""}`}
+          className={`flex items-center gap-2 ${isCompared ? "text-primary" : ""}`}
         >
           <Scale className="h-4 w-4" />
           Add to compare

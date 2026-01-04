@@ -1,6 +1,8 @@
 import { gateway, type Tool, ToolLoopAgent } from "ai";
 import { searchProductsTool } from "./tools/search-products";
+import { searchPackagesTool } from "./tools/search-packages";
 import { createGetMyOrdersTool } from "./tools/get-my-orders";
+import { createGetMySubscriptionsTool } from "./tools/get-my-subscriptions";
 
 interface ShoppingAgentOptions {
   userId: string | null;
@@ -68,6 +70,36 @@ Use these exact category values:
 - "combat-gear" - Gloves, wraps, shin guards
 - "recovery-wellness" - Recovery tools and wellness
 - "memberships-passes" - Digital memberships and passes
+
+## searchPackages Tool Usage
+
+The searchPackages tool accepts these parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| query | string | Search by package title or access type (e.g., "spa", "gym") |
+| location | string | "bashundhara-sports-city" or "bashundhara-city-shopping-mall" |
+| tier | string | "gold", "silver", "pool-spa" |
+| durationMonths | number | 1, 3, 6, 12 |
+| maxPrice | number | Maximum offer price in BDT (0 = no maximum) |
+
+### Examples
+
+**Gold packages at Bashundhara Sports City:**
+\`\`\`json
+{
+  "location": "bashundhara-sports-city",
+  "tier": "gold"
+}
+\`\`\`
+
+**Pool & spa packages under ৳50,000:**
+\`\`\`json
+{
+  "tier": "pool-spa",
+  "maxPrice": 50000
+}
+\`\`\`
 
 ### Important Rules
 - Call the tool ONCE per user query
@@ -160,11 +192,37 @@ Format orders like this:
 - 💵 COD - Cash on delivery
 - ✅ Paid - Payment completed`;
 
+const subscriptionsInstructions = `
+
+## getMySubscriptions Tool Usage
+
+Use getMySubscriptions when the user asks about memberships, package renewals, or subscription status.
+
+### Parameters
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| status | enum | Optional filter: "", "pending", "active", "paused", "cancelled", "expired" |
+
+### Presenting Subscriptions
+
+Format subscriptions like this:
+
+**[Package Title]** - [statusDisplay]
+- Price: [priceFormatted]
+- Start: [startDate]
+- End: [endDate]
+- [View Membership](/my-subscription)`;
+
 const notAuthenticatedInstructions = `
 
 ## Orders - Not Available
 The user is not signed in. If they ask about orders, politely let them know they need to sign in to view their order history. You can say something like:
 "To check your orders, you'll need to sign in first. Click the user icon in the top right to sign in or create an account."`;
+
+const notAuthenticatedSubscriptions = `
+
+## Subscriptions - Not Available
+If the user asks about memberships or subscription status, let them know they need to sign in to view membership history.`;
 
 /**
  * Creates a shopping agent with tools based on user authentication status
@@ -174,18 +232,24 @@ export function createShoppingAgent({ userId }: ShoppingAgentOptions) {
 
   // Build instructions based on authentication
   const instructions = isAuthenticated
-    ? baseInstructions + ordersInstructions
-    : baseInstructions + notAuthenticatedInstructions;
+    ? baseInstructions + ordersInstructions + subscriptionsInstructions
+    : baseInstructions + notAuthenticatedInstructions + notAuthenticatedSubscriptions;
 
   // Build tools - only include orders tool if authenticated
   const getMyOrdersTool = createGetMyOrdersTool(userId);
 
   const tools: Record<string, Tool> = {
     searchProducts: searchProductsTool,
+    searchPackages: searchPackagesTool,
   };
 
   if (getMyOrdersTool) {
     tools.getMyOrders = getMyOrdersTool;
+  }
+
+  const getMySubscriptionsTool = createGetMySubscriptionsTool(userId);
+  if (getMySubscriptionsTool) {
+    tools.getMySubscriptions = getMySubscriptionsTool;
   }
 
   return new ToolLoopAgent({

@@ -37,7 +37,7 @@ function StatusSelectContent(handle: StatusSelectProps) {
 
   return (
     <Select value={currentStatus} onValueChange={handleStatusChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[180px] border-zinc-800 bg-zinc-950/70 text-zinc-100">
         <SelectValue>
           <div className="flex items-center gap-2">
             <StatusIcon className="h-4 w-4" />
@@ -45,7 +45,7 @@ function StatusSelectContent(handle: StatusSelectProps) {
           </div>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
         {Object.entries(ORDER_STATUS_CONFIG).map(([value, config]) => {
           const Icon = config.icon;
           return (

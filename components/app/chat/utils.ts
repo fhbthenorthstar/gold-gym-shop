@@ -26,7 +26,9 @@ export function getToolParts(message: UIMessage): ToolCallPart[] {
 export function getToolDisplayName(toolName: string): string {
   const toolNames: Record<string, string> = {
     searchProducts: "Searching products",
+    searchPackages: "Searching packages",
     getMyOrders: "Getting your orders",
+    getMySubscriptions: "Getting your memberships",
   };
   return toolNames[toolName] || toolName;
 }

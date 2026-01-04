@@ -3,7 +3,7 @@ import { defineField, defineType } from "sanity";
 
 export const contactMessageType = defineType({
   name: "contactMessage",
-  title: "Contact Form",
+  title: "Inquiry",
   type: "document",
   icon: CommentIcon,
   fields: [

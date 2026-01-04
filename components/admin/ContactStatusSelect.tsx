@@ -39,7 +39,7 @@ function ContactStatusSelectContent(handle: ContactStatusSelectProps) {
 
   return (
     <Select value={currentStatus} onValueChange={handleStatusChange}>
-      <SelectTrigger className="h-8 w-[140px] text-xs">
+      <SelectTrigger className="h-8 w-[140px] border-zinc-800 bg-zinc-950/70 text-xs text-zinc-100">
         <SelectValue>
           <div className="flex items-center gap-2">
             <StatusIcon className="h-3.5 w-3.5" />
@@ -47,7 +47,7 @@ function ContactStatusSelectContent(handle: ContactStatusSelectProps) {
           </div>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
         {(Object.keys(CONTACT_STATUS_CONFIG) as ContactStatusValue[]).map(
           (value) => {
             const config = CONTACT_STATUS_CONFIG[value];

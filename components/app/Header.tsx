@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import {
   ChevronDown,
+  Calendar,
   Heart,
   Menu,
   Package,
@@ -15,6 +17,7 @@ import {
 } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartActions, useTotalItems } from "@/lib/store/cart-store-provider";
 import {
   useWishlistActions,
@@ -25,8 +28,8 @@ import { useChatActions, useIsChatOpen } from "@/lib/store/chat-store-provider";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
+  { label: "Packages", href: "/packages" },
   { label: "About Us", href: "/about" },
-  { label: "Pages", href: "/pages" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -61,6 +64,7 @@ const megaMenuColumns = [
 export function Header() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const totalItems = useTotalItems();
   const wishlistItems = useWishlistItems();
   const { openCart } = useCartActions();
@@ -88,12 +92,12 @@ export function Header() {
       <div className="border-b border-zinc-900 bg-zinc-950 text-xs text-zinc-400">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2">
           <div className="flex items-center gap-4">
-            <span>Call Us: 0000-123-456789</span>
-            <span className="hidden md:inline">info@fitfinity.com</span>
+            <span>Call Us: +880 1704 112385</span>
+            <span className="hidden md:inline">info@goldsgym.com.bd</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden md:inline">Free shipping on orders over ৳2,500</span>
-            <span className="rounded-full border border-lime-400/40 px-2 py-0.5 text-[11px] text-lime-300">
+            <span className="rounded-full border border-primary/40 px-2 py-0.5 text-[11px] text-primary">
               BDT
             </span>
           </div>
@@ -103,22 +107,115 @@ export function Header() {
       {/* Main bar */}
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            className="rounded-md border border-zinc-800 p-2 text-zinc-200 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                className="rounded-md border border-zinc-800 p-2 text-zinc-200 lg:hidden"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="border-zinc-800 bg-zinc-950 px-4 pb-6 pt-6 text-zinc-200"
+            >
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/Gold's_Gym_logo.png"
+                  alt="Gold's Gym BD"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 rounded-full"
+                />
+                <span className="font-heading text-2xl uppercase tracking-[0.3em] text-white">
+                  SHOP
+                </span>
+              </div>
+
+              <form
+                onSubmit={(event) => {
+                  handleSearch(event);
+                  setIsMenuOpen(false);
+                }}
+                className="mt-6 flex items-center gap-2 rounded-full border border-zinc-800 bg-black px-3 py-2"
+              >
+                <Search className="h-4 w-4 text-zinc-400" />
+                <input
+                  name="q"
+                  defaultValue={searchParams.get("q") ?? ""}
+                  placeholder="Search"
+                  className="w-full bg-transparent text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none"
+                />
+              </form>
+
+              <nav className="mt-6 space-y-2">
+                {navItems.map((item) => (
+                  <SheetClose asChild key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:border-primary/60 hover:text-primary"
+                    >
+                      {item.label}
+                      {item.label === "Shop" && (
+                        <ChevronDown className="h-4 w-4 text-primary" />
+                      )}
+                    </Link>
+                  </SheetClose>
+                ))}
+              </nav>
+
+              <div className="mt-6 space-y-3">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-primary">
+                  Shop Categories
+                </p>
+                {megaMenuColumns.map((column) => (
+                  <details
+                    key={column.slug}
+                    className="rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2"
+                  >
+                    <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.2em] text-white">
+                      {column.title}
+                    </summary>
+                    <div className="mt-3 space-y-2 text-xs text-zinc-400">
+                      <SheetClose asChild>
+                        <Link
+                          href={`/shop?category=${column.slug}`}
+                          className="block text-primary"
+                        >
+                          View all {column.title}
+                        </Link>
+                      </SheetClose>
+                      {column.items.map((itemName) => (
+                        <p key={itemName}>{itemName}</p>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-zinc-800 bg-black/60 p-4 text-xs text-zinc-400">
+                <p className="font-semibold text-white">
+                  Gold's Gym BD Shop
+                </p>
+                <p className="mt-2">+880 1704 112385</p>
+                <p>info@goldsgym.com.bd</p>
+              </div>
+            </SheetContent>
+          </Sheet>
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="https://dt-fitfinity.myshopify.com/cdn/shop/files/new-logo_1.png?v=1701161823"
-              alt="Fitfinity"
-              width={140}
-              height={40}
-              className="h-8 w-auto"
+              src="/Gold's_Gym_logo.png"
+              alt="Gold's Gym BD"
+              width={44}
+              height={44}
+              className="h-11 w-11 rounded-full"
               priority
             />
+            <span className="hidden font-heading text-3xl uppercase tracking-[0.32em] text-white lg:inline-flex lg:text-4xl">
+              SHOP
+            </span>
           </Link>
         </div>
 
@@ -127,11 +224,11 @@ export function Header() {
             <div key={item.label} className="group relative">
               <Link
                 href={item.href}
-                className="flex items-center gap-1 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:text-lime-300"
+                className="flex items-center gap-1 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:text-primary"
               >
                 {item.label}
                 {item.label === "Shop" && (
-                  <ChevronDown className="h-4 w-4 text-lime-300" />
+                  <ChevronDown className="h-4 w-4 text-primary" />
                 )}
               </Link>
               {item.label === "Shop" && (
@@ -142,7 +239,7 @@ export function Header() {
                         <div key={column.slug} className="space-y-3">
                           <Link
                             href={`/shop?category=${column.slug}`}
-                            className="block text-sm font-semibold uppercase text-lime-300"
+                            className="block text-sm font-semibold uppercase text-primary"
                           >
                             {column.title}
                           </Link>
@@ -179,7 +276,7 @@ export function Header() {
             <Button
               asChild
               size="sm"
-              className="hidden items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-lime-300/60 hover:text-lime-200 lg:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-primary/60 hover:text-primary/90 lg:inline-flex"
             >
               <Link href="/orders">
                 <Package className="h-4 w-4" />
@@ -189,25 +286,39 @@ export function Header() {
           </SignedIn>
 
           {!isChatOpen && (
-            <Button
-              onClick={openChat}
-              className="hidden items-center gap-2 rounded-full bg-lime-300 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-lime-200 lg:inline-flex"
-            >
-              <Sparkles className="h-4 w-4" />
-              Ask AI
-            </Button>
+            <>
+              <SignedIn>
+                <Button
+                  onClick={openChat}
+                  className="hidden items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90 lg:inline-flex"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Ask AI
+                </Button>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button
+                    className="hidden items-center gap-2 rounded-full border border-primary/40 bg-transparent px-4 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:text-primary/90 lg:inline-flex"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Sign in to chat
+                  </Button>
+                </SignInButton>
+              </SignedOut>
+            </>
           )}
 
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-zinc-200 hover:text-lime-300"
+            className="relative text-zinc-200 hover:text-primary"
             onClick={openWishlist}
             aria-label="Open wishlist"
           >
             <Heart className="h-5 w-5" />
             {wishlistItems.length > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-lime-400 text-[10px] font-semibold text-black">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-black">
                 {wishlistItems.length}
               </span>
             )}
@@ -228,6 +339,11 @@ export function Header() {
                   labelIcon={<Package className="h-4 w-4" />}
                   href="/orders"
                 />
+                <UserButton.Link
+                  label="My Subscriptions"
+                  labelIcon={<Calendar className="h-4 w-4" />}
+                  href="/my-subscription"
+                />
               </UserButton.MenuItems>
             </UserButton>
           </SignedIn>
@@ -236,7 +352,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-zinc-200 hover:text-lime-300"
+                className="text-zinc-200 hover:text-primary"
               >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Sign in</span>
@@ -247,13 +363,13 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-zinc-200 hover:text-lime-300"
+            className="relative text-zinc-200 hover:text-primary"
             onClick={openCart}
             aria-label="Open cart"
           >
             <ShoppingBag className="h-5 w-5" />
             {totalItems > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-lime-400 text-[10px] font-semibold text-black">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-black">
                 {totalItems}
               </span>
             )}

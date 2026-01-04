@@ -59,6 +59,22 @@ export const HOME_TESTIMONIALS_QUERY = defineQuery(`*[
   }
 }`);
 
+export const HOME_TRAININGS_QUERY = defineQuery(`*[
+  _type == "training"
+  && (featured == true || !defined(featured))
+] | order(order asc, title asc) {
+  _id,
+  title,
+  link,
+  "image": image{
+    asset->{
+      _id,
+      url
+    },
+    hotspot
+  }
+}`);
+
 export const HOME_GALLERY_QUERY = defineQuery(`*[
   _type == "galleryImage"
   && (featured == true || !defined(featured))

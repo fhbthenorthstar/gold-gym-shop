@@ -129,7 +129,7 @@ export function RecentOrders() {
         </h2>
         <Link
           href="/admin/orders"
-          className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          className="text-sm text-primary/80 hover:text-primary"
         >
           View all →
         </Link>

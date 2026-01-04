@@ -14,10 +14,12 @@ interface AddToCartButtonProps {
   name: string;
   price: number;
   image?: string;
+  slug?: string;
   stock: number;
   variantKey?: string;
   variant?: CartItemVariant;
   className?: string;
+  tone?: "default" | "cart";
 }
 
 export function AddToCartButton({
@@ -26,10 +28,12 @@ export function AddToCartButton({
   name,
   price,
   image,
+  slug,
   stock,
   variantKey,
   variant,
   className,
+  tone = "default",
 }: AddToCartButtonProps) {
   const resolvedItemId = itemId ?? buildCartItemId(productId, variantKey);
   const { addItem, updateQuantity } = useCartActions();
@@ -42,7 +46,7 @@ export function AddToCartButton({
   const handleAdd = () => {
     if (quantityInCart < stock) {
       addItem(
-        { id: resolvedItemId, productId, name, price, image, variant },
+        { id: resolvedItemId, productId, name, price, image, slug, variant },
         1
       );
       toast.success(`Added ${name}`);
@@ -79,28 +83,44 @@ export function AddToCartButton({
   }
 
   // In cart - show quantity controls
+  const isCartTone = tone === "cart";
+
   return (
     <div
       className={cn(
-        "flex h-11 w-full items-center rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900",
+        "flex h-11 w-full items-center rounded-md border",
+        isCartTone
+          ? "border-primary/60 bg-primary text-black"
+          : "border-zinc-200 bg-white text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100",
         className,
       )}
     >
       <Button
         variant="ghost"
         size="icon"
-        className="h-full flex-1 rounded-r-none"
+        className={cn(
+          "h-full flex-1 rounded-r-none",
+          isCartTone && "text-black hover:bg-primary/80 hover:text-black"
+        )}
         onClick={handleDecrement}
       >
         <Minus className="h-4 w-4" />
       </Button>
-      <span className="flex-1 text-center text-sm font-semibold tabular-nums">
+      <span
+        className={cn(
+          "flex-1 text-center text-sm font-semibold tabular-nums",
+          isCartTone ? "text-black" : "text-zinc-900 dark:text-zinc-100"
+        )}
+      >
         {quantityInCart}
       </span>
       <Button
         variant="ghost"
         size="icon"
-        className="h-full flex-1 rounded-l-none disabled:opacity-20"
+        className={cn(
+          "h-full flex-1 rounded-l-none disabled:opacity-20",
+          isCartTone && "text-black hover:bg-primary/80 hover:text-black"
+        )}
         onClick={handleAdd}
         disabled={isAtMax}
       >

@@ -27,6 +27,8 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
     item.variant?.options
       ?.map((opt) => `${opt.name}: ${opt.value}`)
       .join(" / ") ?? "";
+  const imageUrl = item.image ?? stockInfo?.imageUrl ?? undefined;
+  const productSlug = item.slug ?? stockInfo?.productSlug ?? item.productId;
 
   return (
     <div
@@ -42,9 +44,9 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           isOutOfStock && "opacity-50",
         )}
       >
-        {item.image ? (
+        {imageUrl ? (
           <Image
-            src={item.image}
+            src={imageUrl}
             alt={item.name}
             fill
             className="object-cover"
@@ -61,9 +63,9 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
       <div className="flex flex-1 flex-col">
         <div className="flex justify-between">
           <Link
-            href={`/products/${item.productId}`}
+            href={`/products/${productSlug}`}
             className={cn(
-              "font-medium text-white hover:text-lime-300",
+              "font-medium text-white hover:text-primary",
               isOutOfStock && "text-zinc-500",
             )}
           >
@@ -100,9 +102,11 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
                 productId={item.productId}
                 name={item.name}
                 price={item.price}
-                image={item.image}
+                image={imageUrl}
+                slug={productSlug}
                 stock={currentStock}
                 variant={item.variant}
+                tone="cart"
               />
             </div>
           )}

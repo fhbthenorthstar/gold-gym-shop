@@ -48,6 +48,14 @@ const PASSWORD = (() => {
   return process.argv[index + 1] ?? "1";
 })();
 const DEFAULT_STOCK = 12;
+const STORE_URL = (process.env.SHOPIFY_SOURCE_URL ?? "").replace(/\/$/, "");
+const STORE_PASSWORD = process.env.SHOPIFY_STORE_PASSWORD || PASSWORD;
+
+if (!STORE_URL) {
+  throw new Error(
+    "Missing SHOPIFY_SOURCE_URL. Set it to your Shopify store base URL."
+  );
+}
 
 const normalizeUrl = (url: string) =>
   url.startsWith("//") ? `https:${url}` : url;
@@ -119,9 +127,9 @@ const login = async () => {
   const body = new URLSearchParams({
     form_type: "storefront_password",
     utf8: "✓",
-    password: PASSWORD,
+    password: STORE_PASSWORD,
   });
-  const res = await fetch("https://dt-fitfinity.myshopify.com/password", {
+  const res = await fetch(`${STORE_URL}/password`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
@@ -172,7 +180,7 @@ async function run() {
   const cookie = await login();
 
   const collectionsData = await fetchJson<{ collections: ShopifyCollection[] }>(
-    "https://dt-fitfinity.myshopify.com/collections.json?limit=250",
+    `${STORE_URL}/collections.json?limit=250`,
     cookie
   );
 
@@ -186,7 +194,7 @@ async function run() {
     let page = 1;
     while (true) {
       const data = await fetchJson<{ products: ShopifyProduct[] }>(
-        `https://dt-fitfinity.myshopify.com/collections/${collection.handle}/products.json?limit=250&page=${page}`,
+        `${STORE_URL}/collections/${collection.handle}/products.json?limit=250&page=${page}`,
         cookie
       );
       if (!data.products || data.products.length === 0) break;
@@ -219,7 +227,7 @@ async function run() {
   let page = 1;
   while (true) {
     const data = await fetchJson<{ products: ShopifyProduct[] }>(
-      `https://dt-fitfinity.myshopify.com/collections/all/products.json?limit=250&page=${page}`,
+      `${STORE_URL}/collections/all/products.json?limit=250&page=${page}`,
       cookie
     );
     if (!data.products || data.products.length === 0) break;
@@ -336,7 +344,7 @@ async function run() {
 
     const descriptionText = htmlToText(product.body_html ?? "");
     const basePrice = priceFromCents(product.variants?.[0]?.price ?? 0);
-    const shopifyUrl = `https://dt-fitfinity.myshopify.com/products/${product.handle}`;
+    const shopifyUrl = `${STORE_URL}/products/${product.handle}`;
 
     await writeClient.createOrReplace({
       _id: `product-${product.handle}`,
@@ -374,6 +382,6 @@ async function run() {
 }
 
 run().catch((error) => {
-  console.error("Failed to import Fitfinity collection:", error);
+  console.error("Failed to import Shopify collection:", error);
   process.exit(1);
 });

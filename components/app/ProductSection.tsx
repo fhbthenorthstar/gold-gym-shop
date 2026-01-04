@@ -106,7 +106,7 @@ export function ProductSection({
             {searchQuery && (
               <span>
                 {" "}
-                for &quot;<span className="text-lime-300">{searchQuery}</span>&quot;
+                for &quot;<span className="text-primary">{searchQuery}</span>&quot;
               </span>
             )}
           </p>
@@ -118,7 +118,7 @@ export function ProductSection({
               type="button"
               onClick={() => updateParams({ view: "list" })}
               className={`rounded-full p-1 ${
-                view === "list" ? "text-lime-300" : ""
+                view === "list" ? "text-primary" : ""
               }`}
               aria-label="List view"
             >
@@ -128,7 +128,7 @@ export function ProductSection({
               type="button"
               onClick={() => updateParams({ view: "grid", cols: 2 })}
               className={`rounded-full p-1 ${
-                view === "grid" && columns === 2 ? "text-lime-300" : ""
+                view === "grid" && columns === 2 ? "text-primary" : ""
               }`}
               aria-label="2 column grid"
             >
@@ -138,7 +138,7 @@ export function ProductSection({
               type="button"
               onClick={() => updateParams({ view: "grid", cols: 3 })}
               className={`rounded-full p-1 ${
-                view === "grid" && columns === 3 ? "text-lime-300" : ""
+                view === "grid" && columns === 3 ? "text-primary" : ""
               }`}
               aria-label="3 column grid"
             >
@@ -148,7 +148,7 @@ export function ProductSection({
               type="button"
               onClick={() => updateParams({ view: "grid", cols: 4 })}
               className={`rounded-full p-1 ${
-                view === "grid" && columns === 4 ? "text-lime-300" : ""
+                view === "grid" && columns === 4 ? "text-primary" : ""
               }`}
               aria-label="4 column grid"
             >
@@ -243,7 +243,7 @@ export function ProductSection({
                     onClick={() => updateParams({ page: item })}
                     className={
                       item === pagination.currentPage
-                        ? "bg-lime-300 text-black hover:bg-lime-200"
+                        ? "bg-primary text-black hover:bg-primary/90"
                         : "border-zinc-800 bg-zinc-950 text-zinc-200 hover:bg-zinc-900"
                     }
                   >

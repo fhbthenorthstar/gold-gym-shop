@@ -27,7 +27,7 @@ export function WishlistSheet() {
       <SheetContent className="flex w-full flex-col gap-0 sm:max-w-lg">
         <SheetHeader className="border-b border-zinc-800">
           <SheetTitle className="flex items-center gap-2 text-white">
-            <Heart className="h-5 w-5 text-lime-400" />
+            <Heart className="h-5 w-5 text-primary" />
             Wishlist ({items.length})
           </SheetTitle>
         </SheetHeader>
@@ -64,7 +64,7 @@ export function WishlistSheet() {
                   <div className="flex flex-1 flex-col gap-1">
                     <Link
                       href={item.slug ? `/products/${item.slug}` : "#"}
-                      className="text-sm font-semibold text-white hover:text-lime-300"
+                      className="text-sm font-semibold text-white hover:text-primary"
                     >
                       {item.name}
                     </Link>
