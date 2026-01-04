@@ -22,7 +22,9 @@ import {
   LowStockAlert,
   RecentOrders,
   RecentSubscriptions,
+  RecentInquiries,
   AIInsightsCard,
+  ActivitySnapshot,
 } from "@/components/admin";
 
 export default function AdminDashboard() {
@@ -71,7 +73,7 @@ export default function AdminDashboard() {
       <AIInsightsCard />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Products"
           icon={Package}
@@ -106,11 +108,14 @@ export default function AdminDashboard() {
         />
       </div>
 
+      <ActivitySnapshot />
+
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2">
         <LowStockAlert />
         <RecentOrders />
         <RecentSubscriptions />
+        <RecentInquiries />
       </div>
     </div>
   );

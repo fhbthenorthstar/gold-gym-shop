@@ -26,8 +26,16 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <section className="border-b border-zinc-900 py-16 text-zinc-300">
-        <div className="mx-auto max-w-7xl px-4">
+      <section className="relative overflow-hidden border-b border-zinc-900 py-16 text-zinc-300">
+        <Image
+          src="/rsg-group-history-golds-gym-2020-1440x1080.png"
+          alt="Gold's Gym legacy"
+          fill
+          className="object-cover opacity-20"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/40" />
+        <div className="relative mx-auto max-w-7xl px-4">
           <div className="space-y-6 text-center">
             <div className="mx-auto max-w-3xl space-y-4">
               <h1 className="font-heading text-2xl uppercase tracking-[0.15em] text-white sm:text-3xl">
