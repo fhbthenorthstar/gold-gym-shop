@@ -45,7 +45,8 @@ export function SubscriptionCheckoutClient({
     const today = new Date();
     return today.toISOString().split("T")[0] ?? "";
   });
-  const [paymentMethod] = useState<SubscriptionPaymentMethod>("online");
+  const [paymentMethod, setPaymentMethod] =
+    useState<SubscriptionPaymentMethod>("offline");
   const [error, setError] = useState<string | null>(null);
 
   const price = useMemo(() => {
@@ -57,7 +58,7 @@ export function SubscriptionCheckoutClient({
     setError(null);
     startTransition(async () => {
       const result = await createSubscription({
-        packageSlug: pkg.slug ?? "",
+        packageSlug: pkg.slug ?? pkg._id,
         startDate,
         phone,
         notes,
@@ -152,16 +153,23 @@ export function SubscriptionCheckoutClient({
         <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6">
           <h3 className="font-heading text-lg text-white">Payment</h3>
           <p className="mt-2 text-sm text-zinc-400">
-            Online payment will be confirmed by our team within 24 hours.
+            Online payment will be available soon. Choose onsite payment for
+            now.
           </p>
 
           <div className="mt-5 space-y-4">
             <label className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm text-zinc-100">
-              <input type="radio" checked readOnly className="accent-black" />
+              <input
+                type="radio"
+                name="paymentMethod"
+                checked={paymentMethod === "offline"}
+                onChange={() => setPaymentMethod("offline")}
+                className="accent-black"
+              />
               <div className="flex-1">
-                <p className="font-semibold text-primary">Online payment</p>
+                <p className="font-semibold text-primary">Onsite payment</p>
                 <p className="text-xs text-zinc-400">
-                  Pay with bKash, Nagad, or card once payment goes live.
+                  Pay at the club once your membership is confirmed.
                 </p>
               </div>
               <CreditCard className="h-5 w-5 text-primary" />
@@ -169,9 +177,9 @@ export function SubscriptionCheckoutClient({
             <label className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-black/40 p-4 text-sm text-zinc-500 opacity-70">
               <input type="radio" disabled className="accent-black" />
               <div className="flex-1">
-                <p className="font-semibold">Onsite payment (disabled)</p>
+                <p className="font-semibold">Online payment (disabled)</p>
                 <p className="text-xs text-zinc-600">
-                  Available soon for in-club payments.
+                  bKash, Nagad, and card payments will go live soon.
                 </p>
               </div>
             </label>

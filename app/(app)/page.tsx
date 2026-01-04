@@ -411,7 +411,7 @@ export default async function HomePage() {
                   </div>
                 )}
                 <div className="mt-8 border-t border-zinc-700 pt-6">
-                  <p className="font-heading text-xs uppercase tracking-[0.3em] text-zinc-300">
+                  <p className="font-heading text-xs uppercase tracking-[0.3em] text-zinc-300 text-center">
                     Proudly Powered By
                   </p>
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">

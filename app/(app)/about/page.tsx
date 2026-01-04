@@ -10,11 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 const galleryImages = [
-  "/trinners/1.jpg",
-  "/trinners/2.jpg",
-  "/trinners/3.jpg",
-  "/trinners/4.jpg",
-  "/trinners/5.jpg",
+  "/about-us/1-min.png",
+  "/about-us/2-min.png",
+  "/about-us/3-min.png",
+  "/about-us/4-min.png",
+  "/about-us/5-min.png",
 ];
 
 const accessHighlights = [
@@ -75,7 +75,7 @@ const faqs = [
 
 const collaborators = [
   "Gold's Gym",
-  "Bashundhara Group",
+  "Bashundhara",
   "Technogym",
   "BSC",
   "BCDL",
@@ -98,18 +98,18 @@ export default function AboutPage() {
             that began in 1965 in Venice Beach, California.
           </p>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-10 grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {galleryImages.map((src, index) => (
               <div
                 key={src}
-                className="relative h-24 overflow-hidden rounded-xl border border-zinc-800 sm:h-28 lg:h-32"
+                className="relative h-32 overflow-hidden rounded-xl border border-zinc-800 sm:h-36 lg:h-40"
               >
                 <Image
                   src={src}
                   alt={`About gallery ${index + 1}`}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 1024px) 33vw, 20vw"
+                  sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 18vw"
                 />
               </div>
             ))}
@@ -182,6 +182,11 @@ export default function AboutPage() {
                   "Diverse Programs",
                   "Exclusive Facilities",
                   "Flexible Packages",
+                  "Recovery & Wellness Zones",
+                  "Women-Only Training Areas",
+                  "Performance Nutrition Guidance",
+                  "Personal Progress Tracking",
+                  "Community Events & Challenges",
                 ].map((item, index) => (
                   <div
                     key={item}
@@ -224,8 +229,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-zinc-900/40 py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center">
+      <section className="relative overflow-hidden border-y border-zinc-900 py-20">
+        <Image
+          src="/rsg-group-history-golds-gym-2020-1440x1080.png"
+          alt="Gold's Gym worldwide"
+          fill
+          className="object-cover opacity-20"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black/60" />
+        <div className="relative mx-auto max-w-7xl px-4 text-center">
           <p className="text-xs uppercase tracking-[0.4em] text-primary">
             Workout Enthusiasm
           </p>
@@ -255,12 +268,6 @@ export default function AboutPage() {
                   <p className="mt-3 text-sm text-zinc-400">
                     {card.description}
                   </p>
-                  <Button
-                    variant="outline"
-                    className="mt-6 h-9 rounded-md border-zinc-800 bg-transparent text-xs uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-black"
-                  >
-                    Know More
-                  </Button>
                 </div>
               );
             })}
@@ -335,7 +342,7 @@ export default function AboutPage() {
             {collaborators.map((item) => (
               <div
                 key={item}
-                className="rounded-full border border-zinc-800 bg-zinc-950 py-3 text-xs uppercase tracking-[0.3em] text-zinc-400"
+                className="flex min-h-[44px] items-center justify-center rounded-full border border-zinc-800 bg-zinc-950 px-4 text-center text-[10px] uppercase tracking-[0.25em] text-zinc-400 sm:text-xs"
               >
                 {item}
               </div>

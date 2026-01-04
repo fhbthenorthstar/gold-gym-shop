@@ -19,7 +19,7 @@ export const SUBSCRIPTION_PACKAGES_QUERY = defineQuery(`*[
 
 export const SUBSCRIPTION_PACKAGE_BY_SLUG_QUERY = defineQuery(`*[
   _type == "subscriptionPackage"
-  && slug.current == $slug
+  && (slug.current == $slug || _id == $slug || lower(slug.current) == lower($slug))
   && !(_id in path("drafts.**"))
 ][0] {
   _id,

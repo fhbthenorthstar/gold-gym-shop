@@ -51,6 +51,16 @@ export function Footer() {
                   Returns
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy" className="hover:text-primary">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-primary">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
             </ul>
           </div>
 

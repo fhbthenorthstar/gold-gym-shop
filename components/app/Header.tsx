@@ -50,7 +50,7 @@ const megaMenuColumns = [
     items: ["Track Pants", "Tank Tops", "Sports Bras"],
   },
   {
-    title: "Gym Accessories",
+    title: "Accessories",
     slug: "accessories",
     items: ["Bottles", "Bags", "Jump Ropes"],
   },
@@ -150,6 +150,34 @@ export function Header() {
                 />
               </form>
 
+              {!isChatOpen && (
+                <div className="mt-4 space-y-2">
+                  <SignedIn>
+                    <Button
+                      onClick={() => {
+                        openChat();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full justify-center gap-2 rounded-full bg-primary text-xs font-semibold uppercase tracking-[0.2em] text-black"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Ask AI
+                    </Button>
+                  </SignedIn>
+                  <SignedOut>
+                    <SignInButton mode="modal">
+                      <Button
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full justify-center gap-2 rounded-full border border-primary/40 bg-transparent text-xs font-semibold uppercase tracking-[0.2em] text-primary hover:border-primary/70"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Sign in to chat
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                </div>
+              )}
+
               <nav className="mt-6 space-y-2">
                 {navItems.map((item) => (
                   <SheetClose asChild key={item.label}>
@@ -213,7 +241,7 @@ export function Header() {
               className="h-11 w-11 rounded-full"
               priority
             />
-            <span className="hidden font-heading text-3xl uppercase tracking-[0.32em] text-white lg:inline-flex lg:text-4xl">
+            <span className="font-heading text-2xl uppercase leading-none tracking-[0.3em] text-white sm:text-3xl lg:text-4xl">
               SHOP
             </span>
           </Link>
@@ -330,6 +358,12 @@ export function Header() {
               appearance={{
                 elements: {
                   avatarBox: "h-9 w-9",
+                  userButtonPopoverCard:
+                    "bg-zinc-950 border border-zinc-800 text-zinc-200",
+                  userButtonPopoverActionButton:
+                    "text-zinc-200 hover:bg-zinc-900",
+                  userButtonPopoverFooter:
+                    "border-t border-zinc-800 bg-zinc-950",
                 },
               }}
             >
