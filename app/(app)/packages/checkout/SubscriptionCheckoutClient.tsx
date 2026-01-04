@@ -70,7 +70,13 @@ export function SubscriptionCheckoutClient({
       }
 
       toast.success("Subscription request submitted");
-      router.push("/my-subscription");
+      if (result.subscriptionId) {
+        router.push(
+          `/packages/checkout/success?subscriptionId=${result.subscriptionId}`
+        );
+      } else {
+        router.push("/my-subscription");
+      }
     });
   };
 
