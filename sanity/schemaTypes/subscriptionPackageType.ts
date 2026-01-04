@@ -1,16 +1,16 @@
 import { TagIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
-const PACKAGE_LOCATIONS = [
+const PACKAGE_LOCATIONS: Array<{ title: string; value: string }> = [
   { title: "Bashundhara Sports City", value: "bashundhara-sports-city" },
   { title: "Bashundhara City Shopping Mall", value: "bashundhara-city-shopping-mall" },
-] as const;
+];
 
-const PACKAGE_TIERS = [
+const PACKAGE_TIERS: Array<{ title: string; value: string }> = [
   { title: "Gold", value: "gold" },
   { title: "Silver", value: "silver" },
   { title: "Pool & Spa", value: "pool-spa" },
-] as const;
+];
 
 export const subscriptionPackageType = defineType({
   name: "subscriptionPackage",

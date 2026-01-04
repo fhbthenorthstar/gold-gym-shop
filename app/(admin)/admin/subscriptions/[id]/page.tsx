@@ -6,12 +6,16 @@ import {
   useDocument,
   useEditDocument,
   useDocumentProjection,
+  useDocuments,
+  useApplyDocumentActions,
+  publishDocument,
   type DocumentHandle,
 } from "@sanity/sdk-react";
 import { ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -20,12 +24,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { SubscriptionStatusSelect } from "@/components/admin";
+import {
+  SubscriptionStatusSelect,
+  DeleteButton,
+  PublishButton,
+  RevertButton,
+} from "@/components/admin";
 import {
   SUBSCRIPTION_PAYMENT_STATUS_LABELS,
   SUBSCRIPTION_PAYMENT_STATUS_SANITY_LIST,
+  SUBSCRIPTION_PAYMENT_METHOD_SANITY_LIST,
 } from "@/lib/constants/subscriptionPayments";
-import { formatDate, formatPrice } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { formatPackageLocation, formatPackageTier } from "@/lib/utils/subscriptions";
 
 interface SubscriptionDetailProjection {
@@ -50,6 +60,77 @@ interface SubscriptionDetailProjection {
   } | null;
 }
 
+function TextEditor({
+  handle,
+  path,
+  placeholder,
+  type = "text",
+}: {
+  handle: DocumentHandle;
+  path: string;
+  placeholder: string;
+  type?: "text" | "email" | "tel" | "number" | "date";
+}) {
+  const { data } = useDocument({ ...handle, path });
+  const edit = useEditDocument({ ...handle, path });
+  const value = (data as string | number | null) ?? "";
+
+  return (
+    <Input
+      type={type}
+      value={value}
+      onChange={(event) => {
+        const next =
+          type === "number" ? Number(event.target.value) || 0 : event.target.value;
+        edit(next);
+      }}
+      placeholder={placeholder}
+      className="border-zinc-800 bg-zinc-950/70 text-zinc-100"
+    />
+  );
+}
+
+function PackageSelect({ handle }: { handle: DocumentHandle }) {
+  const { data } = useDocument({ ...handle, path: "package" });
+  const edit = useEditDocument({ ...handle, path: "package" });
+  const current = (data as { _ref?: string } | null)?._ref ?? "";
+  const { data: packages } = useDocuments({
+    documentType: "subscriptionPackage",
+    orderings: [
+      { field: "order", direction: "asc" },
+      { field: "title", direction: "asc" },
+    ],
+    batchSize: 100,
+  });
+
+  return (
+    <Select
+      value={current}
+      onValueChange={(next) => {
+        edit(next ? { _type: "reference", _ref: next } : null);
+      }}
+    >
+      <SelectTrigger className="border-zinc-800 bg-zinc-950/70 text-zinc-100">
+        <SelectValue placeholder="Select package" />
+      </SelectTrigger>
+      <SelectContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
+        {(packages ?? []).map((pkg) => (
+          <PackageOption key={pkg.documentId} handle={pkg} />
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function PackageOption({ handle }: { handle: DocumentHandle }) {
+  const { data: title } = useDocument({ ...handle, path: "title" });
+  return (
+    <SelectItem value={handle.documentId}>
+      {(title as string) ?? "Package"}
+    </SelectItem>
+  );
+}
+
 function NotesEditor(handle: DocumentHandle) {
   const { data: notes } = useDocument({ ...handle, path: "notes" });
   const editNotes = useEditDocument({ ...handle, path: "notes" });
@@ -59,6 +140,7 @@ function NotesEditor(handle: DocumentHandle) {
       value={(notes as string) ?? ""}
       onChange={(event) => editNotes(event.target.value)}
       placeholder="Add internal notes for this member..."
+      className="border-zinc-800 bg-zinc-950/70 text-zinc-100"
     />
   );
 }
@@ -66,17 +148,45 @@ function NotesEditor(handle: DocumentHandle) {
 function PaymentStatusEditor(handle: DocumentHandle) {
   const { data } = useDocument({ ...handle, path: "paymentStatus" });
   const edit = useEditDocument({ ...handle, path: "paymentStatus" });
+  const apply = useApplyDocumentActions();
   const value = (data as string) ?? "pending";
 
   return (
-    <Select value={value} onValueChange={(next) => edit(next)}>
-      <SelectTrigger>
+    <Select
+      value={value}
+      onValueChange={async (next) => {
+        edit(next);
+        await apply(publishDocument(handle));
+      }}
+    >
+      <SelectTrigger className="border-zinc-800 bg-zinc-950/70 text-zinc-100">
         <SelectValue>
           {SUBSCRIPTION_PAYMENT_STATUS_LABELS[value as keyof typeof SUBSCRIPTION_PAYMENT_STATUS_LABELS] ?? "Pending"}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
         {SUBSCRIPTION_PAYMENT_STATUS_SANITY_LIST.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.title}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function PaymentMethodEditor(handle: DocumentHandle) {
+  const { data } = useDocument({ ...handle, path: "paymentMethod" });
+  const edit = useEditDocument({ ...handle, path: "paymentMethod" });
+  const value = (data as string) ?? "online";
+
+  return (
+    <Select value={value} onValueChange={(next) => edit(next)}>
+      <SelectTrigger className="border-zinc-800 bg-zinc-950/70 text-zinc-100">
+        <SelectValue placeholder="Select payment method" />
+      </SelectTrigger>
+      <SelectContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
+        {SUBSCRIPTION_PAYMENT_METHOD_SANITY_LIST.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.title}
           </SelectItem>
@@ -138,6 +248,15 @@ function SubscriptionDetailContent({ handle }: { handle: DocumentHandle }) {
             </span>
             <SubscriptionStatusSelect {...handle} />
           </div>
+          <div className="flex items-center gap-2">
+            <DeleteButton handle={handle} />
+            <Suspense fallback={null}>
+              <RevertButton {...handle} />
+            </Suspense>
+            <Suspense fallback={null}>
+              <PublishButton {...handle} />
+            </Suspense>
+          </div>
         </div>
       </div>
 
@@ -146,56 +265,78 @@ function SubscriptionDetailContent({ handle }: { handle: DocumentHandle }) {
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
             Member Details
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
-                Email
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {data.subscriberEmail || "—"}
-              </p>
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                Subscription ID
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="subscriptionNumber"
+                placeholder="SUB-2025-001"
+              />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                Member Name
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="subscriberName"
+                placeholder="Member name"
+              />
+            </div>
+            <div>
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                Email
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="subscriberEmail"
+                placeholder="member@email.com"
+                type="email"
+              />
+            </div>
+            <div>
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                 Phone
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {data.subscriberPhone || "—"}
-              </p>
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="subscriberPhone"
+                placeholder="01XXXXXXXXX"
+                type="tel"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                Package
+              </Label>
+              <PackageSelect handle={handle} />
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                 Start Date
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {formatDate(data.startDate, "long", "—")}
-              </p>
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="startDate"
+                placeholder="YYYY-MM-DD"
+                type="date"
+              />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                 End Date
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {formatDate(data.endDate, "long", "—")}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
-                Next Renewal
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {formatDate(data.nextRenewalDate, "long", "—")}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
-                Amount
-              </p>
-              <p className="mt-1 text-zinc-900 dark:text-zinc-100">
-                {formatPrice(data.price ?? 0)}
-              </p>
+              </Label>
+              <TextEditor
+                handle={handle}
+                path="endDate"
+                placeholder="YYYY-MM-DD"
+                type="date"
+              />
             </div>
           </div>
         </div>
@@ -214,10 +355,34 @@ function SubscriptionDetailContent({ handle }: { handle: DocumentHandle }) {
             <p>Location: {formatPackageLocation(data.package?.location ?? "")}</p>
             <p>Duration: {data.package?.durationLabel ?? "—"}</p>
             <p>Access: {data.package?.accessLabel ?? "—"}</p>
+            <p>Start: {formatDate(data.startDate, "short", "—")}</p>
+            <p>End: {formatDate(data.endDate, "short", "—")}</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Next Renewal</Label>
+            <TextEditor
+              handle={handle}
+              path="nextRenewalDate"
+              placeholder="YYYY-MM-DD"
+              type="date"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Amount (BDT)</Label>
+            <TextEditor
+              handle={handle}
+              path="price"
+              placeholder="0"
+              type="number"
+            />
           </div>
           <div className="space-y-2">
             <Label>Payment Status</Label>
             <PaymentStatusEditor {...handle} />
+          </div>
+          <div className="space-y-2">
+            <Label>Payment Method</Label>
+            <PaymentMethodEditor {...handle} />
           </div>
           <div className="space-y-2">
             <Label>Internal Notes</Label>
