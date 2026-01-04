@@ -7,6 +7,8 @@ import {
   PRODUCTS_INVENTORY_QUERY,
   UNFULFILLED_ORDERS_QUERY,
   REVENUE_BY_PERIOD_QUERY,
+  ACTIVE_SUBSCRIPTION_COUNT_QUERY,
+  SUBSCRIPTION_REVENUE_BY_PERIOD_QUERY,
 } from "@/lib/sanity/queries/stats";
 
 interface OrderItem {
@@ -62,6 +64,13 @@ interface RevenuePeriod {
   previousOrderCount: number;
 }
 
+interface SubscriptionPeriod {
+  currentPeriod: number;
+  previousPeriod: number;
+  currentCount: number;
+  previousCount: number;
+}
+
 export async function GET() {
   try {
     // Calculate date ranges
@@ -77,6 +86,8 @@ export async function GET() {
       productsInventory,
       unfulfilledOrders,
       revenuePeriod,
+      activeSubscriptionCount,
+      subscriptionPeriod,
     ] = await Promise.all([
       client.fetch<Order[]>(ORDERS_LAST_7_DAYS_QUERY, {
         startDate: sevenDaysAgo.toISOString(),
@@ -86,6 +97,11 @@ export async function GET() {
       client.fetch<Product[]>(PRODUCTS_INVENTORY_QUERY),
       client.fetch<UnfulfilledOrder[]>(UNFULFILLED_ORDERS_QUERY),
       client.fetch<RevenuePeriod>(REVENUE_BY_PERIOD_QUERY, {
+        currentStart: sevenDaysAgo.toISOString(),
+        previousStart: fourteenDaysAgo.toISOString(),
+      }),
+      client.fetch<number>(ACTIVE_SUBSCRIPTION_COUNT_QUERY),
+      client.fetch<SubscriptionPeriod>(SUBSCRIPTION_REVENUE_BY_PERIOD_QUERY, {
         currentStart: sevenDaysAgo.toISOString(),
         previousStart: fourteenDaysAgo.toISOString(),
       }),
@@ -157,6 +173,15 @@ export async function GET() {
         : currentRevenue > 0
           ? 100
           : 0;
+    const subscriptionRevenue = subscriptionPeriod.currentPeriod || 0;
+    const subscriptionRevenueChange =
+      subscriptionPeriod.previousPeriod > 0
+        ? ((subscriptionRevenue - subscriptionPeriod.previousPeriod) /
+            subscriptionPeriod.previousPeriod) *
+          100
+        : subscriptionRevenue > 0
+          ? 100
+          : 0;
 
     const avgOrderValue =
       recentOrders.length > 0
@@ -178,6 +203,14 @@ export async function GET() {
           unitsSold: p.totalQuantity,
           revenue: p.revenue.toFixed(2),
         })),
+      },
+      subscriptions: {
+        activeSubscriptions: activeSubscriptionCount || 0,
+        currentWeekRevenue: subscriptionRevenue,
+        previousWeekRevenue: subscriptionPeriod.previousPeriod || 0,
+        revenueChangePercent: subscriptionRevenueChange.toFixed(1),
+        currentWeekSignups: subscriptionPeriod.currentCount || 0,
+        previousWeekSignups: subscriptionPeriod.previousCount || 0,
       },
       inventory: {
         needsRestock: needsRestock.map((p) => ({
@@ -317,6 +350,8 @@ Generate insights in the required JSON format.`,
         avgOrderValue: avgOrderValue.toFixed(2),
         unfulfilledCount: unfulfilledOrders.length,
         lowStockCount: productsInventory.filter((p) => p.stock <= 5).length,
+        activeSubscriptionCount: activeSubscriptionCount || 0,
+        subscriptionRevenue,
       },
       generatedAt: new Date().toISOString(),
     });

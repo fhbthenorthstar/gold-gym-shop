@@ -27,7 +27,7 @@ export function AdminSearch({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-9 pr-9"
+        className="pl-9 pr-9 border-zinc-800 bg-zinc-950/70 text-zinc-100 placeholder:text-zinc-500"
       />
       {value && (
         <Button
@@ -89,6 +89,42 @@ export function useContactSearchFilter(searchQuery: string) {
   const filter = useMemo(() => {
     if (!debouncedQuery.trim()) return undefined;
     return `name match "*${debouncedQuery}*" || phone match "*${debouncedQuery}*" || comment match "*${debouncedQuery}*"`;
+  }, [debouncedQuery]);
+
+  return { filter, isSearching: searchQuery !== debouncedQuery };
+}
+
+// Hook to build GROQ filter for training search
+export function useTrainingSearchFilter(searchQuery: string) {
+  const debouncedQuery = useDebouncedValue(searchQuery, 300);
+
+  const filter = useMemo(() => {
+    if (!debouncedQuery.trim()) return undefined;
+    return `title match "*${debouncedQuery}*" || link match "*${debouncedQuery}*"`;
+  }, [debouncedQuery]);
+
+  return { filter, isSearching: searchQuery !== debouncedQuery };
+}
+
+// Hook to build GROQ filter for subscription package search
+export function usePackageSearchFilter(searchQuery: string) {
+  const debouncedQuery = useDebouncedValue(searchQuery, 300);
+
+  const filter = useMemo(() => {
+    if (!debouncedQuery.trim()) return undefined;
+    return `title match "*${debouncedQuery}*" || location match "*${debouncedQuery}*" || tier match "*${debouncedQuery}*"`;
+  }, [debouncedQuery]);
+
+  return { filter, isSearching: searchQuery !== debouncedQuery };
+}
+
+// Hook to build GROQ filter for subscription search
+export function useSubscriptionSearchFilter(searchQuery: string) {
+  const debouncedQuery = useDebouncedValue(searchQuery, 300);
+
+  const filter = useMemo(() => {
+    if (!debouncedQuery.trim()) return undefined;
+    return `subscriberName match "*${debouncedQuery}*" || subscriberPhone match "*${debouncedQuery}*" || subscriptionNumber match "*${debouncedQuery}*"`;
   }, [debouncedQuery]);
 
   return { filter, isSearching: searchQuery !== debouncedQuery };

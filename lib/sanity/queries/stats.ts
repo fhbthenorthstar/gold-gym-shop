@@ -18,6 +18,50 @@ export const TOTAL_REVENUE_QUERY = defineQuery(`math::sum(*[
   && status == "paid"
 ].total)`);
 
+/**
+ * Get total subscription count
+ */
+export const SUBSCRIPTION_COUNT_QUERY = defineQuery(
+  `count(*[_type == "subscription" && !(_id in path("drafts.**"))])`
+);
+
+/**
+ * Get active subscription count
+ */
+export const ACTIVE_SUBSCRIPTION_COUNT_QUERY = defineQuery(
+  `count(*[_type == "subscription" && status == "active" && !(_id in path("drafts.**"))])`
+);
+
+/**
+ * Get subscription revenue comparison data (current vs previous period)
+ */
+export const SUBSCRIPTION_REVENUE_BY_PERIOD_QUERY = defineQuery(`{
+  "currentPeriod": math::sum(*[
+    _type == "subscription"
+    && paymentStatus == "paid"
+    && _createdAt >= $currentStart
+    && !(_id in path("drafts.**"))
+  ].price),
+  "previousPeriod": math::sum(*[
+    _type == "subscription"
+    && paymentStatus == "paid"
+    && _createdAt >= $previousStart
+    && _createdAt < $currentStart
+    && !(_id in path("drafts.**"))
+  ].price),
+  "currentCount": count(*[
+    _type == "subscription"
+    && _createdAt >= $currentStart
+    && !(_id in path("drafts.**"))
+  ]),
+  "previousCount": count(*[
+    _type == "subscription"
+    && _createdAt >= $previousStart
+    && _createdAt < $currentStart
+    && !(_id in path("drafts.**"))
+  ])
+}`);
+
 // ============================================
 // AI Insights Analytics Queries
 // ============================================

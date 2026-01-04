@@ -41,7 +41,7 @@ export function OrderCardWidget({ order, onClose }: OrderCardWidgetProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <span className="block truncate text-sm font-medium text-white transition-colors duration-200 group-hover:text-lime-200">
+            <span className="block truncate text-sm font-medium text-white transition-colors duration-200 group-hover:text-primary/90">
               Order #{formatOrderNumber(order.orderNumber)}
             </span>
             {displayItems && (
@@ -76,7 +76,7 @@ export function OrderCardWidget({ order, onClose }: OrderCardWidgetProps) {
   );
 
   const cardClasses =
-    "group flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3 transition-all duration-200 hover:border-lime-300/60 hover:shadow-[0_12px_30px_rgba(163,230,53,0.12)]";
+    "group flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3 transition-all duration-200 hover:border-primary/60 hover:shadow-[0_12px_30px_rgba(163,230,53,0.12)]";
 
   return (
     <Link href={order.orderUrl} onClick={handleClick} className={cardClasses}>

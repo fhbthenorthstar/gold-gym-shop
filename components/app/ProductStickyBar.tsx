@@ -138,6 +138,7 @@ export function ProductStickyBar({ product }: ProductStickyBarProps) {
             name={product.name ?? "Unknown Product"}
             price={displayPrice}
             image={imageUrl ?? undefined}
+            slug={product.slug ?? undefined}
             stock={displayStock}
             variantKey={variantKey}
             variant={
@@ -153,7 +154,7 @@ export function ProductStickyBar({ product }: ProductStickyBarProps) {
                   }
                 : undefined
             }
-            className="h-9 rounded-full bg-lime-300 text-xs font-semibold text-black hover:bg-lime-200"
+            className="h-9 rounded-full bg-primary text-xs font-semibold text-black hover:bg-primary/90"
           />
         </div>
       </div>

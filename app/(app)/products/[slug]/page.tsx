@@ -3,6 +3,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { PRODUCT_BY_SLUG_QUERY } from "@/lib/sanity/queries/products";
 import { ProductGallery } from "@/components/app/ProductGallery";
 import { ProductInfo } from "@/components/app/ProductInfo";
+import { ProductReviews } from "@/components/app/ProductReviews";
 import { ProductStickyBar } from "@/components/app/ProductStickyBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -35,12 +36,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         className="relative overflow-hidden border-b border-zinc-800 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url(https://dt-fitfinity.myshopify.com/cdn/shop/files/Breadcrump_2.jpg?v=1707216002&width=1920)",
+            "url(/trinners/head-trainers-01.webp)",
         }}
       >
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative mx-auto max-w-7xl px-4 py-14 text-center text-white">
-          <p className="text-xs uppercase tracking-[0.3em] text-lime-300">
+          <p className="text-xs uppercase tracking-[0.3em] text-primary">
             All / {product.name}
           </p>
           <h1 className="font-heading mt-4 text-3xl md:text-4xl">
@@ -60,19 +61,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <TabsList className="w-full justify-start gap-2 rounded-none bg-transparent p-0">
               <TabsTrigger
                 value="description"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-lime-300 data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
               >
                 Description
               </TabsTrigger>
               <TabsTrigger
                 value="shipping"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-lime-300 data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
               >
                 Shipping Information
               </TabsTrigger>
               <TabsTrigger
                 value="reviews"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-lime-300 data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
               >
                 Reviews
               </TabsTrigger>
@@ -98,8 +99,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 options.
               </p>
             </TabsContent>
-            <TabsContent value="reviews" className="mt-6 text-sm text-zinc-300">
-              <p className="text-zinc-400">No reviews yet. Be the first to review!</p>
+            <TabsContent value="reviews" className="mt-6">
+              <ProductReviews
+                productId={product._id}
+                productName={product.name}
+              />
             </TabsContent>
           </Tabs>
         </div>

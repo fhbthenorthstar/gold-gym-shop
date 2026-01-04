@@ -42,7 +42,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               className={cn(
                 "relative aspect-square w-16 overflow-hidden rounded-md border border-zinc-800 bg-zinc-900/60 transition-all",
                 selectedIndex === index
-                  ? "ring-2 ring-lime-300"
+                  ? "ring-2 ring-primary"
                   : "hover:opacity-80",
               )}
             >

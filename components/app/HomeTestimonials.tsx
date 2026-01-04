@@ -92,7 +92,7 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
   return (
     <section className="py-10">
       <div className="mx-auto max-w-6xl px-4 text-center">
-        <p className="text-xs uppercase tracking-[0.4em] text-lime-300">
+        <p className="text-xs uppercase tracking-[0.4em] text-primary">
           Real stories | Real progress | Real results.
         </p>
         <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
@@ -102,7 +102,7 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
           <button
             type="button"
             onClick={() => goToIndex(activeIndex - 1)}
-            className="absolute left-4 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-lime-300/40 bg-black/60 p-2 text-lime-300 transition hover:border-lime-200 hover:text-lime-200 sm:flex"
+            className="absolute left-4 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-primary/40 bg-black/60 p-2 text-primary transition hover:border-primary/80 hover:text-primary/90 sm:flex"
             aria-label="Previous testimonial"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -110,7 +110,7 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
           <button
             type="button"
             onClick={() => goToIndex(activeIndex + 1)}
-            className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-lime-300/40 bg-black/60 p-2 text-lime-300 transition hover:border-lime-200 hover:text-lime-200 sm:flex"
+            className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-primary/40 bg-black/60 p-2 text-primary transition hover:border-primary/80 hover:text-primary/90 sm:flex"
             aria-label="Next testimonial"
           >
             <ArrowRight className="h-5 w-5" />
@@ -158,13 +158,13 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
               {active?.name ?? "Customer"}
               {active?.role ? ` - ${active.role}` : ""}
             </div>
-            <div className="mt-3 flex items-center justify-center gap-1 text-lime-300">
+            <div className="mt-3 flex items-center justify-center gap-1 text-primary">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
                   key={index}
                   className={cn(
                     "h-4 w-4",
-                    index < activeRating ? "fill-lime-300" : "text-zinc-700"
+                    index < activeRating ? "fill-primary" : "text-zinc-700"
                   )}
                 />
               ))}
@@ -180,7 +180,7 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
             <button
               type="button"
               onClick={() => goToIndex(activeIndex - 1)}
-              className="inline-flex items-center justify-center rounded-full border border-lime-300/40 bg-black/60 p-2 text-lime-300 transition hover:border-lime-200 hover:text-lime-200"
+              className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-black/60 p-2 text-primary transition hover:border-primary/80 hover:text-primary/90"
               aria-label="Previous testimonial"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -188,7 +188,7 @@ export function HomeTestimonials({ items }: { items: HomeTestimonialItem[] }) {
             <button
               type="button"
               onClick={() => goToIndex(activeIndex + 1)}
-              className="inline-flex items-center justify-center rounded-full border border-lime-300/40 bg-black/60 p-2 text-lime-300 transition hover:border-lime-200 hover:text-lime-200"
+              className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-black/60 p-2 text-primary transition hover:border-primary/80 hover:text-primary/90"
               aria-label="Next testimonial"
             >
               <ArrowRight className="h-5 w-5" />

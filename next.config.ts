@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
     domains: [
       "cdn.sanity.io",
       "images.unsplash.com",
-      "dt-fitfinity.myshopify.com",
       "scontent.cdninstagram.com",
     ],
     remotePatterns: [
@@ -18,10 +17,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "dt-fitfinity.myshopify.com",
       },
       {
         protocol: "https",

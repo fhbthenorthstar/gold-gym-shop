@@ -1,6 +1,20 @@
-import { Banknote, CreditCard, type LucideIcon } from "lucide-react";
+import {
+  Banknote,
+  CreditCard,
+  Package,
+  Truck,
+  RotateCcw,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 
-export type OrderStatusValue = "cod" | "paid";
+export type OrderStatusValue =
+  | "cod"
+  | "paid"
+  | "preparing"
+  | "shipped"
+  | "refunded"
+  | "cancelled";
 
 export interface OrderStatusConfig {
   /** The status value/key */
@@ -38,6 +52,44 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatusValue, OrderStatusConfig> =
       emoji: "✅",
       iconColor: "text-emerald-600 dark:text-emerald-400",
       iconBgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+    },
+    preparing: {
+      value: "preparing",
+      label: "Preparing Product",
+      color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      icon: Package,
+      emoji: "📦",
+      iconColor: "text-blue-600 dark:text-blue-400",
+      iconBgColor: "bg-blue-100 dark:bg-blue-900/30",
+    },
+    shipped: {
+      value: "shipped",
+      label: "Shipped",
+      color:
+        "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
+      icon: Truck,
+      emoji: "🚚",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      iconBgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+    },
+    refunded: {
+      value: "refunded",
+      label: "Refunded",
+      color: "bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300",
+      icon: RotateCcw,
+      emoji: "↩️",
+      iconColor: "text-rose-600 dark:text-rose-400",
+      iconBgColor: "bg-rose-100 dark:bg-rose-900/30",
+    },
+    cancelled: {
+      value: "cancelled",
+      label: "Cancelled",
+      color:
+        "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+      icon: XCircle,
+      emoji: "❌",
+      iconColor: "text-zinc-600 dark:text-zinc-300",
+      iconBgColor: "bg-zinc-200 dark:bg-zinc-800",
     },
   };
 

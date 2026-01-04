@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function SuccessPageSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-2xl px-4 py-16 text-zinc-100 sm:px-6 lg:px-8">
       <div className="text-center">
         {/* Success Icon */}
         <Skeleton className="mx-auto h-20 w-20 rounded-full" />
@@ -14,7 +14,7 @@ export function SuccessPageSkeleton() {
         <Skeleton className="mx-auto mt-2 h-5 w-80" />
 
         {/* Order Details Card */}
-        <div className="mt-8 rounded-lg border border-zinc-200 bg-white p-6 text-left dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="mt-8 rounded-lg border border-zinc-800 bg-zinc-950 p-6 text-left">
           <Skeleton className="h-5 w-32" />
           
           <div className="mt-4 space-y-3">

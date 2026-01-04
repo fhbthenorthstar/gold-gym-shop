@@ -7,8 +7,11 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  Tags,
   ShoppingCart,
   MessageSquare,
+  Activity,
+  Calendar,
   Menu,
   X,
   ExternalLink,
@@ -37,12 +40,27 @@ const navItems = [
     icon: Package,
   },
   {
+    label: "Packages",
+    href: "/admin/packages",
+    icon: Tags,
+  },
+  {
+    label: "Trainings",
+    href: "/admin/trainings",
+    icon: Activity,
+  },
+  {
     label: "Orders",
     href: "/admin/orders",
     icon: ShoppingCart,
   },
   {
-    label: "Contact Form",
+    label: "Subscriptions",
+    href: "/admin/subscriptions",
+    icon: Calendar,
+  },
+  {
+    label: "Inquiries",
     href: "/admin/contact",
     icon: MessageSquare,
   },
@@ -228,9 +246,10 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AdminPinGate>
       <Providers>
-        <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+        <div className="dark">
+          <div className="flex min-h-screen bg-zinc-50 text-zinc-100 dark:bg-zinc-950">
           {/* Mobile Header */}
-          <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-zinc-200 bg-white px-4 dark:border-zinc-800 dark:bg-zinc-900 lg:hidden">
+          <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 lg:hidden">
             <Link href="/admin" className="flex items-center gap-2">
               <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-white ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700">
                 <Image
@@ -241,8 +260,8 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                   className="object-contain p-1"
                 />
               </div>
-              <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                GGS Admin
+              <span className="font-heading text-xl uppercase tracking-[0.2em] text-white">
+                Admin
               </span>
             </Link>
             <Button
@@ -295,7 +314,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                       className="object-contain p-1"
                     />
                   </div>
-                  <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <span className="font-heading text-xl uppercase tracking-[0.2em] text-white">
                     Admin
                   </span>
                 </Link>
@@ -317,8 +336,8 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                         isActive
-                          ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-                          : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100",
+                          ? "bg-primary/15 text-primary"
+                          : "text-zinc-400 hover:bg-zinc-900/60 hover:text-white",
                       )}
                     >
                       <item.icon className="h-5 w-5" />
@@ -334,7 +353,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                   href="/studio"
                   target="_blank"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
                 >
                   Open GGS Studio
                   <ExternalLink className="h-4 w-4" />
@@ -342,7 +361,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/"
                   onClick={() => setSidebarOpen(false)}
-                  className="block px-3 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  className="block px-3 text-sm text-zinc-400 hover:text-white"
                 >
                   ← Back to Store
                 </Link>
@@ -352,7 +371,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                     setSidebarOpen(false);
                     handleLogout();
                   }}
-                  className="flex items-center gap-2 px-3 text-sm text-zinc-500 transition hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  className="flex items-center gap-2 px-3 text-sm text-zinc-400 transition hover:text-white"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -365,6 +384,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
           <main className="flex-1 pt-14 lg:ml-64 lg:pt-0">
             <div className="p-4 lg:p-8">{children}</div>
           </main>
+        </div>
         </div>
       </Providers>
     </AdminPinGate>

@@ -98,19 +98,20 @@ export default async function ShopPage({ searchParams }: PageProps) {
         className="relative overflow-hidden border-b border-zinc-800 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url(https://dt-fitfinity.myshopify.com/cdn/shop/files/Breadcrump_2.jpg?v=1707216002&width=1920)",
+            "url(/trinners/head-trainers-01.webp)",
         }}
       >
         <div className="absolute inset-0 bg-black/70" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 text-center text-white">
-          <p className="text-xs uppercase tracking-[0.3em] text-lime-300">
+          <p className="text-xs uppercase tracking-[0.3em] text-primary">
             Home / All Collections / Products
           </p>
           <h1 className="font-heading mt-4 text-3xl md:text-4xl">
             {activeCategory?.title ?? "All Products"}
           </h1>
           <p className="mt-2 text-sm text-zinc-300">
-            Fitwear, supplements, and equipment curated for modern training.
+            Gold's Gym Bangladesh essentials for stronger training: apparel,
+            supplements, and performance gear.
           </p>
         </div>
       </section>

@@ -65,6 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
     compareAtPrice !== null && compareAtPrice > displayPrice;
   const cartVariant: CartItemVariant | undefined = defaultVariant
     ? {
+        _key: defaultVariant?._key ?? undefined,
         sku: defaultVariant?.sku ?? undefined,
         options:
           defaultVariant?.optionValues?.flatMap((opt) =>
@@ -87,7 +88,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const isCompared = compareItems.some((item) => item.id === itemId);
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-lime-400/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+    <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
       <div className="relative">
         <Link href={`/products/${product.slug}`} className="block">
           <div
@@ -114,7 +115,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="absolute left-3 top-3 flex flex-col gap-2">
           {hasSale && (
-            <Badge className="rounded-full bg-lime-300 px-3 py-1 text-[10px] font-semibold uppercase text-black">
+            <Badge className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase text-black">
               Sale
             </Badge>
           )}
@@ -130,8 +131,8 @@ export function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={() => toggleWishlist(wishlistItem)}
             className={cn(
-              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-lime-300",
-              isWishlisted && "text-lime-300",
+              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-primary",
+              isWishlisted && "text-primary",
             )}
             aria-label="Add to wishlist"
           >
@@ -141,8 +142,8 @@ export function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={() => toggleCompare(wishlistItem)}
             className={cn(
-              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-lime-300",
-              isCompared && "text-lime-300",
+              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-primary",
+              isCompared && "text-primary",
             )}
             aria-label="Add to compare"
           >
@@ -153,16 +154,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
       <div className="flex flex-col gap-3 p-5">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-          {product.brand ?? "Fitfinity"}
+          {product.brand ?? "Gold's Gym BD"}
         </div>
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="line-clamp-2 text-base font-semibold text-white transition-colors group-hover:text-lime-200">
+          <h3 className="line-clamp-2 text-base font-semibold text-white transition-colors group-hover:text-primary/90">
             {product.name}
           </h3>
         </Link>
-        <div className="flex items-center gap-1 text-lime-300">
+        <div className="flex items-center gap-1 text-primary">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Star key={index} className="h-3 w-3 fill-lime-300" />
+            <Star key={index} className="h-3 w-3 fill-primary" />
           ))}
         </div>
 
@@ -185,10 +186,11 @@ export function ProductCard({ product }: ProductCardProps) {
           name={product.name ?? "Unknown Product"}
           price={displayPrice}
           image={mainImageUrl ?? undefined}
+          slug={product.slug ?? undefined}
           stock={displayStock}
           variantKey={variantKey}
           variant={cartVariant}
-          className="h-10 rounded-full bg-lime-300 text-black hover:bg-lime-200"
+          className="h-10 rounded-full bg-primary text-black hover:bg-primary/90"
         />
       </div>
     </div>

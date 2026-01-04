@@ -7,12 +7,21 @@ import {
   createDocumentHandle,
   createDocument,
 } from "@sanity/sdk-react";
-import { Package, ShoppingCart, TrendingUp, Plus, Loader2 } from "lucide-react";
+import {
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  Plus,
+  Loader2,
+  CalendarCheck,
+  Users2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   StatCard,
   LowStockAlert,
   RecentOrders,
+  RecentSubscriptions,
   AIInsightsCard,
 } from "@/components/admin";
 
@@ -62,7 +71,7 @@ export default function AdminDashboard() {
       <AIInsightsCard />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard
           title="Total Products"
           icon={Package}
@@ -76,6 +85,19 @@ export default function AdminDashboard() {
           href="/admin/orders"
         />
         <StatCard
+          title="Active Subscriptions"
+          icon={CalendarCheck}
+          documentType="subscription"
+          filter='status == "active"'
+          href="/admin/subscriptions"
+        />
+        <StatCard
+          title="Total Members"
+          icon={Users2}
+          documentType="subscription"
+          href="/admin/subscriptions"
+        />
+        <StatCard
           title="Low Stock Items"
           icon={TrendingUp}
           documentType="product"
@@ -85,9 +107,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         <LowStockAlert />
         <RecentOrders />
+        <RecentSubscriptions />
       </div>
     </div>
   );

@@ -45,5 +45,31 @@ export interface SearchProductsResult {
   };
 }
 
-// Re-export order types from the tool
+export interface SearchPackage {
+  id: string;
+  title: string | null;
+  location: string | null;
+  locationLabel: string;
+  tier: string | null;
+  tierLabel: string;
+  durationLabel: string | null;
+  durationMonths: number | null;
+  accessLabel: string | null;
+  price: number;
+  priceFormatted: string;
+  packageUrl: string | null;
+}
+
+export interface SearchPackagesResult {
+  found: boolean;
+  message: string;
+  packages: SearchPackage[];
+  error?: string;
+}
+
+// Re-export order/subscription types from tools
 export type { OrderSummary, GetMyOrdersResult } from "./tools/get-my-orders";
+export type {
+  SubscriptionSummary,
+  GetMySubscriptionsResult,
+} from "./tools/get-my-subscriptions";

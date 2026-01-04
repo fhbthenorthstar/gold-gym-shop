@@ -13,10 +13,15 @@ export const BANGLADESH_DIVISIONS = [
 
 export type BangladeshDivision = (typeof BANGLADESH_DIVISIONS)[number];
 
-const DEFAULT_SHIPPING_FEE = 150;
-const DHAKA_SHIPPING_FEE = 100;
+export const FREE_SHIPPING_THRESHOLD = 2500;
+const DEFAULT_SHIPPING_FEE = 100;
+const DHAKA_SHIPPING_FEE = 60;
 
-export const getShippingFee = (division?: string | null): number => {
+export const getShippingFee = (
+  division?: string | null,
+  subtotal = 0
+): number => {
+  if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
   if (!division) return 0;
   return division === "Dhaka" ? DHAKA_SHIPPING_FEE : DEFAULT_SHIPPING_FEE;
 };

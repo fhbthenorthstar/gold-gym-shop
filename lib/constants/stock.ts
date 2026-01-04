@@ -5,6 +5,12 @@
 export const LOW_STOCK_THRESHOLD = 5;
 
 /**
+ * Fallback stock used when no stock value is provided in data.
+ * Helps prevent checkout blocks for incomplete sample data.
+ */
+export const DEFAULT_STOCK_FALLBACK = 25;
+
+/**
  * Check if a product is considered low stock
  * @param stock - Current stock count
  * @returns true if stock is above 0 but at or below the threshold

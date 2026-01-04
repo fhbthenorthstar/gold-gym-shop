@@ -53,13 +53,13 @@ function ContactListContent({
     const description = searchFilter
       ? "Try adjusting your search terms."
       : statusFilter === "all"
-        ? "New contact requests will appear here."
-        : `No ${statusFilter} contact requests right now.`;
+        ? "New inquiries will appear here."
+        : `No ${statusFilter} inquiries right now.`;
 
     return (
       <EmptyState
         icon={MessageSquare}
-        title="No contact requests"
+        title="No inquiries"
         description={description}
       />
     );
@@ -119,12 +119,12 @@ export default function ContactAdminPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
-          Contact Form
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
-          Review and respond to customer contact requests.
-        </p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
+            Inquiries
+          </h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
+            Review and resolve customer inquiries.
+          </p>
       </div>
 
       <div className="flex flex-col gap-4">

@@ -30,12 +30,14 @@ import {
   BANGLADESH_DIVISIONS,
   DEFAULT_COUNTRY,
   getShippingFee,
+  FREE_SHIPPING_THRESHOLD,
 } from "@/lib/constants/bangladesh";
 import type { CUSTOMER_BY_CLERK_ID_QUERYResult } from "@/sanity.types";
 
 interface CheckoutClientProps {
   isSignedIn: boolean;
   initialEmail: string;
+  initialName: string;
   initialAddresses: NonNullable<
     NonNullable<CUSTOMER_BY_CLERK_ID_QUERYResult>["addresses"]
   >;
@@ -68,13 +70,14 @@ const emptyAddress: AddressFormState = {
 export function CheckoutClient({
   isSignedIn,
   initialEmail,
+  initialName,
   initialAddresses,
 }: CheckoutClientProps) {
   const router = useRouter();
   const items = useCartItems();
   const subtotal = useTotalPrice();
   const totalItems = useTotalItems();
-  const { isLoading, hasStockIssues } = useCartStock(items);
+  const { isLoading, hasStockIssues, stockMap } = useCartStock(items);
   const [isPending, startTransition] = useTransition();
 
   const addresses = useMemo(
@@ -101,7 +104,7 @@ export function CheckoutClient({
           country: defaultAddress.country ?? DEFAULT_COUNTRY,
           phone: defaultAddress.phone ?? "",
         }
-      : { ...emptyAddress }
+      : { ...emptyAddress, name: initialName ?? "" }
   );
   const [email, setEmail] = useState(initialEmail ?? "");
   const [orderNotes, setOrderNotes] = useState("");
@@ -111,22 +114,33 @@ export function CheckoutClient({
   );
   const [paymentMethod] = useState<"cod" | "online">("cod");
   const [formError, setFormError] = useState<string | null>(null);
+  const inputClassName =
+    "border-zinc-800 bg-black/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-primary";
+  const selectTriggerClassName =
+    "w-full border-zinc-800 bg-black/60 text-zinc-100";
+  const selectContentClassName = "border-zinc-800 bg-zinc-950 text-zinc-200";
 
   const shippingFee = useMemo(
-    () => getShippingFee(addressForm.division),
-    [addressForm.division]
+    () => getShippingFee(addressForm.division, subtotal),
+    [addressForm.division, subtotal]
   );
   const total = subtotal + shippingFee;
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingLabel = addressForm.division
+    ? shippingFee === 0
+      ? "Free"
+      : formatPrice(shippingFee)
+    : "Select division";
 
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
-          <ShoppingBag className="mx-auto h-16 w-16 text-zinc-300 dark:text-zinc-600" />
-          <h1 className="mt-6 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <ShoppingBag className="mx-auto h-16 w-16 text-zinc-500" />
+          <h1 className="mt-6 text-2xl font-bold text-white">
             Your cart is empty
           </h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-zinc-400">
             Add some items to your cart before checking out.
           </p>
           <Button asChild className="mt-8">
@@ -140,7 +154,7 @@ export function CheckoutClient({
   const handleSelectAddress = (address: CustomerAddress | null) => {
     if (!address) {
       setSelectedAddressKey(null);
-      setAddressForm({ ...emptyAddress });
+      setAddressForm({ ...emptyAddress, name: initialName ?? "" });
       setMakeDefault(addresses.length === 0);
       return;
     }
@@ -201,13 +215,11 @@ export function CheckoutClient({
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-6 flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-400">
+    <div className="mx-auto max-w-6xl px-4 py-10 text-zinc-100 sm:px-6 lg:px-8">
+      <div className="mb-6 flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
         <span>Shopping Cart</span>
         <span className="text-zinc-300">›</span>
-        <span className="text-zinc-900 dark:text-zinc-100">
-          Checkout Details
-        </span>
+        <span className="text-primary">Checkout Details</span>
         <span className="text-zinc-300">›</span>
         <span>Order Complete</span>
       </div>
@@ -215,37 +227,35 @@ export function CheckoutClient({
       <div className="mb-6">
         <Link
           href="/"
-          className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-primary"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Continue Shopping
         </Link>
-        <h1 className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-          Checkout
-        </h1>
+        <h1 className="mt-4 text-3xl font-bold text-white">Checkout</h1>
       </div>
 
       {!isSignedIn && (
-        <div className="mb-4 text-sm text-zinc-500">
+        <div className="mb-4 text-sm text-zinc-400">
           Returning customer?{" "}
           <SignInButton mode="modal">
-            <button type="button" className="text-zinc-900 underline">
+            <button type="button" className="text-primary underline">
               Click here to login
             </button>
           </SignInButton>
         </div>
       )}
 
-      <div className="mb-6 text-sm text-zinc-500">
+      <div className="mb-6 text-sm text-zinc-400">
         Have a coupon?{" "}
-        <span className="text-zinc-900">Click here to enter your code</span>
+        <span className="text-primary">Click here to enter your code</span>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="space-y-8 lg:col-span-7">
           {isSignedIn && addresses.length > 0 && (
-            <div className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
-              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+              <h2 className="text-sm font-semibold text-white">
                 Saved Addresses
               </h2>
               <div className="mt-4 grid gap-3">
@@ -256,8 +266,8 @@ export function CheckoutClient({
                     onClick={() => handleSelectAddress(address)}
                     className={`rounded-md border px-4 py-3 text-left text-sm transition-colors ${
                       selectedAddressKey === address._key
-                        ? "border-zinc-900 bg-zinc-50 text-zinc-900"
-                        : "border-zinc-200 text-zinc-600 hover:border-zinc-300"
+                        ? "border-primary/70 bg-primary/10 text-white"
+                        : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-primary/40"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -265,14 +275,14 @@ export function CheckoutClient({
                         {address.label || address.name || "Saved Address"}
                       </span>
                       {address.isDefault && (
-                        <span className="text-xs text-emerald-600">Default</span>
+                        <span className="text-xs text-primary">Default</span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <p className="mt-1 text-xs text-zinc-400">
                       {[address.line1, address.division].filter(Boolean).join(", ")}
                     </p>
                     {address.phone && (
-                      <p className="mt-1 text-xs text-zinc-500">{address.phone}</p>
+                      <p className="mt-1 text-xs text-zinc-400">{address.phone}</p>
                     )}
                   </button>
                 ))}
@@ -281,8 +291,8 @@ export function CheckoutClient({
                   onClick={() => handleSelectAddress(null)}
                   className={`rounded-md border px-4 py-3 text-left text-sm transition-colors ${
                     selectedAddressKey === null
-                      ? "border-zinc-900 bg-zinc-50 text-zinc-900"
-                      : "border-dashed border-zinc-200 text-zinc-600 hover:border-zinc-300"
+                      ? "border-primary/70 bg-primary/10 text-white"
+                      : "border-dashed border-zinc-700 text-zinc-300 hover:border-primary/50"
                   }`}
                 >
                   Use a new address
@@ -291,14 +301,16 @@ export function CheckoutClient({
             </div>
           )}
 
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-base font-semibold text-white">
               Billing & Shipping
             </h2>
 
             <div className="mt-5 grid gap-4">
               <div>
-                <Label htmlFor="full-name">Full Name *</Label>
+                <Label htmlFor="full-name" className="text-zinc-200">
+                  Full Name *
+                </Label>
                 <Input
                   id="full-name"
                   value={addressForm.name}
@@ -309,11 +321,14 @@ export function CheckoutClient({
                     }))
                   }
                   placeholder="Your name"
+                  className={inputClassName}
                 />
               </div>
 
               <div>
-                <Label htmlFor="address-line-1">Address *</Label>
+                <Label htmlFor="address-line-1" className="text-zinc-200">
+                  Address *
+                </Label>
                 <Input
                   id="address-line-1"
                   value={addressForm.line1}
@@ -324,11 +339,14 @@ export function CheckoutClient({
                     }))
                   }
                   placeholder="House number and street name"
+                  className={inputClassName}
                 />
               </div>
 
               <div>
-                <Label htmlFor="address-line-2">Address Line 2</Label>
+                <Label htmlFor="address-line-2" className="text-zinc-200">
+                  Address Line 2
+                </Label>
                 <Input
                   id="address-line-2"
                   value={addressForm.line2}
@@ -339,22 +357,23 @@ export function CheckoutClient({
                     }))
                   }
                   placeholder="Apartment, suite, unit, etc."
+                  className={inputClassName}
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>Division *</Label>
+                  <Label className="text-zinc-200">Division *</Label>
                   <Select
                     value={addressForm.division}
                     onValueChange={(value) =>
                       setAddressForm((prev) => ({ ...prev, division: value }))
                     }
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className={selectTriggerClassName}>
                       <SelectValue placeholder="Select division" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className={selectContentClassName}>
                       {BANGLADESH_DIVISIONS.map((division) => (
                         <SelectItem key={division} value={division}>
                           {division}
@@ -365,7 +384,9 @@ export function CheckoutClient({
                 </div>
 
                 <div>
-                  <Label htmlFor="postcode">Postcode</Label>
+                  <Label htmlFor="postcode" className="text-zinc-200">
+                    Postcode
+                  </Label>
                   <Input
                     id="postcode"
                     value={addressForm.postcode}
@@ -376,13 +397,16 @@ export function CheckoutClient({
                       }))
                     }
                     placeholder="Postcode"
+                    className={inputClassName}
                   />
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="phone">Phone *</Label>
+                  <Label htmlFor="phone" className="text-zinc-200">
+                    Phone *
+                  </Label>
                   <Input
                     id="phone"
                     value={addressForm.phone}
@@ -393,45 +417,56 @@ export function CheckoutClient({
                       }))
                     }
                     placeholder="01XXXXXXXXX"
+                    className={inputClassName}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Input id="country" value={DEFAULT_COUNTRY} disabled />
+                  <Label htmlFor="country" className="text-zinc-200">
+                    Country
+                  </Label>
+                  <Input
+                    id="country"
+                    value={DEFAULT_COUNTRY}
+                    disabled
+                    className={`${inputClassName} bg-black/40 text-zinc-400`}
+                  />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="email">Email (optional)</Label>
+                <Label htmlFor="email" className="text-zinc-200">
+                  Email (optional)
+                </Label>
                 <Input
                   id="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@email.com"
+                  className={inputClassName}
                 />
               </div>
 
               {isSignedIn && (
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm text-zinc-600">
+                  <label className="flex items-center gap-2 text-sm text-zinc-300">
                     <input
                       type="checkbox"
                       checked={saveAddress}
                       onChange={(event) => setSaveAddress(event.target.checked)}
-                      className="h-4 w-4"
+                      className="h-4 w-4 rounded border-zinc-700 bg-black text-primary"
                     />
                     Save this address for next time
                   </label>
                   {saveAddress && (
-                    <label className="flex items-center gap-2 text-sm text-zinc-600">
+                    <label className="flex items-center gap-2 text-sm text-zinc-300">
                       <input
                         type="checkbox"
                         checked={makeDefault}
                         onChange={(event) =>
                           setMakeDefault(event.target.checked)
                         }
-                        className="h-4 w-4"
+                        className="h-4 w-4 rounded border-zinc-700 bg-black text-primary"
                       />
                       Make this my default address
                     </label>
@@ -441,35 +476,41 @@ export function CheckoutClient({
             </div>
           </div>
 
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-base font-semibold text-white">
               Additional Information
             </h2>
             <div className="mt-4">
-              <Label htmlFor="order-notes">Order notes (optional)</Label>
+              <Label htmlFor="order-notes" className="text-zinc-200">
+                Order notes (optional)
+              </Label>
               <Textarea
                 id="order-notes"
                 value={orderNotes}
                 onChange={(event) => setOrderNotes(event.target.value)}
                 placeholder="Notes about your order, e.g. special notes for delivery"
+                className={inputClassName}
               />
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-5">
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-base font-semibold text-white">
               Your Order
             </h2>
 
-            <div className="mt-4 space-y-4 border-b border-zinc-200 pb-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-3">
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-zinc-100">
-                    {item.image ? (
-                      <Image
-                        src={item.image}
+            <div className="mt-4 space-y-4 border-b border-zinc-800 pb-4">
+              {items.map((item) => {
+                const itemImage = item.image ?? stockMap.get(item.id)?.imageUrl ?? undefined;
+
+                return (
+                  <div key={item.id} className="flex gap-3">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-black/60">
+                      {itemImage ? (
+                        <Image
+                          src={itemImage}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -482,69 +523,68 @@ export function CheckoutClient({
                     )}
                   </div>
                   <div className="flex-1 text-sm">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {item.name}
-                    </p>
+                    <p className="font-medium text-white">{item.name}</p>
                     {item.variant?.options?.length ? (
-                      <p className="text-xs text-zinc-500">
+                      <p className="text-xs text-zinc-400">
                         {item.variant.options
                           .map((option) => `${option.name}: ${option.value}`)
                           .join(" / ")}
                       </p>
                     ) : null}
-                    <p className="text-xs text-zinc-500">Qty: {item.quantity}</p>
+                    <p className="text-xs text-zinc-400">Qty: {item.quantity}</p>
                   </div>
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  <p className="text-sm font-medium text-white">
                     {formatPrice(item.price * item.quantity)}
                   </p>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-500">Subtotal</span>
-                <span className="text-zinc-900 dark:text-zinc-100">
+                <span className="text-zinc-400">Subtotal</span>
+                <span className="text-white">
                   {formatPrice(subtotal)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Shipping</span>
-                <span className="text-zinc-900 dark:text-zinc-100">
-                  {shippingFee > 0
-                    ? formatPrice(shippingFee)
-                    : "Calculated at checkout"}
+                <span className="text-zinc-400">Shipping</span>
+                <span className="text-white">
+                  {shippingLabel}
                 </span>
               </div>
-              <div className="border-t border-zinc-200 pt-3">
+              <p className="text-xs text-zinc-400">
+                Dhaka delivery: ৳60 • Outside Dhaka: ৳100 • Free over{" "}
+                {formatPrice(FREE_SHIPPING_THRESHOLD)}
+              </p>
+              <div className="border-t border-zinc-800 pt-3">
                 <div className="flex justify-between text-base font-semibold">
-                  <span className="text-zinc-900 dark:text-zinc-100">Total</span>
-                  <span className="text-zinc-900 dark:text-zinc-100">
-                    {formatPrice(total)}
-                  </span>
+                  <span className="text-white">Total</span>
+                  <span className="text-white">{formatPrice(total)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 space-y-4 border-t border-zinc-200 pt-4">
+            <div className="mt-6 space-y-4 border-t border-zinc-800 pt-4">
               <div className="space-y-2">
                 <label className="flex items-start gap-2 text-sm">
                   <input
                     type="radio"
                     checked={paymentMethod === "cod"}
                     readOnly
-                    className="mt-1 h-4 w-4"
+                    className="mt-1 h-4 w-4 text-primary"
                   />
                   <span>
-                    <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                    <span className="font-semibold text-white">
                       Cash on Delivery
                     </span>
-                    <span className="mt-1 block text-xs text-zinc-500">
+                    <span className="mt-1 block text-xs text-zinc-400">
                       Inside Dhaka: Cash on Delivery. Outside Dhaka: partial advance payment is required.
                     </span>
                   </span>
                 </label>
-                <label className="flex items-start gap-2 text-sm text-zinc-400">
+                <label className="flex items-start gap-2 text-sm text-zinc-500">
                   <input type="radio" disabled className="mt-1 h-4 w-4" />
                   <span>
                     <span className="font-semibold">Pay Online</span>
@@ -556,27 +596,27 @@ export function CheckoutClient({
               </div>
 
               {hasStockIssues && !isLoading && (
-                <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
                   <AlertTriangle className="h-4 w-4" />
                   Some items have stock issues. Please update your cart.
                 </div>
               )}
 
               {isLoading && (
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Verifying stock...
                 </div>
               )}
 
               {formError && (
-                <p className="text-xs text-red-600">{formError}</p>
+                <p className="text-xs text-red-400">{formError}</p>
               )}
 
               <Button
                 onClick={handleSubmit}
                 disabled={isPending || hasStockIssues || isLoading}
-                className="w-full bg-lime-500 text-white hover:bg-lime-600"
+                className="w-full bg-primary text-black hover:bg-primary/80"
                 size="lg"
               >
                 {isPending ? (
@@ -590,12 +630,12 @@ export function CheckoutClient({
               </Button>
             </div>
 
-            <p className="mt-4 text-center text-xs text-zinc-500">
+            <p className="mt-4 text-center text-xs text-zinc-400">
               By placing your order, you agree to our terms and conditions.
             </p>
           </div>
 
-          <div className="mt-6 rounded-lg border border-zinc-100 bg-zinc-50 p-4 text-xs text-zinc-500">
+          <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs text-zinc-400">
             Order Summary ({totalItems} items)
           </div>
         </div>

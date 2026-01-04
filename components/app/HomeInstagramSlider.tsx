@@ -132,7 +132,7 @@ export function HomeInstagramSlider({
                     />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <Instagram className="h-8 w-8 text-lime-300" />
+                    <Instagram className="h-8 w-8 text-primary" />
                   </div>
                 </div>
                 {item.caption && (

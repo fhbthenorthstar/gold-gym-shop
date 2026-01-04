@@ -11,12 +11,12 @@ export function PageHero({ title, subtitle }: PageHeroProps) {
       className="relative overflow-hidden border-b border-zinc-800 bg-cover bg-center"
       style={{
         backgroundImage:
-          "url(https://dt-fitfinity.myshopify.com/cdn/shop/files/Breadcrump_2.jpg?v=1707216002&width=1920)",
+          "url(/trinners/head-trainers-01.webp)",
       }}
     >
       <div className="absolute inset-0 bg-black/70" />
       <div className="relative mx-auto max-w-7xl px-4 py-16 text-center text-white">
-        <p className="text-xs uppercase tracking-[0.3em] text-lime-300">
+        <p className="text-xs uppercase tracking-[0.3em] text-primary">
           Home / {title}
         </p>
         <h1 className="font-heading mt-4 text-3xl md:text-4xl">{title}</h1>

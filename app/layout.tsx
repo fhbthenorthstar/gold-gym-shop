@@ -15,8 +15,8 @@ const baiJamjuree = Bai_Jamjuree({
 });
 
 export const metadata: Metadata = {
-  title: "Fitfinity Storefront",
-  description: "Fitfinity-inspired ecommerce storefront",
+  title: "Gold's Gym BD Shop",
+  description: "Gold's Gym Bangladesh ecommerce storefront",
 };
 
 export default function RootLayout({

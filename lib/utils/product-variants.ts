@@ -1,3 +1,5 @@
+import { DEFAULT_STOCK_FALLBACK } from "@/lib/constants/stock";
+
 export type VariantOptionValue = {
   name?: string | null;
   value?: string | null;
@@ -149,7 +151,7 @@ export const getDisplayStock = (
   product: ProductWithVariants,
   variant: ProductVariant
 ): number => {
-  return variant?.stock ?? product.stock ?? 0;
+  return variant?.stock ?? product.stock ?? DEFAULT_STOCK_FALLBACK;
 };
 
 export const getVariantLabel = (variant: ProductVariant): string => {

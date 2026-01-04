@@ -49,6 +49,13 @@ const FILE_PATH = (() => {
 })();
 
 const DEFAULT_STOCK = 12;
+const STORE_URL = (process.env.SHOPIFY_SOURCE_URL ?? "").replace(/\/$/, "");
+
+if (!STORE_URL) {
+  throw new Error(
+    "Missing SHOPIFY_SOURCE_URL. Set it to your Shopify store base URL."
+  );
+}
 
 const normalizeUrl = (url: string) =>
   url.startsWith("//") ? `https:${url}` : url;
@@ -209,7 +216,7 @@ async function run() {
     {
       key: "shopifyUrl",
       type: "string",
-      valueString: `https://dt-fitfinity.myshopify.com${product.url}`,
+      valueString: `${STORE_URL}${product.url}`,
     },
     {
       key: "shopifyVendor",
@@ -250,6 +257,6 @@ async function run() {
 }
 
 run().catch((error) => {
-  console.error("Failed to import Fitfinity product:", error);
+  console.error("Failed to import Shopify product:", error);
   process.exit(1);
 });

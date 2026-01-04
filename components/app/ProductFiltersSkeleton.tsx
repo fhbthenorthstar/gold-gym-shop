@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProductFiltersSkeleton() {
   return (
-    <div className="space-y-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="space-y-6 rounded-lg border border-zinc-800 bg-zinc-950 p-6">
       {/* Search */}
       <div>
         <Skeleton className="mb-2 h-4 w-16" />

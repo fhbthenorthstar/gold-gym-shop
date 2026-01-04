@@ -24,11 +24,16 @@ async function CheckoutClientLoader() {
     : { data: null };
 
   const initialEmail = user?.emailAddresses[0]?.emailAddress ?? customer?.email ?? "";
+  const fallbackName =
+    user?.fullName ??
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ");
+  const initialName = customer?.name ?? fallbackName ?? "";
 
   return (
     <CheckoutClient
       isSignedIn={!!userId}
       initialEmail={initialEmail}
+      initialName={initialName}
       initialAddresses={customer?.addresses ?? []}
     />
   );

@@ -4,7 +4,11 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 import { PRODUCTS_BY_IDS_QUERY } from "@/lib/sanity/queries/products";
 import type { CartItem } from "@/lib/store/cart-store";
-import { getVariantBySelectedOptions } from "@/lib/utils/product-variants";
+import {
+  getVariantBySelectedOptions,
+  type ProductVariant,
+} from "@/lib/utils/product-variants";
+import { DEFAULT_STOCK_FALLBACK } from "@/lib/constants/stock";
 
 export interface StockInfo {
   itemId: string;
@@ -12,6 +16,8 @@ export interface StockInfo {
   isOutOfStock: boolean;
   exceedsStock: boolean;
   availableQuantity: number;
+  imageUrl?: string | null;
+  productSlug?: string | null;
 }
 
 export type StockMap = Map<string, StockInfo>;
@@ -57,25 +63,44 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
           (p: { _id: string }) => p._id === item.productId
         );
 
-        let currentStock = product?.stock ?? 0;
+        const baseStock =
+          typeof product?.stock === "number"
+            ? product.stock
+            : DEFAULT_STOCK_FALLBACK;
+        let currentStock = baseStock;
         if (product?.variants?.length && item.variant) {
-          const selectedOptions =
-            item.variant.options?.reduce<Record<string, string>>(
-              (acc, option) => {
-                acc[option.name] = option.value;
-                return acc;
-              },
-              {}
-            ) ?? {};
+          let variant: ProductVariant | null =
+            item.variant._key
+              ? (product.variants?.find(
+                  (entry: { _key?: string | null }) =>
+                    entry?._key === item.variant?._key
+                ) as ProductVariant | null)
+              : null;
 
-          const variant = item.variant.sku
-            ? product.variants?.find(
+          if (!variant && item.variant.sku) {
+            variant =
+              (product.variants?.find(
                 (entry: { sku?: string | null }) =>
                   entry?.sku === item.variant?.sku
-              )
-            : getVariantBySelectedOptions(product, selectedOptions);
+              ) as ProductVariant | null) ?? null;
+          }
 
-          currentStock = variant?.stock ?? 0;
+          if (!variant && item.variant.options?.length) {
+            const selectedOptions =
+              item.variant.options?.reduce<Record<string, string>>(
+                (acc, option) => {
+                  acc[option.name] = option.value;
+                  return acc;
+                },
+                {}
+              ) ?? {};
+
+            variant = getVariantBySelectedOptions(product, selectedOptions);
+          }
+
+          if (variant && typeof variant.stock === "number") {
+            currentStock = variant.stock;
+          }
         }
 
         newStockMap.set(item.id, {
@@ -84,6 +109,8 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
           isOutOfStock: currentStock === 0,
           exceedsStock: item.quantity > currentStock,
           availableQuantity: Math.min(item.quantity, currentStock),
+          imageUrl: product?.image?.asset?.url ?? null,
+          productSlug: product?.slug ?? null,
         });
       }
 

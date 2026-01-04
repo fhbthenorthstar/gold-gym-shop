@@ -8,7 +8,11 @@ import { galleryImageType } from "./galleryImageType";
 import { homeOfferType } from "./homeOfferType";
 import { orderType } from "./orderType";
 import { productType } from "./productType";
+import { reviewType } from "./reviewType";
+import { subscriptionPackageType } from "./subscriptionPackageType";
+import { subscriptionType } from "./subscriptionType";
 import { testimonialType } from "./testimonialType";
+import { trainingType } from "./trainingType";
 import { trainerType } from "./trainerType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
@@ -20,8 +24,12 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     galleryImageType,
     homeOfferType,
     productType,
+    reviewType,
     orderType,
+    subscriptionPackageType,
+    subscriptionType,
     testimonialType,
+    trainingType,
     trainerType,
   ],
 };
