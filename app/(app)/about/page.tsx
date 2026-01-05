@@ -8,6 +8,7 @@ import {
   Users2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HomeInstagramSlider } from "@/components/app/HomeInstagramSlider";
 
 const galleryImages = [
   "/about-us/1-min.png",
@@ -81,6 +82,24 @@ const collaborators = [
   "BCDL",
   "Zulcan Arena",
 ];
+
+const instagramProfileUrl = "https://www.instagram.com/goldsgymbangladesh/";
+const instagramSlides = [
+  { id: "instagram-about-1", imageUrl: "/instagram/1.jpg" },
+  { id: "instagram-about-2", imageUrl: "/instagram/2.jpg" },
+  { id: "instagram-about-3", imageUrl: "/instagram/3.jpg" },
+  { id: "instagram-about-4", imageUrl: "/instagram/4.jpg" },
+  { id: "instagram-about-5", imageUrl: "/instagram/5.jpg" },
+  { id: "instagram-about-6", imageUrl: "/instagram/6.jpg" },
+  { id: "instagram-about-7", imageUrl: "/instagram/7.jpg" },
+  { id: "instagram-about-8", imageUrl: "/instagram/8.jpg" },
+  { id: "instagram-about-9", imageUrl: "/instagram/9.jpg" },
+  { id: "instagram-about-10", imageUrl: "/instagram/10.jpeg" },
+].map((item) => ({
+  ...item,
+  link: instagramProfileUrl,
+  caption: null,
+}));
 
 export default function AboutPage() {
   return (
@@ -329,6 +348,11 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <HomeInstagramSlider
+        items={instagramSlides}
+        profileUrl={instagramProfileUrl}
+      />
 
       <section className="py-20 text-center">
         <div className="mx-auto max-w-6xl px-4">

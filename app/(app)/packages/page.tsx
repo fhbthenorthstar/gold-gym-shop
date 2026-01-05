@@ -138,14 +138,10 @@ export default async function PackagesPage() {
       </section>
 
       {instagramSlides.length > 0 && (
-        <section className="border-b border-zinc-900 py-10">
-          <div className="mx-auto max-w-7xl px-4">
-            <HomeInstagramSlider
-              items={instagramSlides}
-              profileUrl={instagramProfileUrl}
-            />
-          </div>
-        </section>
+        <HomeInstagramSlider
+          items={instagramSlides}
+          profileUrl={instagramProfileUrl}
+        />
       )}
 
       {trainings.length > 0 && (

@@ -75,7 +75,6 @@ export function ProductCard({ product }: ProductCardProps) {
     : undefined;
 
   const isOutOfStock = displayStock <= 0;
-  const hasMultipleImages = images.length > 1;
   const wishlistItem = {
     id: itemId,
     productId: product._id,
@@ -88,14 +87,11 @@ export function ProductCard({ product }: ProductCardProps) {
   const isCompared = compareItems.some((item) => item.id === itemId);
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
       <div className="relative">
         <Link href={`/products/${product.slug}`} className="block">
           <div
-            className={cn(
-              "relative overflow-hidden bg-zinc-900",
-              hasMultipleImages ? "aspect-square" : "aspect-4/5",
-            )}
+            className={cn("relative overflow-hidden bg-zinc-900 aspect-[4/5]")}
           >
             {displayedImageUrl ? (
               <Image
@@ -152,7 +148,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 p-5">
+      <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500">
           {product.brand ?? "Gold's Gym BD"}
         </div>
@@ -181,17 +177,19 @@ export function ProductCard({ product }: ProductCardProps) {
           <StockBadge itemId={itemId} stock={displayStock} />
         </div>
 
-        <AddToCartButton
-          productId={product._id}
-          name={product.name ?? "Unknown Product"}
-          price={displayPrice}
-          image={mainImageUrl ?? undefined}
-          slug={product.slug ?? undefined}
-          stock={displayStock}
-          variantKey={variantKey}
-          variant={cartVariant}
-          className="h-10 rounded-full bg-primary text-black hover:bg-primary/90"
-        />
+        <div className="mt-auto">
+          <AddToCartButton
+            productId={product._id}
+            name={product.name ?? "Unknown Product"}
+            price={displayPrice}
+            image={mainImageUrl ?? undefined}
+            slug={product.slug ?? undefined}
+            stock={displayStock}
+            variantKey={variantKey}
+            variant={cartVariant}
+            className="h-10 rounded-full bg-primary text-black hover:bg-primary/90"
+          />
+        </div>
       </div>
     </div>
   );
