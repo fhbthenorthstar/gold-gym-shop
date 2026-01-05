@@ -179,6 +179,50 @@ export const orderType = defineType({
       description: "Subtotal before shipping",
     }),
     defineField({
+      name: "discountCode",
+      type: "string",
+      group: "details",
+      readOnly: true,
+    }),
+    defineField({
+      name: "discountTitle",
+      type: "string",
+      group: "details",
+      readOnly: true,
+    }),
+    defineField({
+      name: "discountType",
+      type: "string",
+      group: "details",
+      readOnly: true,
+      options: {
+        list: [
+          { title: "Percentage", value: "percentage" },
+          { title: "Fixed Amount", value: "fixed" },
+        ],
+      },
+    }),
+    defineField({
+      name: "discountValue",
+      type: "number",
+      group: "details",
+      readOnly: true,
+    }),
+    defineField({
+      name: "discountAmount",
+      type: "number",
+      group: "details",
+      readOnly: true,
+      description: "Total discount applied in BDT",
+    }),
+    defineField({
+      name: "discountRef",
+      type: "reference",
+      to: [{ type: "discount" }],
+      group: "details",
+      readOnly: true,
+    }),
+    defineField({
       name: "shippingFee",
       type: "number",
       group: "details",

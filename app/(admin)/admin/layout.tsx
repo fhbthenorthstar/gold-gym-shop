@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Package,
   Tags,
+  BadgePercent,
   ShoppingCart,
   MessageSquare,
   Activity,
@@ -43,6 +44,11 @@ const navItems = [
     label: "Packages",
     href: "/admin/packages",
     icon: Tags,
+  },
+  {
+    label: "Discounts",
+    href: "/admin/discounts",
+    icon: BadgePercent,
   },
   {
     label: "Trainings",

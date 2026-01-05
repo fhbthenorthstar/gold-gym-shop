@@ -4,6 +4,7 @@ import { categoryType } from "./categoryType";
 import { collectionType } from "./collectionType";
 import { contactMessageType } from "./contactMessageType";
 import { customerType } from "./customerType";
+import { discountType } from "./discountType";
 import { galleryImageType } from "./galleryImageType";
 import { homeOfferType } from "./homeOfferType";
 import { orderType } from "./orderType";
@@ -21,6 +22,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     collectionType,
     contactMessageType,
     customerType,
+    discountType,
     galleryImageType,
     homeOfferType,
     productType,

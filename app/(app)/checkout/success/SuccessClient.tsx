@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { CheckCircle, Package, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useCartActions } from "@/lib/store/cart-store-provider";
 import { PAYMENT_METHOD_LABELS } from "@/lib/constants/paymentMethods";
+import { trackFacebookEvent } from "@/lib/analytics/facebook";
 import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 
 interface SuccessClientProps {
@@ -19,10 +20,44 @@ type OrderItem = NonNullable<
 
 export function SuccessClient({ order }: SuccessClientProps) {
   const { clearCart } = useCartActions();
+  const trackedRef = useRef(false);
 
   useEffect(() => {
     clearCart();
   }, [clearCart]);
+
+  useEffect(() => {
+    if (trackedRef.current) return;
+    trackedRef.current = true;
+
+    const contents = (order.items ?? [])
+      .filter(Boolean)
+      .map((item) => ({
+        id: item?.product?._id ?? "",
+        quantity: item?.quantity ?? 1,
+        item_price: item?.priceAtPurchase ?? 0,
+      }))
+      .filter((item) => item.id);
+
+    trackFacebookEvent("Purchase", {
+      eventData: {
+        currency: "BDT",
+        value: order.total ?? 0,
+        content_type: "product",
+        contents,
+        content_ids: contents.map((item) => item.id),
+        num_items: contents.reduce((sum, item) => sum + item.quantity, 0),
+        order_id: order.orderNumber ?? order._id,
+      },
+      userData: {
+        email: order.email ?? undefined,
+        phone: order.address?.phone ?? undefined,
+        firstName: order.address?.name?.split(" ")[0] ?? undefined,
+        lastName: order.address?.name?.split(" ").slice(1).join(" ") || undefined,
+        externalId: order.clerkUserId ?? undefined,
+      },
+    });
+  }, [order]);
 
   const orderItems = (order.items ?? []).filter(Boolean) as OrderItem[];
   const address = order.address;
@@ -83,6 +118,17 @@ export function SuccessClient({ order }: SuccessClientProps) {
                 {formatPrice(order.subtotal ?? order.total)}
               </span>
             </div>
+            {order.discountAmount ? (
+              <div className="flex justify-between">
+                <span className="text-zinc-400">
+                  Discount{" "}
+                  {order.discountCode ? `(${order.discountCode})` : ""}
+                </span>
+                <span className="text-green-400">
+                  -{formatPrice(order.discountAmount)}
+                </span>
+              </div>
+            ) : null}
             <div className="flex justify-between">
               <span className="text-zinc-400">Shipping</span>
               <span className="text-white">

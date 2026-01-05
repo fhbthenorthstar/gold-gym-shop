@@ -220,7 +220,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <section className="relative isolate min-h-[100svh] overflow-hidden border-b border-zinc-800">
+      <section className="relative isolate min-h-[80svh] overflow-hidden border-b border-zinc-800 sm:min-h-[100svh]">
         <Image
           src="/trinners/head-trainers-01.webp"
           alt="Gold's Gym trainers"
@@ -230,7 +230,7 @@ export default async function HomePage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
-        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl items-center px-4 py-24">
+        <div className="relative mx-auto flex min-h-[80svh] max-w-7xl items-center px-4 py-16 sm:min-h-[100svh] sm:py-24">
           <div className="max-w-xl space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-700">
             <p className="text-xs uppercase tracking-[0.4em] text-primary">
               Save up to 50% off

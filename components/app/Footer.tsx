@@ -26,31 +26,52 @@ export function Footer() {
               Gold's Gym BD delivers premium apparel, supplements, and training gear
               built for athletes across Bangladesh.
             </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Image
+                src="/payment-icons/visa-logo.svg"
+                alt="Visa"
+                width={44}
+                height={28}
+                className="h-6 w-auto opacity-80"
+              />
+              <Image
+                src="/payment-icons/mastercard-logo.svg"
+                alt="Mastercard"
+                width={44}
+                height={28}
+                className="h-6 w-auto opacity-80"
+              />
+              <Image
+                src="/payment-icons/american-express-logo.svg"
+                alt="American Express"
+                width={44}
+                height={28}
+                className="h-6 w-auto opacity-80"
+              />
+              <Image
+                src="/payment-icons/cod-logo.svg"
+                alt="Cash on delivery"
+                width={44}
+                height={28}
+                className="h-6 w-auto opacity-80"
+              />
+            </div>
           </div>
 
           <div>
             <h3 className="font-heading text-sm text-white">Information</h3>
             <ul className="mt-4 space-y-2 text-sm text-zinc-400">
               <li>
+                <Link href="/orders" className="hover:text-primary">
+                  About Us
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-primary">
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link href="/orders" className="hover:text-primary">
-                  Order Status
-                </Link>
-              </li>
-              <li>
-                <Link href="/pages/shipping" className="hover:text-primary">
-                  Delivery Choice
-                </Link>
-              </li>
-              <li>
-                <Link href="/pages/returns" className="hover:text-primary">
-                  Returns
-                </Link>
-              </li>
+             
               <li>
                 <Link href="/privacy" className="hover:text-primary">
                   Privacy Policy

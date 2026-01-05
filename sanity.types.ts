@@ -60,6 +60,17 @@ export type Order = {
   };
   orderNotes?: string;
   subtotal?: number;
+  discountCode?: string;
+  discountTitle?: string;
+  discountType?: "percentage" | "fixed";
+  discountValue?: number;
+  discountAmount?: number;
+  discountRef?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "discount";
+  };
   shippingFee?: number;
   createdAt?: string;
 };
@@ -470,7 +481,7 @@ export type ORDERS_BY_USER_QUERYResult = Array<{
   itemImages: Array<string | null> | null;
 }>;
 // Variable: ORDER_BY_ID_QUERY
-// Query: *[  _type == "order"  && _id == $id][0] {  _id,  orderNumber,  clerkUserId,  email,  items[]{    _key,    quantity,    priceAtPurchase,    product->{      _id,      name,      "slug": slug.current,      "image": images[0]{        asset->{          _id,          url        }      }    }  },  total,  subtotal,  shippingFee,  status,  paymentMethod,  orderNotes,  address{    name,    line1,    line2,    "division": coalesce(division, city),    postcode,    country,    phone  },  createdAt}
+// Query: *[  _type == "order"  && _id == $id][0] {  _id,  orderNumber,  clerkUserId,  email,  items[]{    _key,    quantity,    priceAtPurchase,    product->{      _id,      name,      "slug": slug.current,      "image": images[0]{        asset->{          _id,          url        }      }    }  },  total,  subtotal,  shippingFee,  discountCode,  discountTitle,  discountType,  discountValue,  discountAmount,  status,  paymentMethod,  orderNotes,  address{    name,    line1,    line2,    "division": coalesce(division, city),    postcode,    country,    phone  },  createdAt}
 export type ORDER_BY_ID_QUERYResult = {
   _id: string;
   orderNumber: string | null;
@@ -495,6 +506,11 @@ export type ORDER_BY_ID_QUERYResult = {
   total: number | null;
   subtotal: number | null;
   shippingFee: number | null;
+  discountCode: string | null;
+  discountTitle: string | null;
+  discountType: "fixed" | "percentage" | null;
+  discountValue: number | null;
+  discountAmount: number | null;
   status: "cod" | "paid" | null;
   paymentMethod: "cod" | "online" | null;
   orderNotes: string | null;

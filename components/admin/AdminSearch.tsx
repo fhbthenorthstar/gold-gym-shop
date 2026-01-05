@@ -129,3 +129,15 @@ export function useSubscriptionSearchFilter(searchQuery: string) {
 
   return { filter, isSearching: searchQuery !== debouncedQuery };
 }
+
+// Hook to build GROQ filter for discount search
+export function useDiscountSearchFilter(searchQuery: string) {
+  const debouncedQuery = useDebouncedValue(searchQuery, 300);
+
+  const filter = useMemo(() => {
+    if (!debouncedQuery.trim()) return undefined;
+    return `title match "*${debouncedQuery}*" || code match "*${debouncedQuery}*"`;
+  }, [debouncedQuery]);
+
+  return { filter, isSearching: searchQuery !== debouncedQuery };
+}
