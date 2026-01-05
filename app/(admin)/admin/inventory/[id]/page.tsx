@@ -229,17 +229,21 @@ function SportsEditor(handle: DocumentHandle) {
 function GenderEditor(handle: DocumentHandle) {
   const { data: gender } = useDocument({ ...handle, path: "gender" });
   const editGender = useEditDocument({ ...handle, path: "gender" });
+  const genderValue =
+    typeof gender === "string" && gender.length > 0 ? gender : "unspecified";
 
   return (
     <Select
-      value={(gender as string) ?? ""}
-      onValueChange={(value) => editGender(value)}
+      value={genderValue}
+      onValueChange={(value) =>
+        editGender(value === "unspecified" ? null : value)
+      }
     >
       <SelectTrigger>
         <SelectValue placeholder="Select gender" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="">Unspecified</SelectItem>
+        <SelectItem value="unspecified">Unspecified</SelectItem>
         {GENDERS.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
