@@ -17,17 +17,13 @@ import { buildCartItemId } from "@/lib/utils/cart";
 import type { CartItemVariant } from "@/lib/store/cart-store";
 import type { PRODUCT_BY_SLUG_QUERYResult } from "@/sanity.types";
 import { PRODUCT_TYPES } from "@/lib/constants/filters";
-import { useCartActions } from "@/lib/store/cart-store-provider";
+import { useCartActions, useTotalItems } from "@/lib/store/cart-store-provider";
 import {
   useWishlistActions,
   useWishlistItems,
 } from "@/lib/store/wishlist-store-provider";
-import {
-  useCompareActions,
-  useCompareItems,
-} from "@/lib/store/compare-store-provider";
 import { Button } from "@/components/ui/button";
-import { Heart, Scale, Share2 } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import { trackFacebookEvent } from "@/lib/analytics/facebook";
 import {
   getAvailableOptionValues,
@@ -48,11 +44,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const imageUrl = product.images?.[0]?.asset?.url;
   const options = product.options ?? [];
   const { addItem } = useCartActions();
+  const totalItems = useTotalItems();
   const wishlistItems = useWishlistItems();
-  const compareItems = useCompareItems();
   const { user, isLoaded } = useUser();
   const { toggleItem: toggleWishlist } = useWishlistActions();
-  const { toggleItem: toggleCompare } = useCompareActions();
   const [quantity, setQuantity] = useState(1);
   const viewTrackedRef = useRef(false);
 
@@ -157,7 +152,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
   };
 
   const isWishlisted = wishlistItems.some((item) => item.id === itemId);
-  const isCompared = compareItems.some((item) => item.id === itemId);
 
   const handleAddToCart = () => {
     if (displayStock <= 0) return;
@@ -303,12 +297,15 @@ export function ProductInfo({ product }: ProductInfoProps) {
         >
           Add to Cart
         </Button>
-        <Button
-          variant="outline"
-          className="h-11 flex-1 border-primary text-primary hover:bg-primary hover:text-black"
-        >
-          Buy It Now
-        </Button>
+        {totalItems > 0 && (
+          <Button
+            asChild
+            variant="outline"
+            className="h-11 flex-1 border-primary text-primary hover:bg-primary hover:text-black"
+          >
+            <Link href="/checkout">Checkout</Link>
+          </Button>
+        )}
       </div>
 
       {/* Metadata */}
@@ -371,14 +368,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
         >
           <Heart className="h-4 w-4" />
           Add to wishlist
-        </button>
-        <button
-          type="button"
-          onClick={() => toggleCompare(wishlistItem)}
-          className={`flex items-center gap-2 ${isCompared ? "text-primary" : ""}`}
-        >
-          <Scale className="h-4 w-4" />
-          Add to compare
         </button>
         <button type="button" className="flex items-center gap-2">
           <Share2 className="h-4 w-4" />

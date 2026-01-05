@@ -4,7 +4,6 @@ import { PRODUCT_BY_SLUG_QUERY } from "@/lib/sanity/queries/products";
 import { ProductGallery } from "@/components/app/ProductGallery";
 import { ProductInfo } from "@/components/app/ProductInfo";
 import { ProductReviews } from "@/components/app/ProductReviews";
-import { ProductStickyBar } from "@/components/app/ProductStickyBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ProductPageProps {
@@ -31,25 +30,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-black pb-24">
-      {/* Hero */}
-      <section
-        className="relative overflow-hidden border-b border-zinc-800 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url(/trinners/head-trainers-01.webp)",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="relative mx-auto max-w-7xl px-4 py-14 text-center text-white">
-          <p className="text-xs uppercase tracking-[0.3em] text-primary">
-            All / {product.name}
-          </p>
-          <h1 className="font-heading mt-4 text-3xl md:text-4xl">
-            {product.name}
-          </h1>
-        </div>
-      </section>
-
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="grid gap-10 lg:grid-cols-2">
           <ProductGallery images={product.images} productName={product.name} />
@@ -58,22 +38,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <div className="mt-12 border-t border-zinc-800 pt-10">
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="w-full justify-start gap-2 rounded-none bg-transparent p-0">
+            <TabsList className="w-full flex-wrap justify-start gap-2 rounded-none bg-transparent p-0">
               <TabsTrigger
                 value="description"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white sm:px-4 sm:text-xs sm:tracking-[0.2em]"
               >
                 Description
               </TabsTrigger>
               <TabsTrigger
                 value="shipping"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white sm:px-4 sm:text-xs sm:tracking-[0.2em]"
               >
                 Shipping Information
               </TabsTrigger>
               <TabsTrigger
                 value="reviews"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white"
+                className="rounded-none border-b-2 border-transparent px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-zinc-400 data-[state=active]:border-primary data-[state=active]:text-white sm:px-4 sm:text-xs sm:tracking-[0.2em]"
               >
                 Reviews
               </TabsTrigger>
@@ -109,7 +89,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <ProductStickyBar product={product} />
     </div>
   );
 }

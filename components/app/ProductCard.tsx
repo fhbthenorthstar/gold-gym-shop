@@ -16,15 +16,11 @@ import {
 } from "@/lib/utils/product-variants";
 import type { FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult } from "@/sanity.types";
 import type { CartItemVariant } from "@/lib/store/cart-store";
-import { Heart, Scale, Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import {
   useWishlistActions,
   useWishlistItems,
 } from "@/lib/store/wishlist-store-provider";
-import {
-  useCompareActions,
-  useCompareItems,
-} from "@/lib/store/compare-store-provider";
 
 type Product = FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult[number];
 
@@ -37,9 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
     null,
   );
   const wishlistItems = useWishlistItems();
-  const compareItems = useCompareItems();
   const { toggleItem: toggleWishlist } = useWishlistActions();
-  const { toggleItem: toggleCompare } = useCompareActions();
 
   const images = product.images ?? [];
   const mainImageUrl = images[0]?.asset?.url;
@@ -84,7 +78,6 @@ export function ProductCard({ product }: ProductCardProps) {
     slug: product.slug ?? undefined,
   };
   const isWishlisted = wishlistItems.some((item) => item.id === itemId);
-  const isCompared = compareItems.some((item) => item.id === itemId);
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
@@ -133,17 +126,6 @@ export function ProductCard({ product }: ProductCardProps) {
             aria-label="Add to wishlist"
           >
             <Heart className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleCompare(wishlistItem)}
-            className={cn(
-              "rounded-full border border-zinc-700 bg-black/70 p-2 text-zinc-300 hover:text-primary",
-              isCompared && "text-primary",
-            )}
-            aria-label="Add to compare"
-          >
-            <Scale className="h-4 w-4" />
           </button>
         </div>
       </div>
