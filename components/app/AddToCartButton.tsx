@@ -1,12 +1,14 @@
 "use client";
 
 import { Minus, Plus, ShoppingBag } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useCartItem } from "@/lib/store/cart-store-provider";
 import { cn } from "@/lib/utils";
 import { buildCartItemId } from "@/lib/utils/cart";
 import type { CartItemVariant } from "@/lib/store/cart-store";
+import { trackFacebookEvent } from "@/lib/analytics/facebook";
 
 interface AddToCartButtonProps {
   itemId?: string;
@@ -38,6 +40,7 @@ export function AddToCartButton({
   const resolvedItemId = itemId ?? buildCartItemId(productId, variantKey);
   const { addItem, updateQuantity } = useCartActions();
   const cartItem = useCartItem(resolvedItemId);
+  const { user } = useUser();
 
   const quantityInCart = cartItem?.quantity ?? 0;
   const isOutOfStock = stock <= 0;
@@ -50,6 +53,24 @@ export function AddToCartButton({
         1
       );
       toast.success(`Added ${name}`);
+
+      trackFacebookEvent("AddToCart", {
+        eventData: {
+          currency: "BDT",
+          value: price,
+          content_type: "product",
+          content_ids: [productId],
+          contents: [{ id: productId, quantity: 1, item_price: price }],
+          content_name: name,
+        },
+        userData: {
+          email: user?.primaryEmailAddress?.emailAddress,
+          phone: user?.phoneNumbers?.[0]?.phoneNumber,
+          firstName: user?.firstName ?? undefined,
+          lastName: user?.lastName ?? undefined,
+          externalId: user?.id ?? undefined,
+        },
+      });
     }
   };
 

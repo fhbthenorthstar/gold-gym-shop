@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { AskAISimilarButton } from "@/components/app/AskAISimilarButton";
 import { StockBadge } from "@/components/app/StockBadge";
 import {
@@ -27,6 +28,7 @@ import {
 } from "@/lib/store/compare-store-provider";
 import { Button } from "@/components/ui/button";
 import { Heart, Scale, Share2 } from "lucide-react";
+import { trackFacebookEvent } from "@/lib/analytics/facebook";
 import {
   getAvailableOptionValues,
   getDefaultVariant,
@@ -48,9 +50,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const { addItem } = useCartActions();
   const wishlistItems = useWishlistItems();
   const compareItems = useCompareItems();
+  const { user, isLoaded } = useUser();
   const { toggleItem: toggleWishlist } = useWishlistActions();
   const { toggleItem: toggleCompare } = useCompareActions();
   const [quantity, setQuantity] = useState(1);
+  const viewTrackedRef = useRef(false);
 
   const getMetafieldString = (key: string) =>
     product.metafields?.find((field) => field?.key === key)?.valueString ?? "";
@@ -119,6 +123,30 @@ export function ProductInfo({ product }: ProductInfoProps) {
     }));
   };
 
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (viewTrackedRef.current) return;
+    viewTrackedRef.current = true;
+
+    trackFacebookEvent("ViewContent", {
+      eventData: {
+        currency: "BDT",
+        value: displayPrice,
+        content_type: "product",
+        content_ids: [product._id],
+        contents: [{ id: product._id, quantity: 1, item_price: displayPrice }],
+        content_name: product.name ?? "Product",
+      },
+      userData: {
+        email: user?.primaryEmailAddress?.emailAddress,
+        phone: user?.phoneNumbers?.[0]?.phoneNumber,
+        firstName: user?.firstName ?? undefined,
+        lastName: user?.lastName ?? undefined,
+        externalId: user?.id ?? undefined,
+      },
+    });
+  }, [displayPrice, isLoaded, product._id, product.name, user]);
+
   const wishlistItem = {
     id: itemId,
     productId: product._id,
@@ -145,6 +173,26 @@ export function ProductInfo({ product }: ProductInfoProps) {
       },
       quantity
     );
+
+    trackFacebookEvent("AddToCart", {
+      eventData: {
+        currency: "BDT",
+        value: displayPrice * quantity,
+        content_type: "product",
+        content_ids: [product._id],
+        contents: [
+          { id: product._id, quantity, item_price: displayPrice },
+        ],
+        content_name: product.name ?? "Product",
+      },
+      userData: {
+        email: user?.primaryEmailAddress?.emailAddress,
+        phone: user?.phoneNumbers?.[0]?.phoneNumber,
+        firstName: user?.firstName ?? undefined,
+        lastName: user?.lastName ?? undefined,
+        externalId: user?.id ?? undefined,
+      },
+    });
   };
 
   return (

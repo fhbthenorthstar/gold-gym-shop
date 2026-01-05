@@ -150,6 +150,17 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                   {formatPrice(order.subtotal ?? order.total)}
                 </span>
               </div>
+              {order.discountAmount ? (
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-500 dark:text-zinc-400">
+                    Discount{" "}
+                    {order.discountCode ? `(${order.discountCode})` : ""}
+                  </span>
+                  <span className="text-green-500">
+                    -{formatPrice(order.discountAmount)}
+                  </span>
+                </div>
+              ) : null}
               <div className="flex justify-between text-sm">
                 <span className="text-zinc-500 dark:text-zinc-400">
                   Shipping

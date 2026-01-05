@@ -13,6 +13,7 @@ import { WishlistSheet } from "@/components/app/WishlistSheet";
 import { CompareSheet } from "@/components/app/CompareSheet";
 import { AppShell } from "@/components/app/AppShell";
 import { Footer } from "@/components/app/Footer";
+import { FacebookPixel } from "@/components/app/FacebookPixel";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -29,13 +30,24 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         },
         elements: {
           card: "bg-zinc-950 border border-zinc-800",
+          modalBackdrop: "bg-black/80 backdrop-blur-sm",
+          modalContent: "bg-zinc-950 border border-zinc-800",
           headerTitle: "text-white",
           headerSubtitle: "text-zinc-400",
           socialButtonsBlockButton:
             "border-zinc-800 text-zinc-200 hover:bg-zinc-900",
+          socialButtonsBlockButtonText: "text-zinc-200",
+          socialButtonsBlockButtonIcon: "text-zinc-200",
+          dividerLine: "bg-zinc-800",
+          dividerText: "text-zinc-500",
+          formFieldLabel: "text-zinc-300",
           formButtonPrimary: "bg-primary text-black hover:bg-primary/90",
-          formFieldInput: "bg-black text-white border-zinc-800",
+          formFieldInput:
+            "bg-black text-white border-zinc-800 placeholder:text-zinc-500 focus:ring-1 focus:ring-primary",
+          formFieldInputShowPasswordButton: "text-zinc-400 hover:text-zinc-100",
+          formFieldAction: "text-primary hover:text-primary/90",
           footerActionLink: "text-primary hover:text-primary/90",
+          footerActionText: "text-zinc-400",
           userButtonPopoverCard: "bg-zinc-950 border border-zinc-800",
           userButtonPopoverActionButton:
             "text-zinc-200 hover:bg-zinc-900",
@@ -50,6 +62,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <CompareStoreProvider>
             <ChatStoreProvider>
               <AppShell>
+                <Suspense fallback={null}>
+                  <FacebookPixel />
+                </Suspense>
                 <Suspense fallback={null}>
                   <Header />
                 </Suspense>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,8 @@ import {
 } from "@/lib/store/cart-store-provider";
 import { useCartStock } from "@/lib/hooks/useCartStock";
 import { createCodOrder } from "@/lib/actions/cod-order";
+import { validateDiscount, type DiscountResolution } from "@/lib/actions/discount";
+import { trackFacebookEvent } from "@/lib/analytics/facebook";
 import {
   BANGLADESH_DIVISIONS,
   DEFAULT_COUNTRY,
@@ -50,9 +52,7 @@ type CustomerAddress = NonNullable<
 type AddressFormState = {
   name: string;
   line1: string;
-  line2: string;
   division: string;
-  postcode: string;
   country: string;
   phone: string;
 };
@@ -60,9 +60,7 @@ type AddressFormState = {
 const emptyAddress: AddressFormState = {
   name: "",
   line1: "",
-  line2: "",
   division: "",
-  postcode: "",
   country: DEFAULT_COUNTRY,
   phone: "",
 };
@@ -98,9 +96,7 @@ export function CheckoutClient({
       ? {
           name: defaultAddress.name ?? "",
           line1: defaultAddress.line1 ?? "",
-          line2: defaultAddress.line2 ?? "",
           division: defaultAddress.division ?? "",
-          postcode: defaultAddress.postcode ?? "",
           country: defaultAddress.country ?? DEFAULT_COUNTRY,
           phone: defaultAddress.phone ?? "",
         }
@@ -114,17 +110,25 @@ export function CheckoutClient({
   );
   const [paymentMethod] = useState<"cod" | "online">("cod");
   const [formError, setFormError] = useState<string | null>(null);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountState, setDiscountState] =
+    useState<DiscountResolution["discount"] | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [isApplyingDiscount, startDiscountTransition] = useTransition();
+  const checkoutTrackedRef = useRef(false);
   const inputClassName =
-    "border-zinc-800 bg-black/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-primary";
+    "h-11 rounded-md border-zinc-800 bg-black/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-primary";
   const selectTriggerClassName =
-    "w-full border-zinc-800 bg-black/60 text-zinc-100";
+    "h-11 w-full border-zinc-800 bg-black/60 text-zinc-100";
   const selectContentClassName = "border-zinc-800 bg-zinc-950 text-zinc-200";
 
   const shippingFee = useMemo(
     () => getShippingFee(addressForm.division, subtotal),
     [addressForm.division, subtotal]
   );
-  const total = subtotal + shippingFee;
+  const discountAmount = discountState?.appliedAmount ?? 0;
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+  const total = discountedSubtotal + shippingFee;
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingLabel = addressForm.division
     ? shippingFee === 0
@@ -163,13 +167,66 @@ export function CheckoutClient({
     setAddressForm({
       name: address.name ?? "",
       line1: address.line1 ?? "",
-      line2: address.line2 ?? "",
       division: address.division ?? "",
-      postcode: address.postcode ?? "",
       country: address.country ?? DEFAULT_COUNTRY,
       phone: address.phone ?? "",
     });
     setMakeDefault(!!address.isDefault);
+  };
+
+  useEffect(() => {
+    if (discountState && discountCode.trim() !== discountState.code) {
+      setDiscountState(null);
+    }
+  }, [discountCode, discountState]);
+
+  useEffect(() => {
+    if (checkoutTrackedRef.current || items.length === 0) return;
+    checkoutTrackedRef.current = true;
+
+    const nameParts = addressForm.name.trim().split(" ").filter(Boolean);
+    const [firstName, ...rest] = nameParts;
+    const lastName = rest.join(" ");
+
+    trackFacebookEvent("InitiateCheckout", {
+      eventData: {
+        currency: "BDT",
+        value: subtotal,
+        num_items: totalItems,
+        content_type: "product",
+        content_ids: items.map((item) => item.productId),
+        contents: items.map((item) => ({
+          id: item.productId,
+          quantity: item.quantity,
+          item_price: item.price,
+        })),
+      },
+      userData: {
+        email: email || undefined,
+        phone: addressForm.phone || undefined,
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+      },
+    });
+  }, [items, subtotal, totalItems, email, addressForm.name, addressForm.phone]);
+
+  const handleApplyDiscount = () => {
+    setDiscountError(null);
+    startDiscountTransition(async () => {
+      const result = await validateDiscount(discountCode, subtotal);
+      if (!result.success) {
+        setDiscountState(null);
+        setDiscountError(result.message ?? "Invalid discount code.");
+        return;
+      }
+      setDiscountState(result.discount ?? null);
+    });
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountState(null);
+    setDiscountCode("");
+    setDiscountError(null);
   };
 
   const handleSubmit = () => {
@@ -196,6 +253,7 @@ export function CheckoutClient({
         email,
         orderNotes,
         paymentMethod,
+        discountCode: discountState?.code ?? undefined,
         saveAddress: isSignedIn ? saveAddress : false,
         makeDefault: isSignedIn ? makeDefault : false,
         addressKey: isSignedIn ? selectedAddressKey : null,
@@ -247,15 +305,14 @@ export function CheckoutClient({
       )}
 
       <div className="mb-6 text-sm text-zinc-400">
-        Have a coupon?{" "}
-        <span className="text-primary">Click here to enter your code</span>
+        Have a discount code? Apply it in your order summary.
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="space-y-8 lg:col-span-7">
           {isSignedIn && addresses.length > 0 && (
-            <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
-              <h2 className="text-sm font-semibold text-white">
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6">
+              <h2 className="text-base font-semibold text-white">
                 Saved Addresses
               </h2>
               <div className="mt-4 grid gap-3">
@@ -301,14 +358,17 @@ export function CheckoutClient({
             </div>
           )}
 
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h2 className="text-base font-semibold text-white">
               Billing & Shipping
             </h2>
 
-            <div className="mt-5 grid gap-4">
+            <div className="mt-6 grid gap-5">
               <div>
-                <Label htmlFor="full-name" className="text-zinc-200">
+                <Label
+                  htmlFor="full-name"
+                  className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+                >
                   Full Name *
                 </Label>
                 <Input
@@ -326,7 +386,10 @@ export function CheckoutClient({
               </div>
 
               <div>
-                <Label htmlFor="address-line-1" className="text-zinc-200">
+                <Label
+                  htmlFor="address-line-1"
+                  className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+                >
                   Address *
                 </Label>
                 <Input
@@ -343,27 +406,11 @@ export function CheckoutClient({
                 />
               </div>
 
-              <div>
-                <Label htmlFor="address-line-2" className="text-zinc-200">
-                  Address Line 2
-                </Label>
-                <Input
-                  id="address-line-2"
-                  value={addressForm.line2}
-                  onChange={(event) =>
-                    setAddressForm((prev) => ({
-                      ...prev,
-                      line2: event.target.value,
-                    }))
-                  }
-                  placeholder="Apartment, suite, unit, etc."
-                  className={inputClassName}
-                />
-              </div>
-
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="text-zinc-200">Division *</Label>
+                  <Label className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                    Division *
+                  </Label>
                   <Select
                     value={addressForm.division}
                     onValueChange={(value) =>
@@ -384,27 +431,10 @@ export function CheckoutClient({
                 </div>
 
                 <div>
-                  <Label htmlFor="postcode" className="text-zinc-200">
-                    Postcode
-                  </Label>
-                  <Input
-                    id="postcode"
-                    value={addressForm.postcode}
-                    onChange={(event) =>
-                      setAddressForm((prev) => ({
-                        ...prev,
-                        postcode: event.target.value,
-                      }))
-                    }
-                    placeholder="Postcode"
-                    className={inputClassName}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="phone" className="text-zinc-200">
+                  <Label
+                    htmlFor="phone"
+                    className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+                  >
                     Phone *
                   </Label>
                   <Input
@@ -420,9 +450,30 @@ export function CheckoutClient({
                     className={inputClassName}
                   />
                 </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label
+                    htmlFor="email"
+                    className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+                  >
+                    Email (optional)
+                  </Label>
+                  <Input
+                    id="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@email.com"
+                    className={inputClassName}
+                  />
+                </div>
 
                 <div>
-                  <Label htmlFor="country" className="text-zinc-200">
+                  <Label
+                    htmlFor="country"
+                    className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+                  >
                     Country
                   </Label>
                   <Input
@@ -432,19 +483,6 @@ export function CheckoutClient({
                     className={`${inputClassName} bg-black/40 text-zinc-400`}
                   />
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="email" className="text-zinc-200">
-                  Email (optional)
-                </Label>
-                <Input
-                  id="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@email.com"
-                  className={inputClassName}
-                />
               </div>
 
               {isSignedIn && (
@@ -476,12 +514,15 @@ export function CheckoutClient({
             </div>
           </div>
 
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6">
             <h2 className="text-base font-semibold text-white">
               Additional Information
             </h2>
             <div className="mt-4">
-              <Label htmlFor="order-notes" className="text-zinc-200">
+              <Label
+                htmlFor="order-notes"
+                className="text-xs uppercase tracking-[0.2em] text-zinc-400"
+              >
                 Order notes (optional)
               </Label>
               <Textarea
@@ -496,7 +537,7 @@ export function CheckoutClient({
         </div>
 
         <div className="lg:col-span-5">
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h2 className="text-base font-semibold text-white">
               Your Order
             </h2>
@@ -511,12 +552,12 @@ export function CheckoutClient({
                       {itemImage ? (
                         <Image
                           src={itemImage}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    ) : (
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      ) : (
                       <div className="flex h-full items-center justify-center text-xs text-zinc-400">
                         No image
                       </div>
@@ -541,6 +582,45 @@ export function CheckoutClient({
               })}
             </div>
 
+            <div className="mt-4 rounded-lg border border-zinc-800 bg-black/50 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                Discount Code
+              </p>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <Input
+                  value={discountCode}
+                  onChange={(event) => setDiscountCode(event.target.value)}
+                  placeholder="Enter discount code"
+                  className={inputClassName}
+                />
+                <Button
+                  onClick={handleApplyDiscount}
+                  disabled={isApplyingDiscount || !discountCode.trim()}
+                  className="bg-primary text-black hover:bg-primary/90"
+                >
+                  {isApplyingDiscount ? "Applying..." : "Apply"}
+                </Button>
+                {discountState && (
+                  <Button
+                    variant="outline"
+                    onClick={handleRemoveDiscount}
+                    className="border-zinc-700 text-zinc-200 hover:bg-zinc-900"
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+              {discountError && (
+                <p className="mt-2 text-xs text-red-400">{discountError}</p>
+              )}
+              {discountState && (
+                <p className="mt-2 text-xs text-green-400">
+                  {discountState.title} applied • Save{" "}
+                  {formatPrice(discountState.appliedAmount)}
+                </p>
+              )}
+            </div>
+
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-zinc-400">Subtotal</span>
@@ -548,6 +628,16 @@ export function CheckoutClient({
                   {formatPrice(subtotal)}
                 </span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-zinc-400">
+                    Discount ({discountState?.code ?? "Applied"})
+                  </span>
+                  <span className="text-green-400">
+                    -{formatPrice(discountAmount)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-zinc-400">Shipping</span>
                 <span className="text-white">
@@ -635,7 +725,7 @@ export function CheckoutClient({
             </p>
           </div>
 
-          <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs text-zinc-400">
+          <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 text-xs text-zinc-400">
             Order Summary ({totalItems} items)
           </div>
         </div>

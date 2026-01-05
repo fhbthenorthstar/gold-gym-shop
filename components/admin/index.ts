@@ -13,6 +13,7 @@ export { ContactRow, ContactRowSkeleton } from "./ContactRow";
 export { TrainingRow, TrainingRowSkeleton } from "./TrainingRow";
 export { SubscriptionPackageRow, SubscriptionPackageRowSkeleton } from "./SubscriptionPackageRow";
 export { SubscriptionRow, SubscriptionRowSkeleton } from "./SubscriptionRow";
+export { DiscountRow, DiscountRowSkeleton } from "./DiscountRow";
 export { ContactStatusSelect } from "./ContactStatusSelect";
 export { StatusSelect } from "./StatusSelect";
 export { SubscriptionStatusSelect } from "./SubscriptionStatusSelect";
@@ -26,6 +27,7 @@ export {
   useTrainingSearchFilter,
   usePackageSearchFilter,
   useSubscriptionSearchFilter,
+  useDiscountSearchFilter,
   useDebouncedValue,
 } from "./AdminSearch";
 export { ImageUploader } from "./ImageUploader";
@@ -37,5 +39,6 @@ export {
   ContactTableHeader,
   PackageTableHeader,
   SubscriptionTableHeader,
+  DiscountTableHeader,
 } from "./table-headers";
 export { RecentSubscriptions } from "./RecentSubscriptions";

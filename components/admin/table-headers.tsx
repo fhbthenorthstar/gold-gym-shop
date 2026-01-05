@@ -164,3 +164,30 @@ export function SubscriptionTableHeader() {
     </TableHeader>
   );
 }
+
+// ============================================
+// Discount Table Headers
+// ============================================
+
+const DISCOUNT_TABLE_COLUMNS: TableHeaderColumn[] = [
+  { label: "Discount" },
+  { label: "Type", className: "hidden md:table-cell" },
+  { label: "Amount", className: "hidden md:table-cell" },
+  { label: "Min Subtotal", className: "hidden lg:table-cell" },
+  { label: "Status", className: "hidden md:table-cell" },
+  { label: "Actions", className: "hidden w-[160px] text-right sm:table-cell" },
+];
+
+export function DiscountTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        {DISCOUNT_TABLE_COLUMNS.map((column) => (
+          <TableHead key={column.label} className={column.className}>
+            {column.label}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+}

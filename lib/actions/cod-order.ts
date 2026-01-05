@@ -6,6 +6,11 @@ import { PRODUCTS_BY_IDS_QUERY } from "@/lib/sanity/queries/products";
 import { CUSTOMER_BY_CLERK_ID_QUERY } from "@/lib/sanity/queries/customers";
 import { DEFAULT_COUNTRY, BANGLADESH_DIVISIONS, getShippingFee } from "@/lib/constants/bangladesh";
 import { DEFAULT_STOCK_FALLBACK } from "@/lib/constants/stock";
+import {
+  validateDiscount,
+  incrementDiscountUsage,
+  type DiscountResolution,
+} from "@/lib/actions/discount";
 import type { CartItem } from "@/lib/store/cart-store";
 import type { CUSTOMER_BY_CLERK_ID_QUERYResult } from "@/sanity.types";
 import { getVariantBySelectedOptions } from "@/lib/utils/product-variants";
@@ -26,6 +31,7 @@ export interface CreateCodOrderInput {
   email?: string;
   orderNotes?: string;
   paymentMethod?: "cod" | "online";
+  discountCode?: string;
   saveAddress?: boolean;
   makeDefault?: boolean;
   addressKey?: string | null;
@@ -213,7 +219,22 @@ export async function createCodOrder(
       0
     );
     const shippingFee = getShippingFee(address.division, subtotal);
-    const total = subtotal + shippingFee;
+    let discountAmount = 0;
+    let discountMeta: DiscountResolution["discount"] | null = null;
+
+    if (input.discountCode) {
+      const discountResult = await validateDiscount(input.discountCode, subtotal);
+      if (!discountResult.success) {
+        return {
+          success: false,
+          error: discountResult.message ?? "Invalid discount code.",
+        };
+      }
+      discountMeta = discountResult.discount ?? null;
+      discountAmount = discountMeta?.appliedAmount ?? 0;
+    }
+
+    const total = Math.max(0, subtotal - discountAmount) + shippingFee;
 
     const userEmail = user?.emailAddresses[0]?.emailAddress ?? "";
     const userName =
@@ -330,6 +351,17 @@ export async function createCodOrder(
       items: orderItems,
       subtotal,
       shippingFee,
+      discountCode: discountMeta?.code ?? null,
+      discountTitle: discountMeta?.title ?? null,
+      discountType: discountMeta?.type ?? null,
+      discountValue: discountMeta?.value ?? null,
+      discountAmount: discountAmount || null,
+      discountRef: discountMeta?.id
+        ? {
+            _type: "reference",
+            _ref: discountMeta.id,
+          }
+        : undefined,
       total,
       status: paymentMethod === "online" ? "paid" : "cod",
       paymentMethod,
@@ -361,6 +393,10 @@ export async function createCodOrder(
         );
       }, writeClient.transaction())
       .commit();
+
+    if (discountMeta?.id) {
+      await incrementDiscountUsage(discountMeta.id);
+    }
 
     return { success: true, orderId: order._id };
   } catch (error) {
