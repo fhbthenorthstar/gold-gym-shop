@@ -83,7 +83,7 @@ export function ChatSheet() {
               variant="ghost"
               size="icon"
               onClick={closeChat}
-              className="text-zinc-200 hover:text-primary/90"
+              className="text-zinc-200 hover:bg-primary hover:text-black"
             >
               <X className="h-4 w-4" />
             </Button>

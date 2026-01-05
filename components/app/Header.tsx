@@ -89,14 +89,26 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black">
       {/* Top bar */}
-      <div className="border-b border-zinc-900 bg-zinc-950 text-xs text-zinc-400">
+      <div className="border-b border-zinc-900 bg-zinc-950 text-xs text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2">
           <div className="flex items-center gap-4">
-            <span>Call Us: +880 1704 112385</span>
-            <span className="hidden md:inline">info@goldsgym.com.bd</span>
+            <a
+              href="tel:+8801704112385"
+              className="text-white transition hover:text-primary"
+            >
+              Call Us: +880 1704 112385
+            </a>
+            <a
+              href="mailto:info@goldsgym.com.bd"
+              className="hidden text-white transition hover:text-primary md:inline"
+            >
+              info@goldsgym.com.bd
+            </a>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline">Free shipping on orders over ৳2,500</span>
+            <span className="hidden text-white md:inline">
+              Free shipping on orders over ৳2,500
+            </span>
             <span className="rounded-full border border-primary/40 px-2 py-0.5 text-[11px] text-primary">
               BDT
             </span>
@@ -300,22 +312,18 @@ export function Header() {
             />
           </form>
 
-          <SignedIn>
-            <Button
-              asChild
-              size="sm"
-              className="hidden items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-primary/60 hover:text-primary/90 lg:inline-flex"
-            >
-              <Link href="/orders">
-                <Package className="h-4 w-4" />
-                My Orders
-              </Link>
-            </Button>
-          </SignedIn>
-
           {!isChatOpen && (
             <>
               <SignedIn>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={openChat}
+                  className="text-zinc-200 hover:bg-primary hover:text-black lg:hidden"
+                  aria-label="Open AI assistant"
+                >
+                  <Sparkles className="h-4 w-4" />
+                </Button>
                 <Button
                   onClick={openChat}
                   className="hidden items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90 lg:inline-flex"
@@ -327,7 +335,17 @@ export function Header() {
               <SignedOut>
                 <SignInButton mode="modal">
                   <Button
-                    className="hidden items-center gap-2 rounded-full border border-primary/40 bg-transparent px-4 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:text-primary/90 lg:inline-flex"
+                    variant="ghost"
+                    size="icon"
+                    className="text-zinc-200 hover:bg-primary hover:text-black lg:hidden"
+                    aria-label="Sign in to chat"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
+                </SignInButton>
+                <SignInButton mode="modal">
+                  <Button
+                    className="hidden items-center gap-2 rounded-full border border-primary/40 bg-transparent px-4 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:bg-primary/90 hover:text-black lg:inline-flex"
                   >
                     <Sparkles className="h-4 w-4" />
                     Sign in to chat
@@ -340,7 +358,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-zinc-200 hover:text-primary"
+            className="relative text-zinc-200 hover:bg-primary hover:text-black"
             onClick={openWishlist}
             aria-label="Open wishlist"
           >
@@ -359,11 +377,22 @@ export function Header() {
                 elements: {
                   avatarBox: "h-9 w-9",
                   userButtonPopoverCard:
-                    "bg-zinc-950 border border-zinc-800 text-zinc-200",
+                    "bg-zinc-950 border border-primary/40 text-white",
+                  userButtonPopoverMain: "text-white",
                   userButtonPopoverActionButton:
-                    "text-zinc-200 hover:bg-zinc-900",
+                    "text-white hover:bg-primary/10",
+                  userButtonPopoverActionButtonText: "text-white",
+                  userButtonPopoverActionButtonIcon: "text-primary",
+                  userButtonPopoverActionButtonLabel: "text-white",
+                  userButtonPopoverActionButtonDescription: "text-primary/80",
                   userButtonPopoverFooter:
-                    "border-t border-zinc-800 bg-zinc-950",
+                    "border-t border-primary/30 bg-zinc-950 text-white",
+                  userButtonPopoverFooterAction: "text-primary",
+                  userButtonPopoverFooterActionText: "text-primary",
+                  userButtonPopoverCustomItemButton:
+                    "text-white hover:bg-primary/10",
+                  userButtonPopoverCustomItemButtonIconBox: "text-primary",
+                  userButtonPopoverActionItemButtonIcon: "text-primary",
                 },
               }}
             >
@@ -386,7 +415,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-zinc-200 hover:text-primary"
+                className="text-zinc-200 hover:bg-primary hover:text-black"
               >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Sign in</span>
@@ -397,7 +426,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-zinc-200 hover:text-primary"
+            className="relative text-zinc-200 hover:bg-primary hover:text-black"
             onClick={openCart}
             aria-label="Open cart"
           >

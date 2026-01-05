@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   ensureFbcCookie,
@@ -13,6 +13,9 @@ export function FacebookPixel() {
   const pixelId = getFacebookPixelId();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const initialEventIdRef = useRef<string | null>(null);
+  const pixelPageViewSentRef = useRef(false);
+  const lastRouteRef = useRef<string | null>(null);
 
   useEffect(() => {
     ensureFbcCookie(window.location.search);
@@ -20,6 +23,27 @@ export function FacebookPixel() {
 
   useEffect(() => {
     if (!pixelId) return;
+    if (initialEventIdRef.current) return;
+    const pixelReady = typeof window !== "undefined" && typeof window.fbq === "function";
+    trackFacebookEvent("PageView", { eventSourceUrl: window.location.href })
+      .then((eventId) => {
+        initialEventIdRef.current = eventId ?? null;
+        pixelPageViewSentRef.current = pixelReady;
+      })
+      .catch(() => {
+        // Ignore initial CAPI failure to avoid blocking render.
+      });
+  }, [pixelId]);
+
+  useEffect(() => {
+    if (!pixelId) return;
+    const routeKey = `${pathname}?${searchParams.toString()}`;
+    if (lastRouteRef.current === null) {
+      lastRouteRef.current = routeKey;
+      return;
+    }
+    if (routeKey === lastRouteRef.current) return;
+    lastRouteRef.current = routeKey;
     trackFacebookEvent("PageView", { eventSourceUrl: window.location.href });
   }, [pathname, searchParams, pixelId]);
 
@@ -30,6 +54,13 @@ export function FacebookPixel() {
       <Script
         id="facebook-pixel"
         strategy="afterInteractive"
+        onReady={() => {
+          if (pixelPageViewSentRef.current) return;
+          const eventId = initialEventIdRef.current;
+          if (!eventId || typeof window === "undefined" || !window.fbq) return;
+          window.fbq("track", "PageView", {}, { eventID: eventId });
+          pixelPageViewSentRef.current = true;
+        }}
         dangerouslySetInnerHTML={{
           __html: `
             !function(f,b,e,v,n,t,s)

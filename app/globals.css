@@ -138,3 +138,62 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* Clerk user menu contrast fixes */
+.cl-userButtonPopoverCard {
+  background-color: #050505 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(253, 233, 21, 0.35) !important;
+}
+
+.cl-userButtonPopoverMain,
+.cl-userButtonPopoverActionButton,
+.cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButtonLabel,
+.cl-userButtonPopoverActionButtonDescription,
+.cl-userButtonPopoverFooter,
+.cl-userButtonPopoverFooterAction,
+.cl-userButtonPopoverFooterActionText {
+  color: #ffffff !important;
+}
+
+.cl-userButtonPopoverActionButtonIcon,
+.cl-userButtonPopoverActionButtonIcon svg {
+  color: #fde915 !important;
+  fill: #fde915 !important;
+}
+
+.cl-userButtonPopoverFooterAction,
+.cl-userButtonPopoverFooterActionText {
+  color: #fde915 !important;
+}
+
+.cl-userButtonPopoverCustomItemButton,
+.cl-userButtonPopoverCustomItemButton * {
+  color: #ffffff !important;
+}
+
+.cl-userButtonPopoverCustomItemButtonIconBox,
+.cl-userButtonPopoverActionItemButtonIcon,
+.cl-userButtonPopoverActionItemButtonIcon svg {
+  color: #fde915 !important;
+  stroke: #fde915 !important;
+  fill: none !important;
+}
+
+.cl-userButtonPopoverActions a,
+.cl-userButtonPopoverActions button,
+.cl-userButtonPopoverActions span {
+  color: #ffffff !important;
+}
+
+.cl-userButtonPopoverActions svg {
+  color: #fde915 !important;
+  stroke: #fde915 !important;
+  fill: none !important;
+}
+
+.cl-userButtonPopoverActionButtonIconBox,
+.cl-userButtonPopoverCustomItemButtonIconBox {
+  background: transparent !important;
+}
