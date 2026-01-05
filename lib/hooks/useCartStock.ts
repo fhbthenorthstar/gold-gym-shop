@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { client } from "@/sanity/lib/client";
 import { PRODUCTS_BY_IDS_QUERY } from "@/lib/sanity/queries/products";
 import type { CartItem } from "@/lib/store/cart-store";
@@ -36,6 +36,7 @@ interface UseCartStockReturn {
 export function useCartStock(items: CartItem[]): UseCartStockReturn {
   const [stockMap, setStockMap] = useState<StockMap>(new Map());
   const [isLoading, setIsLoading] = useState(false);
+  const fetchIdRef = useRef(0);
 
   // Memoize product IDs to use as stable dependency
   const productIds = useMemo(
@@ -44,8 +45,11 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
   );
 
   const fetchStock = useCallback(async () => {
+    const fetchId = ++fetchIdRef.current;
+
     if (items.length === 0) {
       setStockMap(new Map());
+      setIsLoading(false);
       return;
     }
 
@@ -55,6 +59,8 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
       const products = await client.fetch(PRODUCTS_BY_IDS_QUERY, {
         ids: productIds,
       });
+
+      if (fetchId !== fetchIdRef.current) return;
 
       const newStockMap = new Map<string, StockInfo>();
 
@@ -118,7 +124,9 @@ export function useCartStock(items: CartItem[]): UseCartStockReturn {
     } catch (error) {
       console.error("Failed to fetch stock:", error);
     } finally {
-      setIsLoading(false);
+      if (fetchId === fetchIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [items, productIds]);
 

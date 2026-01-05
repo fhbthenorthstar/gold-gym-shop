@@ -23,6 +23,7 @@ import {
   useCartItems,
   useTotalPrice,
   useTotalItems,
+  useCartActions,
 } from "@/lib/store/cart-store-provider";
 import { useCartStock } from "@/lib/hooks/useCartStock";
 import { createCodOrder } from "@/lib/actions/cod-order";
@@ -75,6 +76,7 @@ export function CheckoutClient({
   const items = useCartItems();
   const subtotal = useTotalPrice();
   const totalItems = useTotalItems();
+  const { closeCart } = useCartActions();
   const { isLoading, hasStockIssues, stockMap } = useCartStock(items);
   const [isPending, startTransition] = useTransition();
 
@@ -179,6 +181,16 @@ export function CheckoutClient({
       setDiscountState(null);
     }
   }, [discountCode, discountState]);
+
+  useEffect(() => {
+    if (items.length > 0) return;
+    closeCart();
+    setDiscountState(null);
+    setDiscountCode("");
+    setDiscountError(null);
+    setFormError(null);
+    checkoutTrackedRef.current = false;
+  }, [items.length, closeCart]);
 
   useEffect(() => {
     if (checkoutTrackedRef.current || items.length === 0) return;
