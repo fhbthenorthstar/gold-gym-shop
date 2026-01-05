@@ -42,19 +42,19 @@ export function Footer() {
                 className="h-6 w-auto opacity-80"
               />
               <Image
-                src="/payment-icons/american-express-logo.svg"
-                alt="American Express"
-                width={44}
-                height={28}
-                className="h-6 w-auto opacity-80"
-              />
-              <Image
                 src="/payment-icons/cod-logo.svg"
                 alt="Cash on delivery"
                 width={44}
                 height={28}
                 className="h-6 w-auto opacity-80"
               />
+              <div style={{background:"#CECECE", borderRadius:"2px"}}><Image
+                src="/payment-icons/bkash-logo-png.png"
+                alt="Cash on delivery"
+                width={44}
+                height={28}
+                className="h-6 w-auto opacity-80 p-0.5"
+              /></div>
             </div>
           </div>
 

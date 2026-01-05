@@ -54,8 +54,8 @@ export function HomePageSkeleton() {
             <Skeleton className="mx-auto mt-3 h-8 w-60" />
             <Skeleton className="mx-auto mt-2 h-4 w-72" />
           </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={`product-skeleton-${index}`}
                 className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950"
