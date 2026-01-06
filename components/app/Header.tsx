@@ -82,7 +82,14 @@ const megaMenuColumns = [
   {
     title: "Shoes",
     slug: "shoes",
-    items: [],
+    items: [
+      { label: "Training Shoes", slug: "training-shoes" },
+      { label: "Running Shoes", slug: "running-shoes" },
+      { label: "Basketball Shoes", slug: "basketball-shoes" },
+      { label: "Lifestyle Shoes", slug: "lifestyle-shoes" },
+      { label: "Soccer Boots", slug: "soccer-shoes" },
+      { label: "Trail Running Shoes", slug: "trail-running-shoes" },
+    ],
   },
 ];
 
@@ -137,6 +144,31 @@ export function Header() {
             <span className="rounded-full border border-primary/40 px-2 py-0.5 text-[11px] text-primary">
               BDT
             </span>
+            {!isChatOpen && (
+              <>
+                <SignedIn>
+                  <Button
+                    onClick={openChat}
+                    className="h-7 gap-1 rounded-full bg-primary px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    <span className="hidden sm:inline">Ask AI</span>
+                    <span className="sm:hidden">AI</span>
+                  </Button>
+                </SignedIn>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button
+                      className="h-7 gap-1 rounded-full border border-primary/40 bg-transparent px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:bg-primary/90 hover:text-black"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      <span className="hidden sm:inline">Sign in to chat</span>
+                      <span className="sm:hidden">Chat</span>
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -186,34 +218,6 @@ export function Header() {
                   className="w-full bg-transparent text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none"
                 />
               </form>
-
-              {!isChatOpen && (
-                <div className="mt-4 space-y-2">
-                  <SignedIn>
-                    <Button
-                      onClick={() => {
-                        openChat();
-                        setIsMenuOpen(false);
-                      }}
-                      className="w-full justify-center gap-2 rounded-full bg-primary text-xs font-semibold uppercase tracking-[0.2em] text-black"
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      Ask AI
-                    </Button>
-                  </SignedIn>
-                  <SignedOut>
-                    <SignInButton mode="modal">
-                      <Button
-                        onClick={() => setIsMenuOpen(false)}
-                        className="w-full justify-center gap-2 rounded-full border border-primary/40 bg-transparent text-xs font-semibold uppercase tracking-[0.2em] text-primary hover:border-primary/70"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        Sign in to chat
-                      </Button>
-                    </SignInButton>
-                  </SignedOut>
-                </div>
-              )}
 
               <nav className="mt-6 space-y-2">
                 {navItems.map((item) => (
@@ -352,49 +356,6 @@ export function Header() {
               className="w-32 bg-transparent text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none"
             />
           </form>
-
-          {!isChatOpen && (
-            <>
-              <SignedIn>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={openChat}
-                  className="text-zinc-200 hover:bg-primary hover:text-black lg:hidden"
-                  aria-label="Open AI assistant"
-                >
-                  <Sparkles className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={openChat}
-                  className="hidden items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90 lg:inline-flex"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Ask AI
-                </Button>
-              </SignedIn>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-zinc-200 hover:bg-primary hover:text-black lg:hidden"
-                    aria-label="Sign in to chat"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                  </Button>
-                </SignInButton>
-                <SignInButton mode="modal">
-                  <Button
-                    className="hidden items-center gap-2 rounded-full border border-primary/40 bg-transparent px-4 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:bg-primary/90 hover:text-black lg:inline-flex"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    Sign in to chat
-                  </Button>
-                </SignInButton>
-              </SignedOut>
-            </>
-          )}
 
           <Button
             variant="ghost"

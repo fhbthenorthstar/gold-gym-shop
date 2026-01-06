@@ -1,5 +1,60 @@
 import { defineQuery } from "next-sanity";
 
+const HOME_PRODUCT_CARD_PROJECTION = `{
+  _id,
+  name,
+  "slug": slug.current,
+  description,
+  price,
+  brand,
+  productType,
+  goals,
+  sports,
+  gender,
+  "images": images[0...4]{
+    _key,
+    asset->{
+      _id,
+      url
+    }
+  },
+  category->{
+    _id,
+    title,
+    "slug": slug.current,
+    parent->{
+      _id,
+      title,
+      "slug": slug.current
+    }
+  },
+  stock,
+  featured,
+  isDigital,
+  options[]{
+    name,
+    values
+  },
+  variants[]{
+    _key,
+    sku,
+    price,
+    compareAtPrice,
+    stock,
+    optionValues[]{
+      name,
+      value
+    },
+    image{
+      asset->{
+        _id,
+        url
+      },
+      hotspot
+    }
+  }
+}`;
+
 export const HOME_OFFER_QUERY = defineQuery(`*[_type == "homeOffer"] | order(order asc)[0]{
   _id,
   eyebrow,
@@ -89,4 +144,21 @@ export const HOME_GALLERY_QUERY = defineQuery(`*[
     },
     hotspot
   }
+}`);
+
+export const HOME_CATEGORY_TABS_QUERY = defineQuery(`*[
+  _type == "category"
+  && !defined(parent)
+  && (featuredInMenu == true || !defined(featuredInMenu))
+] | order(order asc, title asc) {
+  _id,
+  title,
+  "slug": slug.current,
+  "products": *[
+    _type == "product"
+    && (
+      category->slug.current == ^.slug.current
+      || category->parent->slug.current == ^.slug.current
+    )
+  ] | order(featured desc, _createdAt desc) [0...9] ${HOME_PRODUCT_CARD_PROJECTION}
 }`);

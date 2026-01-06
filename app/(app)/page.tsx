@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Check, Facebook, Instagram, X } from "lucide-react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
+  HOME_CATEGORY_TABS_QUERY,
   HOME_OFFER_QUERY,
   HOME_TESTIMONIALS_QUERY,
   HOME_TRAININGS_QUERY,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/sanity/queries/products";
 import { HomeTestimonials } from "@/components/app/HomeTestimonials";
 import { HomeInstagramSlider } from "@/components/app/HomeInstagramSlider";
-import { ProductCard } from "@/components/app/ProductCard";
+import { HomeFavoritesTabs } from "@/components/app/HomeFavoritesTabs";
 import { cn } from "@/lib/utils";
 import type {
   FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult,
@@ -69,6 +70,13 @@ type Training = {
   title?: string | null;
   link?: string | null;
   image?: SanityImage | null;
+};
+
+type CategoryTab = {
+  _id?: string;
+  title?: string | null;
+  slug?: string | null;
+  products?: FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult | null;
 };
 
 const instagramPlaceholderItems = [
@@ -191,12 +199,14 @@ const TrainerCard = ({
 export default async function HomePage() {
   const [
     featuredProductsResult,
+    categoriesResult,
     offerResult,
     trainingsResult,
     trainersResult,
     testimonialsResult,
   ] = await Promise.all([
     sanityFetch({ query: HOME_FEATURED_PRODUCTS_QUERY }),
+    sanityFetch({ query: HOME_CATEGORY_TABS_QUERY }),
     sanityFetch({ query: HOME_OFFER_QUERY }),
     sanityFetch({ query: HOME_TRAININGS_QUERY }),
     sanityFetch({ query: HOME_TRAINERS_QUERY }),
@@ -206,6 +216,8 @@ export default async function HomePage() {
   const featuredProducts =
     (featuredProductsResult.data as FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult | null) ??
     [];
+  const categoryTabs =
+    (categoriesResult.data as CategoryTab[] | null) ?? [];
   const offer = (offerResult.data as HomeOffer | null) ?? null;
   const trainings = (trainingsResult.data as Training[] | null) ?? [];
   const trainers = (trainersResult.data as Trainer[] | null) ?? [];
@@ -346,33 +358,10 @@ export default async function HomePage() {
               Coach-approved essentials and member favorites ready for your next session.
             </p>
           </div>
-          {featuredProducts.length > 0 ? (
-            <>
-              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredProducts.slice(0, 9).map((product, index) => (
-                  <div
-                    key={product._id}
-                    className="animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
-                    style={{ animationDelay: `${index * 80}ms` }}
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
-              <div className="mt-10 flex justify-center">
-                <Link
-                  href="/shop"
-                  className="inline-flex h-11 items-center justify-center rounded-full border border-primary/50 px-6 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:text-primary/90"
-                >
-                  Shop More
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div className="mt-10 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 p-10 text-center text-sm text-zinc-500">
-              Add featured products in Sanity to populate this section.
-            </div>
-          )}
+          <HomeFavoritesTabs
+            categories={categoryTabs}
+            fallbackProducts={featuredProducts}
+          />
         </div>
       </section>
 

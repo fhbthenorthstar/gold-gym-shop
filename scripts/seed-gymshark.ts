@@ -57,13 +57,19 @@ type SubcategorySource = {
   collections: string[];
   includeKeywords?: string[];
   excludeKeywords?: string[];
+  maxProducts?: number;
+  useGlobalSearch?: boolean;
+  keywordMatches?: string[];
 };
 
 const SHOULD_WRITE = process.argv.includes("--confirm");
+const ONLY_SHOES = process.argv.includes("--only-shoes");
 const STORE_URL = "https://gymshark.com";
 const USD_TO_BDT = 120;
 const DEFAULT_STOCK = 20;
 const MAX_PRODUCTS = 8;
+const MAX_GLOBAL_PAGES = 6;
+const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0" };
 
 if (!SHOULD_WRITE) {
   console.log("Dry run only. Re-run with --confirm to seed Gymshark.");
@@ -390,7 +396,10 @@ const SUBCATEGORY_SOURCES: SubcategorySource[] = [
     parentSlug: "shoes",
     productType: "activewear",
     gender: "unisex",
-    collections: ["training-shoes"],
+    collections: ["footwear"],
+    useGlobalSearch: true,
+    keywordMatches: ["training", "trainer"],
+    maxProducts: 8,
   },
   {
     title: "Running Shoes",
@@ -398,7 +407,10 @@ const SUBCATEGORY_SOURCES: SubcategorySource[] = [
     parentSlug: "shoes",
     productType: "activewear",
     gender: "unisex",
-    collections: ["running-shoes"],
+    collections: ["footwear"],
+    useGlobalSearch: true,
+    keywordMatches: ["running", "runner"],
+    maxProducts: 8,
   },
 ];
 
@@ -412,7 +424,7 @@ async function fetchCollectionProducts(handle: string, max: number) {
   let page = 1;
   while (products.length < max) {
     const url = `${STORE_URL}/collections/${handle}/products.json?limit=250&page=${page}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: FETCH_HEADERS });
     if (!res.ok) {
       break;
     }
@@ -425,6 +437,44 @@ async function fetchCollectionProducts(handle: string, max: number) {
   }
 
   collectionCache.set(handle, products);
+  return products;
+}
+
+async function fetchProductsByKeywords(
+  keywords: string[],
+  max: number,
+  usedHandles: Set<string>,
+  existingHandles: Set<string>
+) {
+  const normalized = keywords.map((keyword) => keyword.toLowerCase());
+  const products: ShopifyProduct[] = [];
+
+  if (normalized.length === 0) return products;
+
+  for (let page = 1; page <= MAX_GLOBAL_PAGES; page += 1) {
+    if (products.length >= max) break;
+    const url = `${STORE_URL}/products.json?limit=250&page=${page}`;
+    const res = await fetch(url, { headers: FETCH_HEADERS });
+    if (!res.ok) break;
+    const data = (await res.json()) as { products: ShopifyProduct[] };
+    if (!data.products?.length) break;
+
+    for (const product of data.products) {
+      if (products.length >= max) break;
+      if (usedHandles.has(product.handle) || existingHandles.has(product.handle)) {
+        continue;
+      }
+      const haystack = `${product.title} ${product.product_type ?? ""} ${product.tags?.join(" ") ?? ""}`.toLowerCase();
+      if (!normalized.some((keyword) => haystack.includes(keyword))) {
+        continue;
+      }
+      products.push(product);
+      usedHandles.add(product.handle);
+    }
+
+    await sleep(200);
+  }
+
   return products;
 }
 
@@ -650,6 +700,56 @@ async function cleanupEmptyCategories() {
   }
 }
 
+async function removeLegacyCategories() {
+  const legacyMap = [
+    { from: "womens-wear", to: "clothing" },
+    { from: "gym-equipments", to: "equipment" },
+  ];
+
+  const categories = await withRetry("fetch legacy categories", () =>
+    writeClient.fetch<
+      { _id: string; slug: { current: string } | null }[]
+    >(`*[_type == "category" && slug.current in $slugs]{_id, slug}`, {
+      slugs: legacyMap.flatMap((entry) => [entry.from, entry.to]),
+    })
+  );
+
+  const categoryBySlug = new Map(
+    categories
+      .map((category) => [category.slug?.current, category._id] as const)
+      .filter((entry): entry is [string, string] => Boolean(entry[0]))
+  );
+
+  for (const entry of legacyMap) {
+    const fromId = categoryBySlug.get(entry.from);
+    const toId = categoryBySlug.get(entry.to);
+    if (!fromId) continue;
+
+    if (toId) {
+      const products = await withRetry(
+        `fetch products for ${entry.from}`,
+        () =>
+          writeClient.fetch<{ _id: string }[]>(
+            `*[_type == "product" && category._ref == $fromId]{_id}`,
+            { fromId }
+          )
+      );
+      for (const product of products) {
+        await withRetry(`reassign product ${product._id}`, () =>
+          writeClientWithTimeout
+            .patch(product._id)
+            .set({ category: { _type: "reference", _ref: toId } })
+            .commit()
+        );
+      }
+    }
+
+    await withRetry(`delete legacy category ${entry.from}`, () =>
+      writeClientWithTimeout.delete(fromId)
+    );
+  }
+}
+
 async function withRetry<T>(
   label: string,
   fn: () => Promise<T>,
@@ -673,7 +773,8 @@ async function run() {
   console.log("Fetching Gymshark collections...");
   const collectionsJson = await withRetry("fetch collections", async () => {
     const collectionsData = await fetch(
-      `${STORE_URL}/collections.json?limit=250`
+      `${STORE_URL}/collections.json?limit=250`,
+      { headers: FETCH_HEADERS }
     );
     return collectionsData.json() as Promise<{ collections: { handle: string }[] }>;
   });
@@ -682,6 +783,18 @@ async function run() {
   );
 
   const categoryIdBySlug = new Map<string, string>();
+  const existingHandles = new Set<string>();
+
+  const existing = await withRetry("fetch existing gymshark handles", () =>
+    writeClient.fetch<{ handle?: string | null }[]>(
+      `*[_type == "product" && _id match "product-gymshark-*"]{"handle": slug.current}`
+    )
+  );
+  existing.forEach((item) => {
+    if (item.handle) existingHandles.add(item.handle);
+  });
+
+  await removeLegacyCategories();
 
   for (const category of CATEGORY_SEEDS) {
     const id = await ensureCategory(category);
@@ -690,8 +803,15 @@ async function run() {
 
   const usedHandles = new Set<string>();
   const categoryImageMap = new Map<string, string>();
+  const sources = ONLY_SHOES
+    ? SUBCATEGORY_SOURCES.filter((subcategory) => subcategory.parentSlug === "shoes")
+    : SUBCATEGORY_SOURCES;
 
-  for (const subcategory of SUBCATEGORY_SOURCES) {
+  if (ONLY_SHOES) {
+    console.log("Seeding shoes only (using global search fallback).");
+  }
+
+  for (const subcategory of sources) {
     const parentId = categoryIdBySlug.get(subcategory.parentSlug);
     if (!parentId) continue;
 
@@ -724,28 +844,45 @@ async function run() {
 
     categoryIdBySlug.set(subcategory.slug, categoryId);
 
-    const products: ShopifyProduct[] = [];
-    for (const collectionHandle of validCollections) {
-      if (products.length >= MAX_PRODUCTS) break;
-      const collectionProducts = await fetchCollectionProducts(
-        collectionHandle,
-        200
-      );
+    const maxProducts = subcategory.maxProducts ?? MAX_PRODUCTS;
+    let products: ShopifyProduct[] = [];
 
-      for (const product of collectionProducts) {
-        if (products.length >= MAX_PRODUCTS) break;
-        if (usedHandles.has(product.handle)) continue;
-        if (
-          !matchesKeywords(
-            product.title,
-            subcategory.includeKeywords,
-            subcategory.excludeKeywords
-          )
-        ) {
-          continue;
+    if (subcategory.useGlobalSearch && subcategory.keywordMatches) {
+      products = await fetchProductsByKeywords(
+        subcategory.keywordMatches,
+        maxProducts,
+        usedHandles,
+        existingHandles
+      );
+    } else {
+      products = [];
+      for (const collectionHandle of validCollections) {
+        if (products.length >= maxProducts) break;
+        const collectionProducts = await fetchCollectionProducts(
+          collectionHandle,
+          200
+        );
+
+        for (const product of collectionProducts) {
+          if (products.length >= maxProducts) break;
+          if (
+            usedHandles.has(product.handle) ||
+            existingHandles.has(product.handle)
+          ) {
+            continue;
+          }
+          if (
+            !matchesKeywords(
+              product.title,
+              subcategory.includeKeywords,
+              subcategory.excludeKeywords
+            )
+          ) {
+            continue;
+          }
+          products.push(product);
+          usedHandles.add(product.handle);
         }
-        products.push(product);
-        usedHandles.add(product.handle);
       }
     }
 
@@ -789,6 +926,7 @@ async function run() {
           subcategory.gender,
           imageAssetIds
         );
+        existingHandles.add(product.handle);
         await sleep(150);
       } catch (error) {
         console.warn(`Skipping product ${product.title}:`, error);

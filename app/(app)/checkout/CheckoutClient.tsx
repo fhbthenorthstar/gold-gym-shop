@@ -137,25 +137,7 @@ export function CheckoutClient({
       ? "Free"
       : formatPrice(shippingFee)
     : "Select division";
-
-  if (items.length === 0) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <ShoppingBag className="mx-auto h-16 w-16 text-zinc-500" />
-          <h1 className="mt-6 text-2xl font-bold text-white">
-            Your cart is empty
-          </h1>
-          <p className="mt-2 text-zinc-400">
-            Add some items to your cart before checking out.
-          </p>
-          <Button asChild className="mt-8">
-            <Link href="/">Continue Shopping</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const isEmpty = items.length === 0;
 
   const handleSelectAddress = (address: CustomerAddress | null) => {
     if (!address) {
@@ -283,6 +265,25 @@ export function CheckoutClient({
       });
     });
   };
+
+  if (isEmpty) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <ShoppingBag className="mx-auto h-16 w-16 text-zinc-500" />
+          <h1 className="mt-6 text-2xl font-bold text-white">
+            Your cart is empty
+          </h1>
+          <p className="mt-2 text-zinc-400">
+            Add some items to your cart before checking out.
+          </p>
+          <Button asChild className="mt-8">
+            <Link href="/">Continue Shopping</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 text-zinc-100 sm:px-6 lg:px-8">

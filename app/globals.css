@@ -173,6 +173,17 @@
   color: #ffffff !important;
 }
 
+.cl-userButtonPopoverCustomItemButtonText {
+  color: #ffffff !important;
+}
+
+.cl-socialButtonsBlockButtonText,
+.cl-socialButtonsBlockButtonText span,
+.cl-socialButtonsBlockButton__text,
+.cl-socialButtonsBlockButton__text span {
+  color: #ffffff !important;
+}
+
 .cl-userButtonPopoverCustomItemButtonIconBox,
 .cl-userButtonPopoverActionItemButtonIcon,
 .cl-userButtonPopoverActionItemButtonIcon svg {
