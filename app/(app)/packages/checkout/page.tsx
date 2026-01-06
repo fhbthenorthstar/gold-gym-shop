@@ -1,14 +1,7 @@
-import { redirect } from "next/navigation";
+import { SubscriptionCheckoutPageClient } from "./SubscriptionCheckoutPageClient";
 
-export default function SubscriptionCheckoutRedirect({
-  searchParams,
-}: {
-  searchParams: { package?: string };
-}) {
-  const packageSlug = searchParams.package;
-  if (!packageSlug) {
-    redirect("/subscribe");
-  }
+export const dynamic = "force-dynamic";
 
-  redirect(`/subscribe?package=${encodeURIComponent(packageSlug)}`);
+export default function SubscriptionCheckoutPage() {
+  return <SubscriptionCheckoutPageClient />;
 }

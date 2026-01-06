@@ -321,7 +321,7 @@ export default async function PackagesPage() {
                                       </p>
                                     </div>
                                     <Link
-                                      href={`/subscribe?package=${encodeURIComponent(
+                                      href={`/packages/checkout?package=${encodeURIComponent(
                                         pkg.slug || pkg._id
                                       )}`}
                                       className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-full bg-primary text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
