@@ -4,7 +4,9 @@ import { apiVersion, dataset, projectId } from "../env";
 
 const serverReadToken =
   process.env.SANITY_API_READ_TOKEN || process.env.SANITY_API_WRITE_TOKEN;
-const browserReadToken = process.env.NEXT_PUBLIC_SANITY_READ_TOKEN;
+const browserReadToken =
+  process.env.NEXT_PUBLIC_SANITY_READ_TOKEN ||
+  process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN;
 const readToken =
   typeof window === "undefined"
     ? serverReadToken ?? browserReadToken
