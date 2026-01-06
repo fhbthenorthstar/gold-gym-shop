@@ -36,28 +36,53 @@ const navItems = [
 const megaMenuColumns = [
   {
     title: "Equipments",
-    slug: "gym-equipments",
-    items: ["Dumbbells", "Weight Bench", "Treadmills", "Exercise Machines"],
+    slug: "equipment",
+    items: [
+      { label: "Weight Bench", slug: "weight-bench" },
+      { label: "Resistance Bands", slug: "resistance-bands" },
+      { label: "Lifting Belts", slug: "lifting-belts" },
+      { label: "Lifting Straps", slug: "lifting-straps" },
+      { label: "Gym Gloves", slug: "gym-gloves" },
+      { label: "Training Mats", slug: "training-mats" },
+      { label: "Foam Rollers", slug: "foam-rollers" },
+    ],
   },
   {
     title: "Supplements",
     slug: "supplements",
-    items: ["Antioxidants", "Build-Up Boosters", "Nutrition Mixes"],
+    items: [
+      { label: "Antioxidants", slug: "antioxidants" },
+      { label: "Build-Up Boosters", slug: "build-up-boosters" },
+      { label: "Nutrition Mixes", slug: "nutrition-mixes" },
+    ],
   },
   {
     title: "Clothing",
-    slug: "womens-wear",
-    items: ["Track Pants", "Tank Tops", "Sports Bras"],
+    slug: "clothing",
+    items: [
+      { label: "T-Shirts", slug: "t-shirts" },
+      { label: "Tank Tops", slug: "tank-tops" },
+      { label: "Track Pants", slug: "track-pants" },
+      { label: "Shorts", slug: "shorts" },
+      { label: "Leggings", slug: "leggings" },
+      { label: "Sports Bras", slug: "sports-bras" },
+      { label: "Hoodies & Jackets", slug: "hoodies-jackets" },
+    ],
   },
   {
     title: "Accessories",
     slug: "accessories",
-    items: ["Bottles", "Bags", "Jump Ropes"],
+    items: [
+      { label: "Bottles", slug: "bottles" },
+      { label: "Bags", slug: "bags" },
+      { label: "Jump Ropes", slug: "jump-ropes" },
+      { label: "Socks", slug: "socks" },
+    ],
   },
   {
     title: "Shoes",
     slug: "shoes",
-    items: ["Training Shoes", "Running Shoes"],
+    items: [],
   },
 ];
 
@@ -227,8 +252,15 @@ export function Header() {
                           View all {column.title}
                         </Link>
                       </SheetClose>
-                      {column.items.map((itemName) => (
-                        <p key={itemName}>{itemName}</p>
+                      {column.items.map((item) => (
+                        <SheetClose asChild key={item.slug}>
+                          <Link
+                            href={`/shop?category=${item.slug}`}
+                            className="block text-zinc-300 hover:text-primary"
+                          >
+                            {item.label}
+                          </Link>
+                        </SheetClose>
                       ))}
                     </div>
                   </details>
@@ -283,11 +315,20 @@ export function Header() {
                           >
                             {column.title}
                           </Link>
-                          <ul className="space-y-2 text-xs text-zinc-400">
-                            {column.items.map((itemName) => (
-                              <li key={itemName}>{itemName}</li>
-                            ))}
-                          </ul>
+                          {column.items.length > 0 && (
+                            <ul className="space-y-2 text-xs text-zinc-400">
+                              {column.items.map((item) => (
+                                <li key={item.slug}>
+                                  <Link
+                                    href={`/shop?category=${item.slug}`}
+                                    className="transition hover:text-primary"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                     </div>
