@@ -378,24 +378,33 @@ export async function createCodOrder(
       createdAt: new Date().toISOString(),
     });
 
-    await validatedItems
-      .reduce((tx, item) => {
-        if (item.variant?._key) {
-          return tx.patch(item.product._id, (p) =>
-            p.dec({
-              [`variants[_key==\"${item.variant?._key}\"].stock`]: item.quantity,
-            })
-          );
-        }
+    try {
+      await validatedItems
+        .reduce((tx, item) => {
+          if (item.variant?._key) {
+            return tx.patch(item.product._id, (p) =>
+              p.dec({
+                [`variants[_key==\"${item.variant?._key}\"].stock`]:
+                  item.quantity,
+              })
+            );
+          }
 
-        return tx.patch(item.product._id, (p) =>
-          p.dec({ stock: item.quantity })
-        );
-      }, writeClient.transaction())
-      .commit();
+          return tx.patch(item.product._id, (p) =>
+            p.dec({ stock: item.quantity })
+          );
+        }, writeClient.transaction())
+        .commit();
+    } catch (error) {
+      console.error("Stock update failed after order creation:", error);
+    }
 
     if (discountMeta?.id) {
-      await incrementDiscountUsage(discountMeta.id);
+      try {
+        await incrementDiscountUsage(discountMeta.id);
+      } catch (error) {
+        console.error("Failed to increment discount usage:", error);
+      }
     }
 
     return { success: true, orderId: order._id };

@@ -200,5 +200,3 @@ flowchart LR
     D -->|Direct mutations| A
     E --> D
 ```
-
-
