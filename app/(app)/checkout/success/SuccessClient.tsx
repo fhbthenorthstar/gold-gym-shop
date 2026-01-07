@@ -18,13 +18,26 @@ type OrderItem = NonNullable<
   NonNullable<NonNullable<ORDER_BY_ID_QUERYResult>["items"]>[number]
 >;
 
+const PENDING_ORDER_KEY = "checkout:lastOrder";
+
 export function SuccessClient({ order }: SuccessClientProps) {
   const { clearCart } = useCartActions();
   const trackedRef = useRef(false);
 
   useEffect(() => {
     clearCart();
-  }, [clearCart]);
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { orderId?: string };
+      if (!parsed?.orderId || parsed.orderId === order._id) {
+        sessionStorage.removeItem(PENDING_ORDER_KEY);
+      }
+    } catch {
+      sessionStorage.removeItem(PENDING_ORDER_KEY);
+    }
+  }, [clearCart, order._id]);
 
   useEffect(() => {
     if (trackedRef.current) return;

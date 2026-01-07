@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -66,6 +73,10 @@ const emptyAddress: AddressFormState = {
   phone: "",
 };
 
+const PENDING_ORDER_KEY = "checkout:lastOrder";
+const PENDING_ORDER_TTL_MS = 10 * 60 * 1000;
+const NAVIGATION_FALLBACK_MS = 800;
+
 export function CheckoutClient({
   isSignedIn,
   initialEmail,
@@ -118,6 +129,7 @@ export function CheckoutClient({
   const [discountError, setDiscountError] = useState<string | null>(null);
   const [isApplyingDiscount, startDiscountTransition] = useTransition();
   const checkoutTrackedRef = useRef(false);
+  const submitLockRef = useRef(false);
   const inputClassName =
     "h-11 rounded-md border-zinc-800 bg-black/60 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-primary";
   const selectTriggerClassName =
@@ -138,6 +150,35 @@ export function CheckoutClient({
       : formatPrice(shippingFee)
     : "Select division";
   const isEmpty = items.length === 0;
+
+  const persistPendingOrder = useCallback((orderId: string) => {
+    if (!orderId || typeof window === "undefined") return;
+    try {
+      sessionStorage.setItem(
+        PENDING_ORDER_KEY,
+        JSON.stringify({ orderId, createdAt: Date.now() })
+      );
+    } catch {
+      // Ignore storage write errors.
+    }
+  }, []);
+
+  const navigateToSuccess = useCallback(
+    (orderId: string) => {
+      if (!orderId) return;
+      const successUrl = `/checkout/success?orderId=${encodeURIComponent(orderId)}`;
+      persistPendingOrder(orderId);
+      router.replace(successUrl);
+
+      if (typeof window === "undefined") return;
+      window.setTimeout(() => {
+        if (!window.location.pathname.startsWith("/checkout/success")) {
+          window.location.assign(successUrl);
+        }
+      }, NAVIGATION_FALLBACK_MS);
+    },
+    [persistPendingOrder, router]
+  );
 
   const handleSelectAddress = (address: CustomerAddress | null) => {
     if (!address) {
@@ -173,6 +214,28 @@ export function CheckoutClient({
     setFormError(null);
     checkoutTrackedRef.current = false;
   }, [items.length, closeCart]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { orderId?: string; createdAt?: number };
+      if (!parsed?.orderId || !parsed.createdAt) {
+        sessionStorage.removeItem(PENDING_ORDER_KEY);
+        return;
+      }
+      if (Date.now() - parsed.createdAt > PENDING_ORDER_TTL_MS) {
+        sessionStorage.removeItem(PENDING_ORDER_KEY);
+        return;
+      }
+      if (window.location.pathname.startsWith("/checkout/success")) return;
+      if (isPending) return;
+      navigateToSuccess(parsed.orderId);
+    } catch {
+      sessionStorage.removeItem(PENDING_ORDER_KEY);
+    }
+  }, [isPending, navigateToSuccess]);
 
   useEffect(() => {
     if (checkoutTrackedRef.current || items.length === 0) return;
@@ -224,6 +287,7 @@ export function CheckoutClient({
   };
 
   const handleSubmit = () => {
+    if (submitLockRef.current || isPending) return;
     setFormError(null);
 
     const required = [
@@ -237,32 +301,46 @@ export function CheckoutClient({
       return;
     }
 
+    submitLockRef.current = true;
     startTransition(async () => {
-      const result = await createCodOrder({
-        items,
-        address: {
-          ...addressForm,
-          country: DEFAULT_COUNTRY,
-        },
-        email,
-        orderNotes,
-        paymentMethod,
-        discountCode: discountState?.code ?? undefined,
-        saveAddress: isSignedIn ? saveAddress : false,
-        makeDefault: isSignedIn ? makeDefault : false,
-        addressKey: isSignedIn ? selectedAddressKey : null,
-      });
+      let shouldUnlock = true;
+      try {
+        const result = await createCodOrder({
+          items,
+          address: {
+            ...addressForm,
+            country: DEFAULT_COUNTRY,
+          },
+          email,
+          orderNotes,
+          paymentMethod,
+          discountCode: discountState?.code ?? undefined,
+          saveAddress: isSignedIn ? saveAddress : false,
+          makeDefault: isSignedIn ? makeDefault : false,
+          addressKey: isSignedIn ? selectedAddressKey : null,
+        });
 
-      if (result.success && result.orderId) {
-        router.push(`/checkout/success?orderId=${result.orderId}`);
-        return;
+        if (result?.success && result.orderId) {
+          shouldUnlock = false;
+          navigateToSuccess(result.orderId);
+          return;
+        }
+
+        setFormError(result?.error ?? "Checkout failed.");
+        toast.error("Checkout Error", {
+          description: result?.error ?? "Something went wrong",
+        });
+      } catch (error) {
+        console.error("Checkout error:", error);
+        setFormError("Checkout failed. Please try again.");
+        toast.error("Checkout Error", {
+          description: "Something went wrong",
+        });
+      } finally {
+        if (shouldUnlock) {
+          submitLockRef.current = false;
+        }
       }
-
-      setFormError(result.error ?? "Checkout failed.");
-      console.log(result);
-      toast.error("Checkout Error", {
-        description: result.error ?? "Something went wrong",
-      });
     });
   };
 

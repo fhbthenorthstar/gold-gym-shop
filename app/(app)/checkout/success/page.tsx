@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { sanityFetch } from "@/sanity/lib/live";
 import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
 import { SuccessClient } from "./SuccessClient";
+import { SuccessPendingClient } from "./SuccessPendingClient";
 
 export const metadata = {
   title: "Order Confirmed | Gold's Gym Shop",
@@ -26,7 +27,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   });
 
   if (!order) {
-    redirect("/");
+    return <SuccessPendingClient orderId={orderId} />;
   }
 
   return <SuccessClient order={order} />;
