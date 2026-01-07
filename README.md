@@ -10,37 +10,42 @@
 
 </div>
 
-# 🏋️ AI-Powered Gym + Combat E-commerce Platform
+# 🏋️ AI-Powered Gym Memebership + E-commerce Platform
 
-> Build a modern gym + combat training e-commerce store for Gold's Gym Bangladesh and Zulcan Indoor Arena, with an AI shopping assistant, real-time inventory updates, and a powerful admin dashboard.
-
-<div align="center">
-
-| 👥 **Who It's For** | ⚡ **Key Differentiators** | 🔧 **Technical Highlights** |
-|:---:|:---:|:---:|
-| Developers learning modern full-stack patterns with AI integration | **Sanity App SDK** for real-time data & **Clerk AgentKit** for authenticated AI tools | Claude AI shopping assistant, live inventory updates, COD checkout |
-
-</div>
+> Built for Gold's Gym Bangladesh and Zulcan Indoor Arena, with an AI shopping assistant, real-time inventory updates, and a powerful admin dashboard.
 
 ---
 
-## 👇🏼 DO THIS Before You Get Started
+## 👇🏼 Customer Journey (Storefront)
+1) Customer Journey (Storefront)
+Home → show hero, trainings, favorites tabs, testimonials, Instagram strip.
+Shop → use filters, category tabs, pagination; open a product.
+Product detail → options/variants, stock, add to cart.
+Cart → adjust quantity, free‑shipping progress, proceed to checkout.
+Checkout → apply discount, place order (COD), see success page.
 
-Use THESE links to set up your accounts (It's a special affiliate link which lets us continue to do builds like this FREE for you!):
+2) Membership Flow
+Packages page → select location/tier → “Join Now”.
+Membership checkout (/packages/checkout?package=...) → fill info, submit.
+My Subscription → verify current membership card + trainings section + history.
 
-- [**Get Started with Sanity →**](https://www.sanity.io/sonny?utm_source=youtube&utm_medium=video&utm_content=ai-ecommerce-platform)
-- [**Get Started with Clerk →**](https://go.clerk.com/uc48FAP)
+3) Admin Management
+Admin login (PIN) → dashboard cards + insights.
+Inventory → verify products, open product edit.
+Orders → view new order, change status (Preparing/Shipped/etc).
+Packages → edit membership packages.
+Subscriptions → view recent membership signup, update status.
+Trainings → edit training items.
+Inquiries → check contact submissions, update status.
 
-| Service | Description | ‼️ LINK TO USE ‼️ |
-|---------|-------------|------|
-| 🧡 **Sanity** | Headless CMS with real-time capabilities & App SDK | [**Get Started with Sanity →**](https://www.sanity.io/sonny?utm_source=youtube&utm_medium=video&utm_content=ai-ecommerce-platform) |
-| 💜 **Clerk** | Authentication with AgentKit for AI context | [**Get Started with Clerk →**](https://go.clerk.com/uc48FAP) |
-
+4) Data Verification
+Sanity Studio → confirm products, categories, packages, subscriptions, trainings.
+Admin pages → confirm data matches Studio.
 ---
 
-## 🤔 What Is This App?
+## 🤔 What Is This Application?
 
-**Think of it as a gym + combat training store with a brain.**
+**Think of it as a modern ecommerce store and gym membership system with a brain.**
 
 This is a full-featured e-commerce platform where customers can:
 
@@ -54,7 +59,7 @@ And store owners get:
 - ✏️ **Real-time Editing** — Manage products and orders with instant updates via Sanity App SDK
 - 🔔 **Smart Alerts** — Low stock warnings and unfulfilled order notifications
 
-### Key Concepts Explained
+### Key Concepts Implemented
 
 | Term | What It Means |
 |------|---------------|
@@ -65,7 +70,7 @@ And store owners get:
 
 ---
 
-## 🎯 What You'll Learn
+## 🎯 Techstack implemented
 
 ✅ **Next.js 16** with App Router & Server/Client Components + Server Actions!
 
@@ -96,32 +101,6 @@ And store owners get:
 ✅ **Order creation** with automatic stock management!
 
 ✅ **Embedded Sanity Studio** for content management at `/studio`! + SO MUCH MORE!
-
----
-
-## 🚀 Before We Dive In - Join the PAPAFAM!
-
-**Want to build apps like this from scratch?**
-
-Join thousands of developers learning to build production-ready applications with the latest technologies.
-
-### PAPAFAM Community Benefits
-
-- 🎓 Step-by-step video tutorials
-- 💬 Private Discord community
-- 🔥 Weekly coding challenges
-- 📁 Access to all project source code
-- 🏆 Certificate of completion
-
-### Real Results
-
-> "I landed my first developer job after completing the PAPAFAM course!" — Community Member
-
-<div align="center">
-
-### [🎯 Join the PAPAFAM Course →](https://www.papareact.com/course)
-
-</div>
 
 ---
 
@@ -221,489 +200,3 @@ flowchart LR
     D -->|Direct mutations| A
     E --> D
 ```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have:
-
-- **Node.js 18+** — [Download here](https://nodejs.org/)
-- **pnpm** — Install with `npm install -g pnpm`
-- **Sanity Account** — [Create free account](https://www.sanity.io/sonny?utm_source=youtube&utm_medium=video&utm_content=ai-ecommerce-platform)
-- **Clerk Account** — [Create free account](https://go.clerk.com/uc48FAP)
-- **Vercel Account** — For AI Gateway access
-
-### Step-by-Step Setup
-
-#### 1. Clone the Repository
-
-```bash
-git clone https://github.com/sonnysangha/ai-ecommerce-sanity-clerk.git
-cd ai-ecommerce-sanity-clerk
-```
-
-#### 2. Install Dependencies
-
-```bash
-pnpm install
-```
-
-#### 3. Set Up Environment Variables
-
-```bash
-cp .env.example .env.local
-```
-
-Then fill in your values:
-
-```bash
-# Sanity
-NEXT_PUBLIC_SANITY_PROJECT_ID=Your_value_goes_here
-NEXT_PUBLIC_SANITY_DATASET=Your_value_goes_here
-NEXT_PUBLIC_SANITY_ORG_ID=Your_value_goes_here
-SANITY_API_WRITE_TOKEN=Your_value_goes_here
-
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=Your_value_goes_here
-CLERK_SECRET_KEY=Your_value_goes_here
-
-# Vercel
-AI_GATEWAY_API_KEY=Your_value_goes_here
-```
-
-> ⚠️ **Security Note**: Never commit `.env.local` to git. The `.gitignore` already excludes it.
-
-> 💡 **Tip**: Variables starting with `NEXT_PUBLIC_` are exposed to the browser. Keep sensitive keys (like `CLERK_SECRET_KEY`) without this prefix.
-
-#### 4. Configure Sanity
-
-1. Go to [sanity.io/manage](https://www.sanity.io/manage)
-2. Create a new project or select existing
-3. Copy your **Project ID** and **Dataset** name
-4. Create an API token with **Editor** permissions for `SANITY_API_WRITE_TOKEN`
-
-#### 5. Configure Clerk
-
-1. Go to [dashboard.clerk.com](https://dashboard.clerk.com/)
-2. Create a new application
-3. Copy your **Publishable Key** and **Secret Key**
-
-#### 6. Configure AI Gateway
-
-1. Go to [vercel.com](https://vercel.com/) and navigate to AI Gateway
-2. Create an API key
-3. The app uses Claude Sonnet 4/4.5 by default, but you can swap to other providers
-
-> 💡 **Swappable Models**: The AI Gateway supports OpenAI, Anthropic, Cohere, and more. Check `lib/ai/shopping-agent.ts` to change models.
-
-#### 7. Generate Types & Import Data
-
-```bash
-# Generate TypeScript types from Sanity schema
-pnpm typegen
-
-# Remove old furniture demo data
-pnpm tsx scripts/reset-demo-data.ts --confirm
-
-# Import gym + combat seed data
-npx sanity dataset import sample-data.ndjson
-```
-
-#### 8. Start Development Server
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) — you're ready to go! 🎉
-
-### First Time Setup Checklist
-
-- [ ] All environment variables filled in `.env.local`
-- [ ] Sanity project created with dataset
-- [ ] Clerk application created
-- [ ] Sample data imported
-- [ ] Types generated with `pnpm typegen`
-
----
-
-## 📊 Database Schema Overview
-
-This app uses **Sanity** as its headless CMS with the following document types:
-
-### Product
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Product name |
-| `slug` | slug | URL-friendly identifier |
-| `description` | text | Product description |
-| `price` | number | Base price in BDT |
-| `category` | reference | Link to category |
-| `images` | array | Product images with hotspot |
-| `stock` | number | Base inventory count |
-| `featured` | boolean | Show in featured carousel |
-| `brand` | string | Brand or manufacturer |
-| `productType` | string | supplement, activewear, equipment, accessory, recovery, combat_gear, digital |
-| `goals` | array | Training goals (muscle_gain, fat_loss, strength, endurance, recovery, fighting_performance) |
-| `sports` | array | Sports focus (fitness, boxing, mma, kickboxing, muay_thai) |
-| `gender` | string | unisex, men, women |
-| `options` | array | Shopify-style option names + values |
-| `variants` | array | SKU-level variants with price/stock and option values |
-| `metafields` | array | Custom key/value metadata |
-| `isDigital` | boolean | Digital product flag |
-
-### Category
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `title` | string | Category name |
-| `slug` | slug | URL-friendly identifier |
-| `image` | image | Category thumbnail |
-| `parent` | reference | Optional parent category |
-| `order` | number | Sort order for menus |
-| `featuredInMenu` | boolean | Include in mega menu |
-| `filterConfig` | object | Filter visibility and option list |
-
-### Collection
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `title` | string | Collection name |
-| `slug` | slug | URL-friendly identifier |
-| `description` | text | Collection summary |
-| `heroImage` | image | Collection hero image |
-| `featured` | boolean | Highlight on storefront |
-| `order` | number | Sort order for merchandising |
-| `products` | array | Product references |
-
-### Order
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `orderNumber` | string | Unique order ID (e.g., ORD-ABC123) |
-| `items` | array | Products with quantity and price at purchase |
-| `total` | number | Order total in BDT |
-| `status` | string | cod, paid |
-| `customer` | reference | Link to customer record |
-| `clerkUserId` | string | Clerk user identifier |
-| `email` | string | Customer email |
-| `address` | object | Shipping address |
-| `paymentMethod` | string | cod, online |
-| `orderNotes` | text | Optional delivery notes |
-| `shippingFee` | number | Shipping fee |
-| `subtotal` | number | Subtotal before shipping |
-
-### Customer
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Customer name |
-| `email` | string | Customer email |
-| `clerkUserId` | string | Clerk user identifier |
-| `addresses` | array | Saved addresses with default flag |
-
----
-
-## 🔧 Key Technical Patterns
-
-### Sanity App SDK Patterns
-
-The admin dashboard uses Sanity App SDK for direct document operations:
-
-```typescript
-// app/(admin)/admin/page.tsx
-import {
-  useApplyDocumentActions,
-  createDocumentHandle,
-  createDocument,
-} from "@sanity/sdk-react";
-
-// Create a new product
-const apply = useApplyDocumentActions();
-
-const handleCreateProduct = async () => {
-  const newDocHandle = createDocumentHandle({
-    documentId: crypto.randomUUID(),
-    documentType: "product",
-  });
-  await apply(createDocument(newDocHandle));
-  router.push(`/admin/inventory/${newDocHandle.documentId}`);
-};
-```
-
-**Key hooks used:**
-- `useDocuments()` — Reactive document queries
-- `useApplyDocumentActions()` — Perform mutations (create, update, delete)
-- `createDocumentHandle()` — Create handles for new documents
-
-### Clerk AgentKit Pattern
-
-The AI assistant uses Clerk to provide user context:
-
-```typescript
-// lib/ai/shopping-agent.ts
-export function createShoppingAgent({ userId }: { userId: string | null }) {
-  const isAuthenticated = !!userId;
-
-  // Tools vary based on authentication
-  const tools: Record<string, Tool> = {
-    searchProducts: searchProductsTool, // Always available
-  };
-
-  // Only add orders tool if user is signed in
-  if (isAuthenticated) {
-    tools.getMyOrders = createGetMyOrdersTool(userId);
-  }
-
-  return new ToolLoopAgent({
-    model: gateway("anthropic/claude-sonnet-4.5"),
-    instructions: isAuthenticated ? fullInstructions : guestInstructions,
-    tools,
-  });
-}
-```
-
-**How it works:**
-1. Clerk provides `userId` from the session
-2. Agent is created with user-specific tools
-3. `getMyOrders` tool is scoped to that user's data
-
-### Custom AI Tools
-
-#### searchProducts Tool
-
-```typescript
-// lib/ai/tools/search-products.ts
-export const searchProductsTool = tool({
-  description: "Search for products in the Gold's Gym Bangladesh store",
-  inputSchema: z.object({
-    query: z.string().optional(),
-    category: z.string().optional(),
-    brand: z.string().optional(),
-    goals: z.array(z.enum(["muscle_gain", "fat_loss", "strength", "endurance", "recovery", "fighting_performance"])).optional(),
-    sports: z.array(z.enum(["fitness", "boxing", "mma", "kickboxing", "muay_thai"])).optional(),
-    gender: z.enum(["", "unisex", "men", "women"]).optional(),
-    minPrice: z.number().optional(),
-    maxPrice: z.number().optional(),
-  }),
-  execute: async (params) => {
-    // Executes GROQ query against Sanity
-    const { data: products } = await sanityFetch({
-      query: AI_SEARCH_PRODUCTS_QUERY,
-      params,
-    });
-    return { products, found: products.length > 0 };
-  },
-});
-```
-
-#### getMyOrders Tool
-
-```typescript
-// lib/ai/tools/get-my-orders.ts
-export function createGetMyOrdersTool(userId: string | null) {
-  if (!userId) return null; // Not available for guests
-
-  return tool({
-    description: "Get the current user's orders",
-    inputSchema: z.object({
-    status: z.enum(["", "cod", "paid"]).optional(),
-    }),
-    execute: async ({ status }) => {
-      const { data: orders } = await sanityFetch({
-        query: ORDERS_BY_USER_QUERY,
-        params: { clerkUserId: userId },
-      });
-      return { orders, found: orders.length > 0 };
-    },
-  });
-}
-```
-
----
-
-## 🚢 Deployment
-
-### Deploy to Vercel
-
-#### Option 1: Vercel CLI
-
-```bash
-# Install Vercel CLI
-pnpm install -g vercel
-
-# Deploy
-vercel
-```
-
-#### Option 2: GitHub Integration
-
-1. Push your code to GitHub
-2. Go to [vercel.com/new](https://vercel.com/new)
-3. Import your repository
-4. Add environment variables
-5. Deploy!
-
-### Post-Deployment Checklist
-
-- [ ] All environment variables set in Vercel dashboard
-- [ ] Add production domain to Clerk allowed origins
-- [ ] Add production domain to Sanity CORS origins
-- [ ] Test a complete purchase flow
-
-### Monitoring
-
-- **Vercel Analytics** — Performance and usage metrics
-- **Sanity Studio** — Content management at `/studio`
-- **Clerk Dashboard** — User analytics
-
----
-
-## 🐛 Common Issues & Solutions
-
-### Sanity Issues
-
-| Problem | Solution |
-|---------|----------|
-| "Missing write token" error | Ensure `SANITY_API_WRITE_TOKEN` is set with Editor permissions |
-| CORS errors | Add your domain to Sanity project CORS origins |
-| Types out of sync | Run `pnpm typegen` after schema changes |
-
-### Clerk Issues
-
-| Problem | Solution |
-|---------|----------|
-| Middleware not working | Check `middleware.ts` matches Clerk docs |
-| User not found in session | Ensure `ClerkProvider` wraps your app |
-| AgentKit not getting userId | Verify `auth()` is called server-side |
-
-### AI Issues
-
-| Problem | Solution |
-|---------|----------|
-| "Gateway error" | Verify `AI_GATEWAY_API_KEY` is valid |
-| Rate limiting | Implement request throttling or upgrade plan |
-| Wrong model response | Check model name in `shopping-agent.ts` |
-
----
-
-## 🏆 Take It Further - Challenge Time!
-
-Ready to level up? Try adding these features:
-
-### Beginner Challenges
-
-- [ ] Add product reviews with star ratings
-- [ ] Implement a wishlist/favorites feature
-- [ ] Add social sharing buttons
-
-### Intermediate Challenges
-
-- [ ] Email notifications via [Resend](https://resend.com/)
-- [ ] Product comparison feature
-- [ ] Advanced filtering (multiple selections)
-
-### Advanced Challenges
-
-- [ ] AI-powered product recommendations ("You might also like...")
-- [ ] Sentiment analysis for reviews
-- [ ] Multi-currency support with automatic conversion
-- [ ] Inventory forecasting with AI
-
-### Infrastructure Challenges
-
-- [ ] Add Redis caching for frequently accessed products
-- [ ] Implement image optimization with Cloudinary
-- [ ] Add full-text search with Algolia
-
----
-
-## 📄 License
-
-This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)**.
-
-### ✅ You CAN
-
-- Use this code for personal learning
-- Modify and adapt the code
-- Share with attribution
-- Use in portfolio projects
-
-### ❌ You CANNOT
-
-- Use for commercial purposes without permission
-- Sell this code or derivatives
-- Remove attribution
-
-### 💼 Commercial Licensing
-
-Want to use this for a commercial project? Contact us:
-
-📧 **contact@papareact.com**
-
-See [LICENSE.md](./LICENSE.md) for full details.
-
----
-
-## 📚 Quick Reference
-
-### Useful Commands
-
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm start` | Start production server |
-| `pnpm typegen` | Generate TypeScript types from Sanity schema |
-| `pnpm lint` | Run Biome linter |
-| `pnpm format` | Format code with Biome |
-| `pnpm typecheck` | Run TypeScript type checking |
-
-### Key Files & Folders
-
-```
-├── app/
-│   ├── (app)/              # Customer-facing routes
-│   ├── (admin)/admin/      # Admin dashboard
-│   ├── api/
-│   │   ├── chat/           # AI chat endpoint
-│   │   └── webhooks/       # Webhook handlers
-│   └── studio/             # Embedded Sanity Studio
-├── components/
-│   ├── app/                # Customer UI components
-│   ├── admin/              # Admin UI components
-│   └── ui/                 # Shadcn/UI components
-├── lib/
-│   ├── ai/                 # AI agent & tools
-│   ├── sanity/queries/     # GROQ queries
-│   └── store/              # Zustand stores
-├── sanity/
-│   ├── schemaTypes/        # Sanity document schemas
-│   └── lib/                # Sanity client & utilities
-└── .env.example            # Environment template
-```
-
-### Important Concepts
-
-| Concept | File(s) | What It Does |
-|---------|---------|--------------|
-| Shopping Agent | `lib/ai/shopping-agent.ts` | Configures AI with tools and instructions |
-| Search Tool | `lib/ai/tools/search-products.ts` | AI tool for product search |
-| Orders Tool | `lib/ai/tools/get-my-orders.ts` | AI tool for user's order history |
-| Real-time Data | `sanity/lib/live.ts` | Sanity Live configuration |
-| Cart Store | `lib/store/cart-store.ts` | Zustand cart with persistence |
-| Admin Actions | `app/(admin)/admin/page.tsx` | Sanity App SDK document operations |
-
----
-
-<div align="center">
-
-**Built with ❤️ by [Sonny Sangha](https://www.papareact.com/) & the PAPAFAM Community**
-
-[YouTube](https://www.youtube.com/@SonnySangha) · [Twitter](https://twitter.com/sonnysangha) · [Course](https://www.papareact.com/course)
-
-</div>
