@@ -19,6 +19,7 @@ type OrderItem = NonNullable<
 >;
 
 const PENDING_ORDER_KEY = "checkout:lastOrder";
+const PENDING_ORDER_CLEAR_DELAY_MS = 20 * 1000;
 
 export function SuccessClient({ order }: SuccessClientProps) {
   const { clearCart } = useCartActions();
@@ -27,16 +28,20 @@ export function SuccessClient({ order }: SuccessClientProps) {
   useEffect(() => {
     clearCart();
     if (typeof window === "undefined") return;
-    try {
-      const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { orderId?: string };
-      if (!parsed?.orderId || parsed.orderId === order._id) {
+    const timeoutId = window.setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as { orderId?: string };
+        if (!parsed?.orderId || parsed.orderId === order._id) {
+          sessionStorage.removeItem(PENDING_ORDER_KEY);
+        }
+      } catch {
         sessionStorage.removeItem(PENDING_ORDER_KEY);
       }
-    } catch {
-      sessionStorage.removeItem(PENDING_ORDER_KEY);
-    }
+    }, PENDING_ORDER_CLEAR_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
   }, [clearCart, order._id]);
 
   useEffect(() => {

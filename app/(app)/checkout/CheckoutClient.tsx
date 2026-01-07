@@ -75,6 +75,7 @@ const emptyAddress: AddressFormState = {
 
 const PENDING_ORDER_KEY = "checkout:lastOrder";
 const PENDING_ORDER_TTL_MS = 10 * 60 * 1000;
+const PENDING_ORDER_REDIRECT_WINDOW_MS = 20 * 1000;
 const NAVIGATION_FALLBACK_MS = 800;
 
 export function CheckoutClient({
@@ -225,7 +226,16 @@ export function CheckoutClient({
         sessionStorage.removeItem(PENDING_ORDER_KEY);
         return;
       }
-      if (Date.now() - parsed.createdAt > PENDING_ORDER_TTL_MS) {
+      const age = Date.now() - parsed.createdAt;
+      if (age > PENDING_ORDER_TTL_MS) {
+        sessionStorage.removeItem(PENDING_ORDER_KEY);
+        return;
+      }
+      if (items.length > 0) {
+        sessionStorage.removeItem(PENDING_ORDER_KEY);
+        return;
+      }
+      if (age > PENDING_ORDER_REDIRECT_WINDOW_MS) {
         sessionStorage.removeItem(PENDING_ORDER_KEY);
         return;
       }
@@ -235,7 +245,7 @@ export function CheckoutClient({
     } catch {
       sessionStorage.removeItem(PENDING_ORDER_KEY);
     }
-  }, [isPending, navigateToSuccess]);
+  }, [isPending, items.length, navigateToSuccess]);
 
   useEffect(() => {
     if (checkoutTrackedRef.current || items.length === 0) return;

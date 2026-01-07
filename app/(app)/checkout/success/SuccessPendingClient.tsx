@@ -8,34 +8,45 @@ import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 import { SuccessClient } from "./SuccessClient";
 import { SuccessPageSkeleton } from "@/components/app/SuccessPageSkeleton";
 import { Button } from "@/components/ui/button";
+import { useCartActions } from "@/lib/store/cart-store-provider";
 
 type OrderResult = NonNullable<ORDER_BY_ID_QUERYResult>;
 
 const PENDING_ORDER_KEY = "checkout:lastOrder";
 const MAX_ATTEMPTS = 8;
 const POLL_INTERVAL_MS = 900;
+const PENDING_ORDER_CLEAR_DELAY_MS = 20 * 1000;
 
 interface SuccessPendingClientProps {
   orderId: string;
 }
 
 export function SuccessPendingClient({ orderId }: SuccessPendingClientProps) {
+  const { clearCart } = useCartActions();
   const [order, setOrder] = useState<OrderResult | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [lastError, setLastError] = useState<string | null>(null);
 
   useEffect(() => {
+    clearCart();
+  }, [clearCart]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
-    try {
-      const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { orderId?: string };
-      if (!parsed?.orderId || parsed.orderId === orderId) {
+    const timeoutId = window.setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem(PENDING_ORDER_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as { orderId?: string };
+        if (!parsed?.orderId || parsed.orderId === orderId) {
+          sessionStorage.removeItem(PENDING_ORDER_KEY);
+        }
+      } catch {
         sessionStorage.removeItem(PENDING_ORDER_KEY);
       }
-    } catch {
-      sessionStorage.removeItem(PENDING_ORDER_KEY);
-    }
+    }, PENDING_ORDER_CLEAR_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
   }, [orderId]);
 
   useEffect(() => {

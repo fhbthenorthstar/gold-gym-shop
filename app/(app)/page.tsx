@@ -9,16 +9,12 @@ import {
   HOME_TRAININGS_QUERY,
   HOME_TRAINERS_QUERY,
 } from "@/lib/sanity/queries/home";
-import {
-  HOME_FEATURED_PRODUCTS_QUERY,
-} from "@/lib/sanity/queries/products";
+import { HOME_FEATURED_PRODUCTS_QUERY } from "@/lib/sanity/queries/products";
 import { HomeTestimonials } from "@/components/app/HomeTestimonials";
 import { HomeInstagramSlider } from "@/components/app/HomeInstagramSlider";
 import { HomeFavoritesTabs } from "@/components/app/HomeFavoritesTabs";
 import { cn } from "@/lib/utils";
-import type {
-  FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult,
-} from "@/sanity.types";
+import type { FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult } from "@/sanity.types";
 
 type SanityImage = {
   asset?: {
@@ -37,16 +33,14 @@ type HomeOffer = {
   ctaLabel?: string | null;
   ctaLink?: string | null;
   image?: SanityImage | null;
-  brandLogos?:
-    | Array<{
-        _key?: string;
-        asset?: {
-          _id?: string;
-          url?: string | null;
-        } | null;
-        hotspot?: unknown;
-      } | null>
-    | null;
+  brandLogos?: Array<{
+    _key?: string;
+    asset?: {
+      _id?: string;
+      url?: string | null;
+    } | null;
+    hotspot?: unknown;
+  } | null> | null;
 };
 
 type Trainer = {
@@ -216,8 +210,7 @@ export default async function HomePage() {
   const featuredProducts =
     (featuredProductsResult.data as FILTER_PRODUCTS_BY_BEST_SELLING_QUERYResult | null) ??
     [];
-  const categoryTabs =
-    (categoriesResult.data as CategoryTab[] | null) ?? [];
+  const categoryTabs = (categoriesResult.data as CategoryTab[] | null) ?? [];
   const offer = (offerResult.data as HomeOffer | null) ?? null;
   const trainings = (trainingsResult.data as Training[] | null) ?? [];
   const trainers = (trainersResult.data as Trainer[] | null) ?? [];
@@ -253,8 +246,8 @@ export default async function HomePage() {
             </h1>
             <p className="max-w-xl text-sm text-zinc-200 sm:text-base">
               Shop premium gym wear, supplements, and equipment curated for
-              modern training. Built for Gold's Gym Bangladesh and Zulcan
-              Indoor Arena athletes.
+              modern training. Built for Gold's Gym Bangladesh and Zulcan Indoor
+              Arena athletes.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -282,7 +275,8 @@ export default async function HomePage() {
                 Training Programs
               </p>
               <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-                Train Smarter. <span className="text-primary">Perform Better.</span>
+                Train Smarter.{" "}
+                <span className="text-primary">Perform Better.</span>
               </h2>
               <p className="mt-2 text-sm text-zinc-400">
                 Choose a focus and let our coaches guide your next session.
@@ -318,29 +312,35 @@ export default async function HomePage() {
                   </>
                 );
 
-                return (
-                  isExternalUrl(href) ? (
-                    <a
-                      key={item._id ?? item.title ?? index}
-                      href={href}
-                      className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
-                      style={{ animationDelay: `${index * 90}ms` }}
-                    >
-                      {content}
-                    </a>
-                  ) : (
-                    <Link
-                      key={item._id ?? item.title ?? index}
-                      href={href}
-                      className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
-                      style={{ animationDelay: `${index * 90}ms` }}
-                    >
-                      {content}
-                    </Link>
-                  )
+                return isExternalUrl(href) ? (
+                  <a
+                    key={item._id ?? item.title ?? index}
+                    href={href}
+                    className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
+                    style={{ animationDelay: `${index * 90}ms` }}
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <Link
+                    key={item._id ?? item.title ?? index}
+                    href={href}
+                    className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-in fade-in-0 slide-in-from-bottom-2 duration-700"
+                    style={{ animationDelay: `${index * 90}ms` }}
+                  >
+                    {content}
+                  </Link>
                 );
               })}
             </div>
+          </div>
+          <div className="mt-5 flex justify-center">
+            <Link
+              href="/packages"
+              className="inline-flex mt-5 h-11 items-center justify-center rounded-full bg-primary px-6 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-primary/90"
+            >
+              View Packages
+            </Link>
           </div>
         </section>
       )}
@@ -355,7 +355,8 @@ export default async function HomePage() {
               Gold&apos;s Gym <span className="text-primary">Favorites</span>
             </h2>
             <p className="mt-2 text-sm text-zinc-400">
-              Coach-approved essentials and member favorites ready for your next session.
+              Coach-approved essentials and member favorites ready for your next
+              session.
             </p>
           </div>
           <HomeFavoritesTabs
@@ -470,7 +471,7 @@ export default async function HomePage() {
                 World-class Trainers Available
               </p>
               <h2 className="font-heading mt-3 text-2xl text-white sm:text-3xl">
-                 <span className="text-primary">Top</span> Trainers
+                <span className="text-primary">Top</span> Trainers
               </h2>
             </div>
 
@@ -487,11 +488,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {testimonials.length > 0 && (
-        <HomeTestimonials items={testimonials} />
-      )}
-
-      
+      {testimonials.length > 0 && <HomeTestimonials items={testimonials} />}
 
       <section className="relative overflow-hidden border-y border-zinc-800">
         <div className="relative h-[380px] w-full sm:h-[460px] lg:h-[540px]">
